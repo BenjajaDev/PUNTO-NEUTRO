@@ -1,0 +1,150 @@
+import { ArrowLeft, Eye, MessageSquareQuote, Pencil, Plus, Save, Send, Trash2, Undo2 } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { api } from '@/lib/api';
+import { formatDate } from '@/lib/format';
+import type { Interview } from '@/lib/types';
+import { useResource } from '@/lib/useResource';
+import { Badge, Button, buttonClass, EmptyState, ErrorState, PageHeader, SkeletonRows, TextArea, TextField, useFeedback } from '@/ui';
+import { ImagePicker } from '../components/ImagePicker';
+import { useEntityEditor } from '../components/useEntityEditor';
+import { StatusBadge } from './TrendsAdmin';
+
+export function InterviewsAdmin() {
+  const { confirm, notify } = useFeedback();
+  const navigate = useNavigate();
+  const items = useResource((signal) => api<Interview[]>('/admin/interviews', { signal }), []);
+
+  const remove = async (item: Interview) => {
+    const done = await confirm({
+      title: `¿Eliminar la entrevista a ${item.guestName}?`,
+      message: 'Desaparecerá del sitio y del panel. Esta acción no se puede deshacer.',
+      tone: 'danger',
+      confirmLabel: 'Eliminar entrevista',
+      onConfirm: () => api(`/admin/interviews/${item.id}`, { method: 'DELETE' }),
+    });
+    if (done) {
+      notify({ tone: 'success', message: 'Entrevista eliminada.' });
+      items.reload();
+    }
+  };
+
+  return (
+    <>
+      <PageHeader title="Pequeñas Entrevistas" subtitle="Formato fijo de tres preguntas a creadoras de contenido." actions={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Nueva entrevista</Button>} />
+      {items.loading ? (
+        <SkeletonRows />
+      ) : items.error ? (
+        <ErrorState message={items.error} onRetry={items.reload} />
+      ) : !items.data?.length ? (
+        <EmptyState icon={MessageSquareQuote} title="Aún no hay entrevistas" action={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Crear la primera</Button>} />
+      ) : (
+        <div className="table-wrap">
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Entrevistada</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Actualizada</th>
+                <th scope="col"><span className="visually-hidden">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.data.map((item) => (
+                <tr key={item.id}>
+                  <td>
+                    <Link to={`/admin/entrevistas/${item.id}`} className="table-link">{item.guestName}</Link>
+                    {item.guestHandle ? <span className="text-xs text-muted" style={{ display: 'block' }}>{item.guestHandle}</span> : null}
+                  </td>
+                  <td><StatusBadge status={item.status} /></td>
+                  <td className="text-secondary">{formatDate(item.updatedAt)}</td>
+                  <td>
+                    <div className="row" style={{ gap: 2, justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                      {item.status === 'PUBLISHED' ? (
+                        <a href={`/entrevistas/${item.slug}`} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'ghost', size: 'sm', iconOnly: true })} aria-label={`Ver entrevista a ${item.guestName} en el sitio`}>
+                          <Eye size={16} aria-hidden />
+                        </a>
+                      ) : null}
+                      <Button variant="ghost" size="sm" icon={Pencil} aria-label={`Editar entrevista a ${item.guestName}`} onClick={() => navigate(`/admin/entrevistas/${item.id}`)} />
+                      <Button variant="ghost" size="sm" icon={Trash2} aria-label={`Eliminar entrevista a ${item.guestName}`} onClick={() => remove(item)} />
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
+  );
+}
+
+const EMPTY: Interview = {
+  id: 0, slug: '', guestName: '', guestHandle: '', guestBio: '', photoId: null, intro: '',
+  question1: '¿Cómo vives el escrutinio público sobre tu cuerpo en redes sociales?', answer1: '',
+  question2: '¿Has sentido presión por mantener cierta estética para tu contenido?', answer2: '',
+  question3: '¿Qué herramientas de autocuidado usas para gestionar la exposición mediática?', answer3: '',
+  status: 'DRAFT', publishedAt: null, updatedAt: '',
+};
+const EDITABLE: (keyof Interview)[] = ['guestName', 'slug', 'guestHandle', 'guestBio', 'photoId', 'intro', 'question1', 'answer1', 'question2', 'answer2', 'question3', 'answer3'];
+
+export function InterviewEditor() {
+  const { id = 'nuevo' } = useParams();
+  const { confirm } = useFeedback();
+  const editor = useEntityEditor<Interview>({ endpoint: '/admin/interviews', id, empty: EMPTY, listPath: '/admin/entrevistas', editable: EDITABLE });
+  const { form, set, errors, isNew, dirty, save } = editor;
+  const published = editor.original?.status === 'PUBLISHED';
+
+  if (editor.loading) return <SkeletonRows rows={5} label="Cargando entrevista" />;
+  if (editor.loadError) return <ErrorState message={editor.loadError} />;
+
+  const publish = () =>
+    confirm({ title: '¿Publicar esta entrevista?', message: 'Quedará visible para todo público en Pequeñas Entrevistas.', tone: 'brand', icon: Send, confirmLabel: 'Publicar' }).then(
+      (ok) => ok && save('PUBLISHED', 'Entrevista publicada.'),
+    );
+  const unpublish = () =>
+    confirm({ title: '¿Pasar a borrador?', message: 'Dejará de verse en el sitio hasta que vuelvas a publicarla.', tone: 'warning', icon: Undo2, confirmLabel: 'Pasar a borrador' }).then(
+      (ok) => ok && save('DRAFT', 'La entrevista volvió a borrador.'),
+    );
+
+  return (
+    <form className="editor" onSubmit={(e) => { e.preventDefault(); save(published ? 'PUBLISHED' : 'DRAFT', 'Cambios guardados.'); }} noValidate>
+      <div className="editor__bar">
+        <Link to="/admin/entrevistas" className="link-arrow link-arrow--back"><ArrowLeft size={18} aria-hidden /> Entrevistas</Link>
+        <div className="row" style={{ gap: 8 }}>
+          {!isNew ? <StatusBadge status={editor.original?.status || 'DRAFT'} /> : null}
+          {dirty ? <Badge tone="accent">Cambios sin guardar</Badge> : null}
+          {published ? <Button variant="ghost" size="sm" icon={Undo2} onClick={unpublish}>Despublicar</Button> : null}
+          <Button variant="secondary" icon={Save} onClick={() => save(published ? 'PUBLISHED' : 'DRAFT', published ? 'Cambios publicados.' : 'Borrador guardado.')} disabled={!dirty && !isNew}>
+            {published ? 'Guardar' : 'Guardar borrador'}
+          </Button>
+          {!published ? <Button icon={Send} onClick={publish}>Publicar</Button> : null}
+        </div>
+      </div>
+
+      <h1 style={{ fontSize: 26 }}>{isNew ? 'Nueva entrevista' : 'Editar entrevista'}</h1>
+
+      <div className="editor__layout">
+        <div className="stack-lg">
+          <section className="card stack" aria-label="Introducción">
+            <TextArea label="Introducción" rows={3} maxLength={1500} showCount value={form.intro} onChange={(e) => set('intro', e.target.value)} error={errors.intro} hint="Contexto breve antes de las preguntas." />
+          </section>
+          {([1, 2, 3] as const).map((n) => (
+            <section key={n} className="card stack" aria-label={`Pregunta ${n}`}>
+              <TextField label={`Pregunta ${n} *`} value={form[`question${n}`]} maxLength={300} onChange={(e) => set(`question${n}`, e.target.value)} error={errors[`question${n}`]} />
+              <TextArea label={`Respuesta ${n} *`} rows={6} maxLength={5000} value={form[`answer${n}`]} onChange={(e) => set(`answer${n}`, e.target.value)} error={errors[`answer${n}`]} />
+            </section>
+          ))}
+        </div>
+        <aside className="stack-lg">
+          <section className="card stack" aria-label="Persona entrevistada">
+            <TextField label="Nombre *" value={form.guestName} maxLength={120} onChange={(e) => set('guestName', e.target.value)} error={errors.guestName} />
+            <TextField label="Usuario en redes" value={form.guestHandle} maxLength={80} placeholder="@usuaria" onChange={(e) => set('guestHandle', e.target.value)} />
+            <TextArea label="Descripción breve" rows={3} maxLength={600} value={form.guestBio} onChange={(e) => set('guestBio', e.target.value)} />
+            <ImagePicker label="Foto" value={form.photoId} onChange={(v) => set('photoId', v)} hint="Usa solo fotos con autorización de la persona." />
+            <TextField label="URL (slug)" value={form.slug} onChange={(e) => set('slug', e.target.value)} error={errors.slug} hint="Se genera desde el nombre si la dejas vacía." />
+          </section>
+        </aside>
+      </div>
+    </form>
+  );
+}

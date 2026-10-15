@@ -1,0 +1,260 @@
+// Modelo de datos de Punto Neutro.
+// Cada sección del sitio (propuesta de arquitectura) tiene su tabla editable
+// desde el panel; los textos institucionales viven en SiteSettings (fila única).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Equipo y acceso al panel ─────────────────────────────────────────
+
+/// ADMIN: todo (configuración, usuarios, historial).
+/// EDITOR: contenidos y moderación del buzón.
+enum Role {
+  ADMIN
+  EDITOR
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         Role      @default(EDITOR)
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  trends      Trend[]
+  interviews  Interview[]
+  reviewed    MailboxSubmission[]
+  uploads     Media[]
+  auditEvents AuditLog[]
+}
+
+// ─── Configuración institucional (Inicio, Nosotras, Footer) ─────────
+
+model SiteSettings {
+  id Int @id @default(1)
+
+  siteName     String @default("Punto Neutro")
+  tagline      String @default("")
+  logoId       Int?
+  logo         Media? @relation("SiteLogo", fields: [logoId], references: [id], onDelete: SetNull)
+
+  // Sección 1 · Inicio
+  heroTitle    String @default("")
+  heroSubtitle String @default("")
+  whatIs       String @default("")
+  objective    String @default("")
+  mission      String @default("")
+  vision       String @default("")
+
+  // Sección 2 · Nosotras
+  aboutIntro    String @default("")
+  editorialLine String @default("")
+  editorialPillars String[] @default([])
+
+  // Sección 6 · Buzón
+  mailboxIntro  String @default("")
+  consentText   String @default("")
+
+  // Sección 7 · Podcast
+  podcastName        String @default("A Pausar el Filtro")
+  podcastDescription String @default("")
+  soundcloudProfile  String @default("")
+
+  // Sección 8 · Cierre y footer
+  closingTitle   String @default("")
+  closingText    String @default("")
+  contactEmail   String @default("")
+  contactPhone   String @default("")
+  whatsappNumber String @default("")
+  instagramUrl   String @default("")
+  facebookUrl    String @default("")
+  tiktokUrl      String @default("")
+  creditsText    String @default("")
+  privacyPolicy  String @default("")
+
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id               Int      @id @default(autoincrement())
+  name             String
+  role             String
+  bio              String   @default("")
+  responsibilities String[] @default([])
+  photoId          Int?
+  photo            Media?   @relation("TeamPhoto", fields: [photoId], references: [id], onDelete: SetNull)
+  order            Int      @default(0)
+  published        Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ─── Contenidos editoriales ──────────────────────────────────────────
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum Platform {
+  TIKTOK
+  INSTAGRAM
+  MULTIPLATFORM
+}
+
+/// Sección 3 · Anatomía de un Trend. La nota tiene la estructura fija de la
+/// propuesta: origen → mecanismo → impacto → mirada desde la neutralidad.
+model Trend {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique
+  title       String
+  summary     String
+  platform    Platform      @default(MULTIPLATFORM)
+  tags        String[]      @default([])
+  coverId     Int?
+  cover       Media?        @relation("TrendCover", fields: [coverId], references: [id], onDelete: SetNull)
+  origin      String
+  mechanism   String
+  impact      String
+  neutralView String
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  authorId    Int?
+  author      User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+/// Sección 4 · Pequeñas Entrevistas: formato fijo de tres preguntas.
+model Interview {
+  id          Int           @id @default(autoincrement())
+  slug        String        @unique
+  guestName   String
+  guestHandle String        @default("")
+  guestBio    String        @default("")
+  photoId     Int?
+  photo       Media?        @relation("InterviewPhoto", fields: [photoId], references: [id], onDelete: SetNull)
+  intro       String        @default("")
+  question1   String
+  answer1     String
+  question2   String
+  answer2     String
+  question3   String
+  answer3     String
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  authorId    Int?
+  author      User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+/// Sección 5 · Glosario de Palabras Normalizadas.
+model GlossaryTerm {
+  id                   Int      @id @default(autoincrement())
+  slug                 String   @unique
+  term                 String
+  commonDefinition     String
+  bias                 String
+  neutralReformulation String
+  order                Int      @default(0)
+  published            Boolean  @default(true)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+/// Sección 7 · Podcast «A Pausar el Filtro» (reproductor de SoundCloud).
+model PodcastEpisode {
+  id            Int       @id @default(autoincrement())
+  number        Int?
+  title         String
+  description   String    @default("")
+  guests        String    @default("")
+  soundcloudUrl String
+  durationMin   Int?
+  published     Boolean   @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// ─── Sección 6 · Buzón Comunitario ───────────────────────────────────
+
+enum SubmissionStatus {
+  PENDING   // recién llegado, solo lo ve el equipo
+  APPROVED  // revisado y publicado (con el extracto editado por el equipo)
+  REJECTED  // no se publica (se conserva para el registro del equipo)
+  ARCHIVED  // leído, sin publicar
+}
+
+/// Protocolo ético: anonimato estricto por defecto, consentimiento expreso y
+/// filtro editorial. Nunca se publica `story` tal cual: solo `publicExcerpt`,
+/// escrito o revisado por el equipo para evitar revictimización.
+model MailboxSubmission {
+  id               Int              @id @default(autoincrement())
+  anonymous        Boolean          @default(true)
+  alias            String?
+  contactEmail     String?
+  ageRange         String?
+  topic            String?
+  story            String
+  allowPublication Boolean          @default(false)
+  consentAt        DateTime
+  status           SubmissionStatus @default(PENDING)
+  publicExcerpt    String?
+  editorNote       String?
+  reviewedById     Int?
+  reviewedBy       User?            @relation(fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt       DateTime?
+  createdAt        DateTime         @default(now())
+
+  @@index([status, createdAt])
+}
+
+// ─── Medios (guardados dentro de Postgres) ───────────────────────────
+
+model Media {
+  id           Int      @id @default(autoincrement())
+  filename     String
+  mimeType     String
+  size         Int
+  alt          String   @default("")
+  data         Bytes
+  uploadedById Int?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+
+  siteLogos       SiteSettings[] @relation("SiteLogo")
+  teamPhotos      TeamMember[]   @relation("TeamPhoto")
+  trendCovers     Trend[]        @relation("TrendCover")
+  interviewPhotos Interview[]    @relation("InterviewPhoto")
+}
+
+// ─── Historial de cambios del panel ──────────────────────────────────
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  summary   String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

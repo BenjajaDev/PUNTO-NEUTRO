@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+server/src/generated/
+web/src/styles/tokens.generated.css
+coverage/
+*.log
+.DS_Store
