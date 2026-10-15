@@ -14,7 +14,8 @@ const ACTION: Record<string, string> = {
   'mailbox:rejected': 'marcó como no publicable', 'mailbox:pending': 'devolvió a revisión',
 };
 
-export const describeAudit = (entry: AuditEntry) => `${ACTION[entry.action] ?? entry.action} ${ENTITY[entry.entity] ?? entry.entity}${entry.summary ? ` «${entry.summary}»` : ''}`;
+export const describeAudit = (entry: AuditEntry) =>
+  `${ACTION[entry.action] ?? entry.action} ${ENTITY[entry.entity] ?? entry.entity}${entry.summary ? ` «${entry.summary}»` : ''}`.replace(' de el ', ' del ');
 
 export function AuditPage() {
   const { data, loading, error, reload } = useResource((signal) => api<AuditEntry[]>('/admin/audit', { signal }), []);

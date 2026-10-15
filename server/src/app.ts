@@ -46,6 +46,14 @@ export function createApp() {
   app.get('/api/health', (_req, res) => {
     res.json({ ok: true });
   });
+  // Detrás de Cloudflare Pages: rechaza llamadas directas a la URL del hosting,
+  // que podrían falsificar X-Forwarded-For y saltarse los límites de envío.
+  if (env.proxySecret) {
+    app.use('/api', (req, res, next) => {
+      if (req.get('x-proxy-secret') === env.proxySecret) return next();
+      res.status(403).json({ error: 'Acceso directo no permitido.' });
+    });
+  }
   app.use('/api/auth', authRouter);
   app.use('/api/admin', adminRouter);
   app.use('/api', publicRouter);

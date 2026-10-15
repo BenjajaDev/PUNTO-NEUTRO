@@ -114,7 +114,7 @@ export function StatTile({ icon: Icon, label, value, tone = 'brand' }: { icon: L
   };
   const [bg, fg] = colors[tone];
   return (
-    <div className="card row" style={{ gap: 14, padding: 18 }}>
+    <div className="card row" style={{ gap: 14, padding: 18, flexWrap: 'nowrap' }}>
       <span style={{ width: 44, height: 44, borderRadius: 12, display: 'grid', placeItems: 'center', background: bg, color: fg, flexShrink: 0 }}>
         <Icon size={22} aria-hidden />
       </span>

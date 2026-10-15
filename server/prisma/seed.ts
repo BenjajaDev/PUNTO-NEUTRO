@@ -1,7 +1,7 @@
 /**
  * Contenido inicial tomado de la «Propuesta de Arquitectura y Diseño Web:
- * Punto Neutro». Es idempotente: solo rellena lo que está vacío, así que
- * correrlo de nuevo no pisa lo que el equipo ya editó en el panel.
+ * Punto Neutro». Solo corre sobre una base nueva (ver main) y nunca pisa lo
+ * que el equipo ya editó en el panel.
  *
  * Las entrevistas y episodios de ejemplo quedan como BORRADOR: no se publican
  * personas ni audios que no existen.
@@ -30,6 +30,14 @@ De acuerdo con la normativa chilena de protección de datos personales, puedes s
 El Buzón no es un servicio de emergencia ni reemplaza la atención profesional. Si necesitas ayuda inmediata, comunícate con Salud Responde (600 360 7777) o acude al servicio de urgencia más cercano.`;
 
 async function main() {
+  // En producción el seed corre en cada despliegue: si la base ya fue
+  // inicializada no toca nada (aunque el equipo haya borrado contenido a propósito).
+  // SEED_FORCE=1 rellena de nuevo solo lo que esté vacío.
+  if (process.env.SEED_FORCE !== '1' && (await prisma.siteSettings.count()) > 0) {
+    console.log('La base ya está inicializada: no se cargó contenido inicial.');
+    return;
+  }
+
   // ── Configuración institucional ──
   await prisma.siteSettings.upsert({
     where: { id: 1 },

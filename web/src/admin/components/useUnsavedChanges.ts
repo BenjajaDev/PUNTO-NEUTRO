@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useBlocker } from 'react-router-dom';
 import { useFeedback } from '@/ui';
 
@@ -8,7 +8,15 @@ import { useFeedback } from '@/ui';
  */
 export function useUnsavedChanges(dirty: boolean) {
   const { confirm } = useFeedback();
-  const blocker = useBlocker(({ currentLocation, nextLocation }) => dirty && currentLocation.pathname !== nextLocation.pathname);
+  // Permite una navegación propia sin preguntar (ej. ir al editor recién guardado).
+  const bypass = useRef(false);
+  const blocker = useBlocker(({ currentLocation, nextLocation }) => {
+    if (bypass.current) {
+      bypass.current = false;
+      return false;
+    }
+    return dirty && currentLocation.pathname !== nextLocation.pathname;
+  });
 
   useEffect(() => {
     if (blocker.state !== 'blocked') return;
@@ -23,4 +31,8 @@ export function useUnsavedChanges(dirty: boolean) {
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
   }, [dirty]);
+
+  return useCallback(() => {
+    bypass.current = true;
+  }, []);
 }

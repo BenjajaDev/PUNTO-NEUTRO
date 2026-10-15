@@ -17,4 +17,6 @@ export const env = {
   databaseUrl: required('DATABASE_URL'),
   jwtSecret,
   trustProxy: Number(process.env.TRUST_PROXY ?? 1),
+  /** Si se define, la API solo acepta peticiones que traigan este secreto (las que reenvía Cloudflare Pages). */
+  proxySecret: process.env.PROXY_SECRET || '',
 };

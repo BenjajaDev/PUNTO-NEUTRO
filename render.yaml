@@ -1,0 +1,38 @@
+# Blueprint de Render para la API + PostgreSQL (ver DESPLIEGUE.md).
+# El sitio (web/) se publica en Cloudflare Pages y reenvía /api/* aquí.
+services:
+  - type: web
+    name: punto-neutro-api
+    runtime: node
+    plan: free
+    region: oregon
+    # --prod=false: el build necesita prisma, typescript y tsx (devDependencies).
+    # El seed solo carga contenido la primera vez (base vacía).
+    buildCommand: npx pnpm@10.28.0 install --frozen-lockfile --prod=false && npx pnpm@10.28.0 --filter server build && npx pnpm@10.28.0 --filter server db:deploy && npx pnpm@10.28.0 --filter server db:seed
+    startCommand: cd server && node dist/index.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: punto-neutro-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TRUST_PROXY
+        value: "2"
+      - key: PROXY_SECRET
+        sync: false
+      - key: SEED_ADMIN_EMAIL
+        sync: false
+      - key: SEED_ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: punto-neutro-db
+    plan: free
+    databaseName: puntoneutro
+    user: puntoneutro

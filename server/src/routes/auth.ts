@@ -35,8 +35,9 @@ authRouter.post('/logout', (_req, res) => {
   res.json({ ok: true });
 });
 
-authRouter.get('/me', requireAuth, (req, res) => {
-  res.json(req.user);
+// Sin sesión responde null (no 401): el panel lo usa para decidir si mostrar el ingreso.
+authRouter.get('/me', (req, res) => {
+  res.json(req.user ?? null);
 });
 
 authRouter.put('/password', requireAuth, async (req, res) => {

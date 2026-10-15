@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let alive = true;
-    api<User>('/auth/me')
+    api<User | null>('/auth/me')
       .then((me) => alive && setUser(me))
       .catch(() => alive && setUser(null))
       .finally(() => alive && setLoading(false));

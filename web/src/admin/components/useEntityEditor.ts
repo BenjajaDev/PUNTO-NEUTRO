@@ -39,7 +39,7 @@ export function useEntityEditor<T extends { id?: number; status?: string }>({ en
 
   const pick = useCallback((source: T) => Object.fromEntries(editable.map((k) => [k, source[k]])), [editable]);
   const dirty = useMemo(() => original !== null && JSON.stringify(pick(form)) !== JSON.stringify(pick(original)), [form, original, pick]);
-  useUnsavedChanges(dirty);
+  const allowNavigation = useUnsavedChanges(dirty);
 
   const set = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -57,7 +57,10 @@ export function useEntityEditor<T extends { id?: number; status?: string }>({ en
         setForm(saved);
         setErrors({});
         notify({ tone: 'success', message: successMessage });
-        if (isNew) navigate(`${listPath}/${saved.id}`, { replace: true });
+        if (isNew) {
+          allowNavigation();
+          navigate(`${listPath}/${saved.id}`, { replace: true });
+        }
         return true;
       } catch (error) {
         if (error instanceof ApiError) setErrors(error.fields);
@@ -66,7 +69,7 @@ export function useEntityEditor<T extends { id?: number; status?: string }>({ en
         return false;
       }
     },
-    [endpoint, form, id, isNew, listPath, navigate, notify, pick, runBlocking],
+    [allowNavigation, endpoint, form, id, isNew, listPath, navigate, notify, pick, runBlocking],
   );
 
   return { isNew, form, set, errors, loading, loadError, dirty, save, original };

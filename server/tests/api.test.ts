@@ -111,8 +111,11 @@ describe('Sesión y permisos', () => {
     expect(res.body.error).toBe('Correo o contraseña incorrectos.');
   });
 
-  it('el panel exige sesión', async () => {
+  it('el panel exige sesión y /me responde null sin sesión', async () => {
     expect((await request(app).get('/api/admin/stats')).status).toBe(401);
+    const me = await request(app).get('/api/auth/me');
+    expect(me.status).toBe(200);
+    expect(me.body).toBeNull();
   });
 
   it('las escrituras del panel exigen la cabecera anti-CSRF', async () => {
@@ -191,5 +194,20 @@ describe('Medios en Postgres', () => {
       .set(CSRF)
       .attach('file', Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>'), { filename: 'x.svg', contentType: 'image/svg+xml' });
     expect(up.status).toBe(400);
+  });
+});
+
+describe('Secreto del proxy', () => {
+  it('con PROXY_SECRET, rechaza llamadas sin el secreto y acepta las reenviadas', async () => {
+    const { env } = await import('../src/env.js');
+    env.proxySecret = 'secreto-de-prueba';
+    try {
+      const guarded = createApp();
+      expect((await request(guarded).get('/api/site')).status).toBe(403);
+      expect((await request(guarded).get('/api/site').set('x-proxy-secret', 'secreto-de-prueba')).status).toBe(200);
+      expect((await request(guarded).get('/api/health')).status).toBe(200);
+    } finally {
+      env.proxySecret = '';
+    }
   });
 });
