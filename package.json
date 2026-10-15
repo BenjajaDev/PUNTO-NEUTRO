@@ -1,0 +1,19 @@
+{
+  "name": "punto-neutro",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Punto Neutro — sitio periodístico transmedia sobre neutralidad corporal (React + Vite) con panel de administración, API Express y PostgreSQL vía Prisma.",
+  "packageManager": "pnpm@10.28.0",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c magenta,cyan \"pnpm --filter server dev\" \"pnpm --filter web dev\"",
+    "build": "pnpm --filter server build && pnpm --filter web build",
+    "start": "pnpm --filter server start",
+    "db:migrate": "pnpm --filter server db:migrate",
+    "db:seed": "pnpm --filter server db:seed",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}
