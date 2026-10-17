@@ -15,6 +15,8 @@ export const env = {
   isTest: process.env.NODE_ENV === 'test' || Boolean(process.env.VITEST),
   port: Number(process.env.PORT || 4000),
   databaseUrl: required('DATABASE_URL'),
+  /** CA (PEM) para verificar el certificado de la base; Supabase usa una CA propia. */
+  databaseSslCa: process.env.DATABASE_SSL_CA || undefined,
   jwtSecret,
   trustProxy: Number(process.env.TRUST_PROXY ?? 1),
   /** Si se define, la API solo acepta peticiones que traigan este secreto (las que reenvía Cloudflare Pages). */

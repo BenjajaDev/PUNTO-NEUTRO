@@ -14,7 +14,7 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 | Sitio público | `web/src/site` | React 19, React Router 7 (data router), CSS con tokens |
 | Panel admin | `web/src/admin` (carga diferida en `/admin`) | mismos componentes `@/ui` |
 | API | `server/src` | Express 5, zod 4, jose (JWT en cookie httpOnly) |
-| Datos | `server/prisma/schema.prisma` | Prisma 7 (`prisma-client` + `@prisma/adapter-pg`), cliente en `server/src/generated/prisma` |
+| Datos | `server/prisma/schema.prisma` | Prisma 7 (`prisma-client` + `@prisma/adapter-pg`), cliente en `server/src/generated/prisma`; en producción, PostgreSQL en Supabase |
 | Proxy de producción | `web/functions/api/[[path]].ts` | Cloudflare Pages Function → API en Render |
 
 ## Reglas de la API
@@ -35,6 +35,7 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 
 ## Recetas
 
+- **Modelo nuevo (tabla)**: además de lo anterior, su migración debe terminar con `ALTER TABLE "<Tabla>" ENABLE ROW LEVEL SECURITY;` (Supabase expone `public` por la Data API; lo exige `tests/db.test.ts`) y la tabla se agrega a `TABLES` en `prisma/copy-data.ts` en orden de claves foráneas.
 - **Campo nuevo en un contenido**: `schema.prisma` → `pnpm db:migrate` (nombre descriptivo) → `schemas.ts` → `lib/types.ts` → editor del panel (y `EDITABLE` si usa `useEntityEditor`) → página pública → test en `server/tests`.
 - **Sección nueva del sitio**: modelo + migración → rutas públicas y `crudRouter` en admin → página en `site/pages` (con `PageHero`, skeleton, vacío) → enlace en `NAV` de `SiteLayout` → página del panel (`CrudDialogPage` si es simple) → entrada en `SECTIONS` de `AdminLayout`.
 - **Texto institucional editable**: campo en `SiteSettings` + `settingsSchema` + `SettingsAdmin` (`SECTIONS`) + tipo `SiteSettings`.
@@ -46,6 +47,7 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 - Nunca secretos en el cliente; variables del servidor en `server/.env` (ver `.env.example`).
 - Dependencias con `pnpm add --filter <web|server> <pkg>` y versión fijada con `^`.
 - Migraciones: nunca editar una ya aplicada; nunca `migrate reset` sobre bases con datos.
+- Conexión: la API usa `DATABASE_URL` (pooler en modo transacción de Supabase) vía `pgConfig()`; las migraciones usan `DIRECT_URL` (modo sesión) si existe. No usar sentencias preparadas con nombre ni `SET` de sesión en la API: el pooler en modo transacción no las conserva.
 
 ## Verificación antes de entregar (obligatoria)
 
@@ -57,4 +59,4 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 
 ## Despliegue
 
-Ver `DESPLIEGUE.md`: web en Cloudflare Pages (root `web`, Function proxy, `_headers`), API + Postgres en Render (`render.yaml`, `TRUST_PROXY=2`, `PROXY_SECRET` compartido).
+Ver `DESPLIEGUE.md`: web en Cloudflare Pages (root `web`, Function proxy, `_headers`), API en Render (`render.yaml`, `TRUST_PROXY=2`, `PROXY_SECRET` compartido) y PostgreSQL en Supabase (`SUPABASE.md`: `DATABASE_URL`, `DIRECT_URL`, `DATABASE_SSL_CA`, RLS, `db:copy`).

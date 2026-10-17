@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "API de Punto Neutro: Express 5 + Prisma 7 sobre PostgreSQL.",
+  "description": "API de Punto Neutro: Express 5 + Prisma 7 sobre PostgreSQL (local, Render o Supabase).",
   "scripts": {
     "dev": "tsx watch --env-file-if-exists=.env src/index.ts",
     "build": "prisma generate && tsc -p tsconfig.build.json",
@@ -12,6 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "tsx --env-file-if-exists=.env prisma/seed.ts",
+    "db:copy": "tsx --env-file-if-exists=.env prisma/copy-data.ts",
     "db:studio": "prisma studio",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

@@ -1,38 +1,40 @@
 # Despliegue de Punto Neutro
 
-El proyecto tiene dos piezas y cada una va en un servicio distinto:
+El proyecto tiene tres piezas y cada una va en un servicio distinto:
 
 | Pieza | Qué es | Dónde se despliega |
 |---|---|---|
 | `web/` | Sitio público y panel (React + Vite, estático) | **Cloudflare Pages** (ya conectado al repo) |
-| `server/` | API (Express + Prisma) y base de datos PostgreSQL | **Render** (o cualquier hosting Node con Postgres) |
+| `server/` | API (Express + Prisma) | **Render** (o cualquier hosting Node) |
+| Base de datos | PostgreSQL | **Supabase** (ver **[SUPABASE.md](SUPABASE.md)**) |
 
 > **¿Por qué no todo en Cloudflare Pages?** Pages sirve archivos estáticos y *Functions* que corren en el runtime de Workers. No puede ejecutar un servidor Express ni alojar PostgreSQL. Por eso la API vive aparte, y Pages le reenvía todo lo que empieza con `/api/` mediante una Function (`web/functions/api/[[path]].ts`).
 
 ```
 Navegador ──► puntoneutro.pages.dev ──┬─► archivos estáticos (web/dist)
-                (Cloudflare Pages)    └─► /api/* ──► Function proxy ──► API en Render ──► PostgreSQL
+                (Cloudflare Pages)    └─► /api/* ──► Function proxy ──► API en Render ──► Supabase (PostgreSQL)
 ```
 
 Gracias al proxy, el navegador habla con un solo dominio: la cookie de sesión del panel sigue siendo propia y no hace falta configurar CORS.
 
-Haz los pasos **en este orden**: primero la API (paso 1), porque Cloudflare necesita su URL.
+Haz los pasos **en este orden**: primero la base en Supabase (pasos 1 a 4 de [SUPABASE.md](SUPABASE.md)), luego la API (paso 1), porque Cloudflare necesita su URL.
 
 ---
 
-## 1. API + base de datos en Render
+## 1. API en Render
 
 ### 1.1 Crear los servicios con el blueprint
 
 1. Entra a <https://dashboard.render.com> e inicia sesión con GitHub.
 2. **New → Blueprint** y elige el repositorio `BenjajaDev/PUNTO-NEUTRO` (rama `main`, o la que vayas a publicar).
-3. Render lee `render.yaml` y propone crear:
-   - `punto-neutro-api` (servicio web Node)
-   - `punto-neutro-db` (PostgreSQL)
+3. Render lee `render.yaml` y propone crear `punto-neutro-api` (servicio web Node). La base no se crea en Render: vive en Supabase.
 4. Te pedirá los valores marcados como secretos. Complétalos:
 
 | Variable | Valor |
 |---|---|
+| `DATABASE_URL` | URL del **Transaction pooler** de Supabase (puerto `6543`). Ver [SUPABASE.md](SUPABASE.md), paso 2. |
+| `DIRECT_URL` | URL del **Session pooler** de Supabase (puerto `5432`). |
+| `DATABASE_SSL_CA` | Contenido completo del certificado de Supabase (`prod-ca-2021.crt`). Ver [SUPABASE.md](SUPABASE.md), paso 3. |
 | `PROXY_SECRET` | Un texto largo y aleatorio (ver abajo cómo generarlo). **Guárdalo**: lo vas a repetir en Cloudflare. |
 | `SEED_ADMIN_EMAIL` | El correo de la primera cuenta administradora, ej. `admin@puntoneutro.cl` |
 | `SEED_ADMIN_PASSWORD` | Su contraseña inicial (mínimo 10 caracteres). Cámbiala después desde **Panel → Mi cuenta**. |
@@ -43,7 +45,7 @@ Para generar `PROXY_SECRET`, en una terminal:
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
-`JWT_SECRET` lo genera Render automáticamente; `DATABASE_URL` se conecta sola a la base creada.
+`JWT_SECRET` lo genera Render automáticamente.
 
 5. **Apply**. El primer build tarda unos minutos. El comando de build:
    - instala dependencias,
@@ -65,7 +67,7 @@ Que `/api/site` responda *Acceso directo no permitido* es correcto: con `PROXY_S
 ### Notas del plan gratuito de Render
 
 - El servicio web **se duerme tras ~15 minutos sin visitas**; la primera visita después tarda unos 30–60 s en responder. Para evitarlo, usa un plan pagado.
-- La base PostgreSQL gratuita de Render **expira a los 30 días**. Para un proyecto que debe durar, usa una base gratuita persistente de **Neon** (ver sección 4) o un plan pagado de Render.
+- La base de datos no depende de Render: está en Supabase, que no expira (el plan gratuito sí se pausa tras 7 días sin actividad; ver [SUPABASE.md](SUPABASE.md)).
 
 ---
 
@@ -120,13 +122,11 @@ Las cabeceras de seguridad del sitio (CSP, anti-iframe, caché de `/assets`) ya 
 
 ---
 
-## 4. (Recomendado) Base de datos persistente en Neon
+## 4. Base de datos en Supabase
 
-1. Crea una cuenta en <https://neon.tech> y un proyecto (región cercana a la de Render, ej. *US West*).
-2. Copia la *connection string* con `?sslmode=require`.
-3. En Render → `punto-neutro-api` → **Environment** → reemplaza `DATABASE_URL` por la de Neon → **Save, rebuild and deploy**. Las migraciones y el contenido inicial se aplican solos en ese build.
-4. Si ya tenías datos en la base de Render, expórtalos antes con `pg_dump` e impórtalos en Neon con `psql`.
-5. Puedes borrar `punto-neutro-db` en Render cuando confirmes que todo funciona.
+Creación del proyecto, URLs de conexión, certificado, copia de los datos que ya existan (desde Render o local) y verificación: todo en **[SUPABASE.md](SUPABASE.md)**.
+
+Cualquier otro PostgreSQL gestionado (Neon, Render, etc.) también sirve: basta con `DATABASE_URL` (y `DIRECT_URL` si la API usa un *pooler* en modo transacción).
 
 ---
 
@@ -157,6 +157,7 @@ Las cabeceras de seguridad del sitio (CSP, anti-iframe, caché de `/assets`) ya 
 | El build de Pages falla en `syncTokens.ts` | Node menor a 22.18: revisa `NODE_VERSION=22.22.0`. |
 | El build de Render falla con `prisma: not found` | Falta `--prod=false` en el build command (está en `render.yaml`). |
 | El buzón responde *Recibimos varios relatos desde tu conexión* para todos | `TRUST_PROXY` debe ser `2` en Render (Cloudflare + balanceador de Render). |
+| El build de Render falla al conectar con la base | Revisa `DATABASE_URL`, `DIRECT_URL` y `DATABASE_SSL_CA`. Errores típicos de Supabase en [SUPABASE.md](SUPABASE.md#solución-de-problemas). |
 
 ---
 

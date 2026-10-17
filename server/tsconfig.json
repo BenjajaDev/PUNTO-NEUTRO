@@ -13,5 +13,5 @@
     "outDir": "dist",
     "types": ["node"]
   },
-  "include": ["src", "tests", "prisma/seed.ts"]
+  "include": ["src", "tests", "prisma/seed.ts", "prisma/copy-data.ts"]
 }

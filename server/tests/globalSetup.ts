@@ -12,6 +12,8 @@ export default function setup() {
   }
   const url = process.env.TEST_DATABASE_URL;
   if (!url) throw new Error('Define TEST_DATABASE_URL (ver server/.env.example) para correr los tests.');
-  if (url === process.env.DATABASE_URL) throw new Error('TEST_DATABASE_URL debe apuntar a una base distinta de DATABASE_URL.');
-  execSync('pnpm prisma migrate deploy', { stdio: 'inherit', env: { ...process.env, DATABASE_URL: url } });
+  if (url === process.env.DATABASE_URL || url === process.env.DIRECT_URL) {
+    throw new Error('TEST_DATABASE_URL debe apuntar a una base distinta de DATABASE_URL y DIRECT_URL.');
+  }
+  execSync('pnpm prisma migrate deploy', { stdio: 'inherit', env: { ...process.env, DATABASE_URL: url, DIRECT_URL: url } });
 }

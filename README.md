@@ -34,6 +34,7 @@ pnpm dev                                 # API :4000 + sitio :5173
 | `pnpm test` | Tests de la API (Postgres real, base `TEST_DATABASE_URL`) y del sitio (contraste WCAG, componentes) |
 | `pnpm build` | Compila server y web |
 | `pnpm db:migrate` / `pnpm db:seed` | Migraciones y contenido inicial |
+| `pnpm --filter server db:copy` | Copia todos los datos de una base a otra vacía (ej. Render → Supabase) |
 | `pnpm --filter server db:studio` | Explorar la base con Prisma Studio |
 
 ## Estructura
@@ -47,4 +48,4 @@ server/   API Express (src/routes), Prisma (prisma/schema.prisma, migrations, se
 
 ## Despliegue
 
-Cloudflare Pages (sitio) + Render (API y PostgreSQL). Paso a paso en **[DESPLIEGUE.md](DESPLIEGUE.md)**.
+Cloudflare Pages (sitio) + Render (API) + Supabase (PostgreSQL). Paso a paso en **[DESPLIEGUE.md](DESPLIEGUE.md)** y **[SUPABASE.md](SUPABASE.md)**.
