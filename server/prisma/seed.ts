@@ -210,6 +210,7 @@ async function main() {
     await prisma.interview.create({
       data: {
         slug: 'entrevista-de-ejemplo',
+        category: 'INFLUENCERS',
         guestName: 'Creadora invitada (ejemplo)',
         guestHandle: '@usuaria',
         guestBio: 'Reemplaza este borrador con los datos de la creadora de contenido entrevistada.',
@@ -231,7 +232,8 @@ async function main() {
       data: {
         number: 1,
         title: 'Episodio 1 (ejemplo): ¿Qué es la neutralidad corporal?',
-        description: 'Reemplaza este borrador con el enlace real del episodio en SoundCloud y publícalo desde el panel.',
+        summary: 'Reemplaza este borrador con el enlace real del episodio en SoundCloud y publícalo desde el panel.',
+        tags: ['Neutralidad corporal', 'Salud mental'],
         guests: 'Especialista invitada',
         soundcloudUrl: 'https://soundcloud.com/punto-neutro/episodio-1',
         durationMin: 30,

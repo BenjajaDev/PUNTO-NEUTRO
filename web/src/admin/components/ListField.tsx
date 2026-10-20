@@ -7,8 +7,10 @@ export function ListField({ label, value, onChange, placeholder, hint, max = 12,
   const id = useId();
   const [draft, setDraft] = useState('');
   const add = () => {
-    const text = draft.trim();
-    if (!text || value.includes(text) || value.length >= max) return;
+    const text = draft.trim().replace(/\s+/g, ' ');
+    // Sin duplicados aunque cambien mayúsculas o tildes («Salud mental» = «salud mental»).
+    const key = (v: string) => v.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!text || value.some((v) => key(v) === key(text)) || value.length >= max) return;
     onChange([...value, text]);
     setDraft('');
   };

@@ -14,7 +14,12 @@ export type CrudField<T> = {
   required?: boolean;
   hint?: string;
   maxLength?: number;
+  /** Máximo de elementos (campos `list`). */
+  max?: number;
   full?: boolean;
+  placeholder?: string;
+  /** Validación propia en el navegador; devuelve el mensaje de error o nada. La API valida igual. */
+  validate?: (value: unknown) => string | undefined;
 };
 
 type Props<T extends { id?: number }> = {
@@ -29,6 +34,8 @@ type Props<T extends { id?: number }> = {
   searchText: (item: T) => string;
   describe: (item: T) => string;
   deleteMessage?: string;
+  /** Vista previa en vivo dentro del formulario (ej. la tarjeta del podcast). */
+  preview?: (item: T) => ReactNode;
 };
 
 /**
@@ -36,7 +43,7 @@ type Props<T extends { id?: number }> = {
  * eliminación con confirmación. Glosario, Podcast y Equipo la comparten para
  * que todas se comporten y den feedback igual.
  */
-export function CrudDialogPage<T extends { id?: number }>({ title, subtitle, icon, itemName, endpoint, empty, fields, columns, searchText, describe, deleteMessage }: Props<T>) {
+export function CrudDialogPage<T extends { id?: number }>({ title, subtitle, icon, itemName, endpoint, empty, fields, columns, searchText, describe, deleteMessage, preview }: Props<T>) {
   const { confirm, notify } = useFeedback();
   const items = useResource((signal) => api<T[]>(endpoint, { signal }), [endpoint]);
   const [query, setQuery] = useState('');
@@ -65,6 +72,10 @@ export function CrudDialogPage<T extends { id?: number }>({ title, subtitle, ico
     fields.forEach((field) => {
       const value = editing[field.key];
       if (field.required && (value === undefined || value === null || String(value).trim() === '')) next[field.key] = 'Campo obligatorio.';
+      else if (field.validate) {
+        const message = field.validate(value);
+        if (message) next[field.key] = message;
+      }
     });
     setErrors(next);
     if (Object.keys(next).length) return;
@@ -168,7 +179,7 @@ export function CrudDialogPage<T extends { id?: number }>({ title, subtitle, ico
                   control = <Switch label={field.label} description={field.hint} checked={Boolean(value)} onChange={(v) => setField(field.key, v)} />;
                   break;
                 case 'list':
-                  control = <ListField label={field.label} hint={field.hint} value={(value as string[]) || []} error={errors[field.key]} onChange={(v) => setField(field.key, v)} />;
+                  control = <ListField label={field.label} hint={field.hint} max={field.max} placeholder={field.placeholder} value={(value as string[]) || []} error={errors[field.key]} onChange={(v) => setField(field.key, v)} />;
                   break;
                 case 'image':
                   control = <ImagePicker label={field.label} hint={field.hint} value={value as number | null} onChange={(v) => setField(field.key, v)} />;
@@ -180,6 +191,7 @@ export function CrudDialogPage<T extends { id?: number }>({ title, subtitle, ico
                       hint={field.hint}
                       type={field.type === 'number' ? 'number' : field.type === 'url' ? 'url' : 'text'}
                       maxLength={field.maxLength}
+                      placeholder={field.placeholder}
                       value={value === null || value === undefined ? '' : String(value)}
                       error={errors[field.key]}
                       onChange={(e) => setField(field.key, field.type === 'number' ? (e.target.value === '' ? null : Number(e.target.value)) : e.target.value)}
@@ -188,6 +200,12 @@ export function CrudDialogPage<T extends { id?: number }>({ title, subtitle, ico
               }
               return <div key={field.key} style={span}>{control}</div>;
             })}
+            {preview ? (
+              <section className="crud-preview" aria-label="Vista previa" style={{ gridColumn: '1 / -1' }}>
+                <p className="field__label">Vista previa</p>
+                <div className="crud-preview__frame">{preview(editing)}</div>
+              </section>
+            ) : null}
           </div>
         ) : null}
       </Dialog>

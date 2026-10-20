@@ -2,11 +2,11 @@ import { ArrowRight, BookOpen, Compass, Eye, Headphones, HeartHandshake, Mail, M
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { mediaUrl } from '@/lib/format';
-import { REFLECTION_CATEGORY, type HomeData } from '@/lib/types';
+import { INTERVIEW_CATEGORY_LABEL, REFLECTION_CATEGORY, type HomeData } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { buttonClass, ErrorState, Skeleton, SkeletonCards } from '@/ui';
 import { Prose, SectionCover, SectionHeading } from '../components/Common';
-import { SoundCloudPlayer } from '../components/SoundCloudPlayer';
+import { SectionArt } from '../components/SectionArt';
 import { TrendCard } from '../components/TrendCard';
 import { usePageTitle } from '../SiteDataProvider';
 
@@ -177,6 +177,7 @@ export function HomePage() {
                 <div className="row" style={{ gap: 14 }}>
                   {mediaUrl(interview.photoId) ? <img className="avatar" src={mediaUrl(interview.photoId)!} alt="" width={56} height={56} /> : null}
                   <div>
+                    <span className="badge">{INTERVIEW_CATEGORY_LABEL[interview.category]}</span>
                     <h2 className="feature-card__title">{interview.guestName}</h2>
                     {interview.guestHandle ? <p className="text-muted text-small">{interview.guestHandle}</p> : null}
                   </div>
@@ -200,8 +201,22 @@ export function HomePage() {
             <h2 className="feature-card__title">{s.podcastName}</h2>
             {episode ? (
               <>
-                <p className="text-secondary">{episode.title}</p>
-                <SoundCloudPlayer url={episode.soundcloudUrl} title={episode.title} />
+                <div className="episode-mini">
+                  {mediaUrl(episode.coverId) ? (
+                    <img className="episode-mini__cover" src={mediaUrl(episode.coverId)!} alt="" width={88} height={88} loading="lazy" />
+                  ) : (
+                    <span className="episode-mini__cover episode-mini__cover--art" aria-hidden><SectionArt kind="podcast" /></span>
+                  )}
+                  <div className="stack-sm" style={{ gap: 4 }}>
+                    <span className="text-xs text-muted">Último episodio</span>
+                    <strong>{episode.title}</strong>
+                    {episode.tags.length ? <span className="text-small text-secondary">{episode.tags.map((t) => `#${t}`).join(' ')}</span> : null}
+                  </div>
+                </div>
+                <a className={buttonClass({ size: 'sm' })} href={episode.soundcloudUrl} target="_blank" rel="noopener noreferrer" style={{ alignSelf: 'flex-start' }}>
+                  <Headphones size={16} aria-hidden /> Escuchar en SoundCloud
+                  <span className="visually-hidden">(se abre en otra pestaña)</span>
+                </a>
                 <Link to="/podcast" className="link-arrow" viewTransition>
                   Todos los episodios <ArrowRight size={18} aria-hidden />
                 </Link>

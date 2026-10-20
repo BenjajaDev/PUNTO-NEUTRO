@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { formatDate, mediaUrl } from '@/lib/format';
-import type { Interview } from '@/lib/types';
+import { INTERVIEW_CATEGORIES, type Interview } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { ErrorState, Skeleton } from '@/ui';
 import { Prose } from '../components/Common';
@@ -27,6 +27,7 @@ export function InterviewDetailPage() {
   if (error) return error.includes('no existe') ? <NotFoundPage /> : <div className="container section"><ErrorState message={error} onRetry={reload} /></div>;
   if (!data) return <NotFoundPage />;
 
+  const category = INTERVIEW_CATEGORIES.find((c) => c.key === data.category);
   const qa = [
     [data.question1, data.answer1],
     [data.question2, data.answer2],
@@ -44,6 +45,11 @@ export function InterviewDetailPage() {
         ) : (
           <span className="avatar avatar--xl avatar--initials" aria-hidden>{initials(data.guestName)}</span>
         )}
+        {category ? (
+          <Link to={`/entrevistas?categoria=${category.slug}`} className="badge interview-hero__category" viewTransition>
+            {category.label}
+          </Link>
+        ) : null}
         <h1 className="article__title">{data.guestName}</h1>
         <p className="text-muted">{[data.guestHandle, data.publishedAt && formatDate(data.publishedAt), data.author?.name && `Entrevista: ${data.author.name}`].filter(Boolean).join(' · ')}</p>
         {data.guestBio ? <p className="article__summary">{data.guestBio}</p> : null}

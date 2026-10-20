@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { normalizeSoundcloudUrl } from './lib/soundcloud.js';
+import { MAX_TAG_LENGTH, MAX_TAGS, cleanTag, normalizeTags } from './lib/tags.js';
 
 // Esquemas de entrada compartidos por la API. Los textos se recortan y los
 // campos opcionales aceptan "" (los formularios del panel siempre envían texto).
@@ -131,7 +133,10 @@ export const reflectionSchema = z
   })
   .superRefine(publishRules(false));
 
+export const INTERVIEW_CATEGORIES = ['EXPERTAS', 'INFLUENCERS', 'PERSONAS_COMUNES'] as const;
+
 export const interviewSchema = z.object({
+  category: z.enum(INTERVIEW_CATEGORIES, 'Elige la categoría de la entrevista.'),
   guestName: text(120, 2),
   slug: z.string().trim().max(90).optional(),
   guestHandle: optText(80),
@@ -157,14 +162,32 @@ export const glossarySchema = z.object({
   published: z.boolean().default(true),
 });
 
-const SOUNDCLOUD = /^https:\/\/(www\.|m\.|on\.|api\.)?soundcloud\.com\/[^\s]+$/i;
+/** Enlace de SoundCloud validado y guardado en forma canónica (lib/soundcloud.ts). */
+const soundcloudUrl = z.string('Campo obligatorio.').transform((value, ctx) => {
+  const result = normalizeSoundcloudUrl(value);
+  if (!result.ok) {
+    ctx.addIssue({ code: 'custom', message: result.error });
+    return z.NEVER;
+  }
+  return result.url;
+});
+
+/** Palabras clave: se limpian y deduplican antes de validar el máximo. */
+const tagList = z
+  .array(z.string().max(MAX_TAG_LENGTH + 5))
+  .default([])
+  .transform(normalizeTags)
+  .refine((tags) => tags.length <= MAX_TAGS, `Máximo ${MAX_TAGS} palabras clave.`)
+  .refine((tags) => tags.every((t) => cleanTag(t).length <= MAX_TAG_LENGTH), `Cada palabra clave puede tener hasta ${MAX_TAG_LENGTH} caracteres.`);
 
 export const podcastSchema = z.object({
   number: z.number().int().min(0).max(9999).nullable().optional(),
   title: text(160, 3),
-  description: optText(2000),
+  summary: text(600, 10),
+  tags: tagList,
+  coverId: mediaId,
   guests: optText(300),
-  soundcloudUrl: z.string().trim().regex(SOUNDCLOUD, 'Pega el enlace del episodio en SoundCloud (https://soundcloud.com/…).'),
+  soundcloudUrl,
   durationMin: z.number().int().min(1).max(600).nullable().optional(),
   published: z.boolean().default(false),
 });

@@ -4,7 +4,8 @@ import { prisma, type Platform } from '../db.js';
 import { env } from '../env.js';
 import { HttpError, idParam, notFound, parse } from '../lib/http.js';
 import { screenSubmission } from '../lib/moderation.js';
-import { OTHER_TOPIC, submissionSchema } from '../schemas.js';
+import { INTERVIEW_CATEGORIES, OTHER_TOPIC, submissionSchema } from '../schemas.js';
+import { tagKey } from '../lib/tags.js';
 
 // API pública: solo lee contenido PUBLICADO. Lo único que escribe es el Buzón.
 export const publicRouter = Router();
@@ -68,12 +69,16 @@ publicRouter.get('/trends/:slug', async (req, res) => {
   res.json({ ...trend, related });
 });
 
-publicRouter.get('/interviews', async (_req, res) => {
+type InterviewCategory = (typeof INTERVIEW_CATEGORIES)[number];
+
+/** ?category=EXPERTAS|INFLUENCERS|PERSONAS_COMUNES filtra; sin parámetro, todas. */
+publicRouter.get('/interviews', async (req, res) => {
+  const category = INTERVIEW_CATEGORIES.includes(req.query.category as InterviewCategory) ? (req.query.category as InterviewCategory) : undefined;
   res.json(
     await prisma.interview.findMany({
-      where: published,
+      where: { ...published, category },
       orderBy: { publishedAt: 'desc' },
-      select: { id: true, slug: true, guestName: true, guestHandle: true, guestBio: true, photoId: true, intro: true, question1: true, publishedAt: true },
+      select: { id: true, slug: true, category: true, guestName: true, guestHandle: true, guestBio: true, photoId: true, intro: true, question1: true, publishedAt: true },
     }),
   );
 });
@@ -112,8 +117,11 @@ publicRouter.get('/reflections/:slug', async (req, res) => {
   res.json({ ...item, related });
 });
 
-publicRouter.get('/podcast', async (_req, res) => {
-  res.json(await prisma.podcastEpisode.findMany({ where: { published: true }, orderBy: [{ publishedAt: 'desc' }, { number: 'desc' }] }));
+/** ?tag=… filtra por palabra clave (sin distinguir mayúsculas ni tildes). */
+publicRouter.get('/podcast', async (req, res) => {
+  const episodes = await prisma.podcastEpisode.findMany({ where: { published: true }, orderBy: [{ publishedAt: 'desc' }, { number: 'desc' }] });
+  const tag = typeof req.query.tag === 'string' && req.query.tag.trim() ? tagKey(req.query.tag.trim()) : null;
+  res.json(tag ? episodes.filter((e) => e.tags.some((t) => tagKey(t) === tag)) : episodes);
 });
 
 /** Relatos aprobados: solo el extracto editado por el equipo, nunca el texto original. */

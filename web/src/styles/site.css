@@ -228,6 +228,82 @@
 .episode { display: grid; gap: var(--space-3); }
 .episode__title { font-size: 24px; }
 
+/* Pestañas (patrón WAI-ARIA): desplazables en móvil, sin salto de línea. */
+.tabs-bar { display: flex; gap: var(--space-2); overflow-x: auto; scrollbar-width: none; padding: 4px; margin: -4px; border-bottom: 1px solid var(--color-border); }
+.tabs-bar::-webkit-scrollbar { display: none; }
+.tabs-bar__tab {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--color-text-secondary);
+  font: 600 15px/1.2 var(--font-sans);
+  cursor: pointer;
+  transition: color var(--duration-fast), border-color var(--duration-fast);
+}
+.tabs-bar__tab:hover { color: var(--color-text-primary); }
+.tabs-bar__tab[aria-selected='true'] { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.tabs-bar__count { min-width: 24px; padding: 1px 8px; border-radius: var(--radius-pill); background: var(--color-surface-sunken); color: var(--color-text-secondary); font-size: 12px; text-align: center; }
+.tabs-bar__tab[aria-selected='true'] .tabs-bar__count { background: var(--color-primary-soft); color: var(--color-on-tag); }
+.tab-panel:focus-visible { outline-offset: 8px; border-radius: var(--radius-md); }
+
+/* Entrevistas por categoría */
+.interview-section { display: grid; gap: var(--space-5); }
+.interview-section + .interview-section { padding-top: var(--space-10); border-top: 1px solid var(--color-border); }
+.interview-section__head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-3) var(--space-6); }
+.interview-section__title { font-size: clamp(26px, 3vw, 34px); }
+.interview-section__intro { margin-top: var(--space-2); max-width: 62ch; color: var(--color-text-secondary); }
+.interview-section__more { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
+.interview-card__category,
+.interview-hero__category { align-self: flex-start; }
+.interview-hero__category { align-self: center; text-decoration: none; }
+.interview-hero__category:hover { background: var(--color-primary); color: var(--color-on-primary); }
+
+/* Tarjetas de podcast: carátula cuadrada arriba, texto y acciones abajo. */
+.podcast-filter__label { font-size: 14px; font-weight: 600; color: var(--color-text-secondary); }
+.chip__count { font-size: 12px; font-weight: 600; opacity: 0.75; }
+.podcast-grid { display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); align-items: start; }
+.podcast-card { display: flex; flex-direction: column; padding: 0; overflow: hidden; min-width: 0; }
+.podcast-card__media { aspect-ratio: 1 / 1; background: var(--color-section); overflow: hidden; }
+.podcast-card__media img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.podcast-card__placeholder { height: 100%; display: grid; place-items: center; }
+.podcast-card__placeholder svg { width: 62%; height: auto; }
+.podcast-card__body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-5) var(--space-6) var(--space-6); }
+.podcast-card__meta { font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-text-muted); }
+.podcast-card__title { font-size: 24px; line-height: 1.2; overflow-wrap: anywhere; }
+.podcast-card__guests { font-size: 15px; font-weight: 600; color: var(--color-text-secondary); }
+.podcast-card__summary { color: var(--color-text-secondary); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; line-clamp: 5; overflow: hidden; }
+.podcast-card__tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.podcast-card__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.podcast-card .player { margin-top: var(--space-2); }
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  background: var(--color-tag);
+  color: var(--color-on-tag);
+  font: 600 13px/1.3 var(--font-sans);
+  overflow-wrap: anywhere;
+}
+button.tag-chip { cursor: pointer; transition: background-color var(--duration-fast), border-color var(--duration-fast), color var(--duration-fast); }
+button.tag-chip:hover { border-color: var(--color-border-strong); }
+.tag-chip[aria-pressed='true'] { background: var(--color-primary); color: var(--color-on-primary); }
+
+/* Último episodio en la portada */
+.episode-mini { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+.episode-mini > div { min-width: 0; }
+.episode-mini__cover { flex-shrink: 0; width: 88px; height: 88px; border-radius: var(--radius-md); object-fit: cover; }
+.episode-mini__cover--art { display: grid; place-items: center; background: var(--color-section); }
+.episode-mini__cover--art svg { width: 70%; height: auto; }
+
 /* ── Buzón ─────────────────────────────────────────────────────────── */
 .cta-band {
   position: relative;

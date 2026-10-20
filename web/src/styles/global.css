@@ -359,7 +359,7 @@ textarea {
 .chip[aria-pressed='true'] { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-primary); }
 
 /* ── Tabla ─────────────────────────────────────────────────────────── */
-.table-wrap { overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
+.table-wrap { position: relative; overflow-x: auto; border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-surface); }
 .table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
 .table th {
   text-align: left;

@@ -360,3 +360,94 @@ describe('Identidad editable', () => {
     expect((await request(app).get('/api/site')).body).toMatchObject({ siteTitle: 'Punto Neutro · Prueba', heroImageId: up.body.id });
   });
 });
+
+describe('Entrevistas por categoría', () => {
+  const base = {
+    guestName: 'Invitada de prueba',
+    question1: '¿Pregunta uno de prueba?',
+    answer1: 'Respuesta uno de prueba.',
+    question2: '¿Pregunta dos de prueba?',
+    answer2: 'Respuesta dos de prueba.',
+    question3: '¿Pregunta tres de prueba?',
+    answer3: 'Respuesta tres de prueba.',
+    status: 'PUBLISHED',
+  };
+
+  beforeEach(async () => {
+    await prisma.interview.deleteMany();
+  });
+
+  it('la categoría es obligatoria', async () => {
+    const editor = await agentFor('EDITOR');
+    const res = await editor.post('/api/admin/interviews').set(CSRF).send(base);
+    expect(res.status).toBe(400);
+    expect(res.body.fields.category).toMatch(/categoría/);
+    const bad = await editor.post('/api/admin/interviews').set(CSRF).send({ ...base, category: 'FAMOSAS' });
+    expect(bad.status).toBe(400);
+  });
+
+  it('filtra por categoría en la vista pública', async () => {
+    const editor = await agentFor('EDITOR');
+    for (const [category, guestName] of [['EXPERTAS', 'Psicóloga'], ['INFLUENCERS', 'Creadora'], ['PERSONAS_COMUNES', 'Estudiante']]) {
+      expect((await editor.post('/api/admin/interviews').set(CSRF).send({ ...base, category, guestName })).status).toBe(201);
+    }
+    const all = (await request(app).get('/api/interviews')).body;
+    expect(all).toHaveLength(3);
+    const experts = (await request(app).get('/api/interviews?category=EXPERTAS')).body;
+    expect(experts.map((i: { guestName: string; category: string }) => [i.guestName, i.category])).toEqual([['Psicóloga', 'EXPERTAS']]);
+    // Un valor desconocido no rompe nada: devuelve todas.
+    expect((await request(app).get('/api/interviews?category=OTRA')).body).toHaveLength(3);
+  });
+});
+
+describe('Tarjetas de podcast', () => {
+  beforeEach(async () => {
+    await prisma.podcastEpisode.deleteMany();
+  });
+
+  const episode = { title: 'Episodio de prueba', summary: 'Un resumen suficientemente largo.', published: true };
+
+  it('guarda el enlace de SoundCloud limpio y las palabras clave sin duplicados', async () => {
+    const editor = await agentFor('EDITOR');
+    const res = await editor
+      .post('/api/admin/podcast')
+      .set(CSRF)
+      .send({ ...episode, soundcloudUrl: 'https://m.soundcloud.com/punto-neutro/ep-1?si=xyz&utm_source=clipboard', tags: ['#Salud mental', 'salud  mental', 'Filtros'] });
+    expect(res.status).toBe(201);
+    expect(res.body.soundcloudUrl).toBe('https://soundcloud.com/punto-neutro/ep-1');
+    expect(res.body.tags).toEqual(['Salud mental', 'Filtros']);
+  });
+
+  it('rechaza enlaces que no son de un episodio de SoundCloud', async () => {
+    const editor = await agentFor('EDITOR');
+    for (const soundcloudUrl of ['https://soundcloud.com/solo-perfil', 'https://w.soundcloud.com/player/?url=x', 'no es un enlace']) {
+      const res = await editor.post('/api/admin/podcast').set(CSRF).send({ ...episode, soundcloudUrl });
+      expect(res.status, soundcloudUrl).toBe(400);
+      expect(res.body.fields.soundcloudUrl).toBeTruthy();
+    }
+  });
+
+  it('exige resumen y limita las palabras clave', async () => {
+    const editor = await agentFor('EDITOR');
+    const sinResumen = await editor.post('/api/admin/podcast').set(CSRF).send({ ...episode, summary: '', soundcloudUrl: 'https://soundcloud.com/a/b' });
+    expect(sinResumen.body.fields.summary).toBeTruthy();
+    const muchas = await editor
+      .post('/api/admin/podcast')
+      .set(CSRF)
+      .send({ ...episode, soundcloudUrl: 'https://soundcloud.com/a/b', tags: Array.from({ length: 9 }, (_, i) => `tag ${i}`) });
+    expect(muchas.body.fields.tags).toMatch(/Máximo 8/);
+  });
+
+  it('CRUD completo y filtro público por palabra clave (sin distinguir tildes)', async () => {
+    const editor = await agentFor('EDITOR');
+    const created = await editor.post('/api/admin/podcast').set(CSRF).send({ ...episode, soundcloudUrl: 'https://soundcloud.com/a/b', tags: ['Autoestima'] });
+    const id = created.body.id;
+    const updated = await editor.put(`/api/admin/podcast/${id}`).set(CSRF).send({ ...episode, title: 'Título editado', soundcloudUrl: 'https://soundcloud.com/a/b', tags: ['Salud mental'] });
+    expect(updated.body.title).toBe('Título editado');
+    expect((await request(app).get('/api/podcast?tag=salud%20mental')).body).toHaveLength(1);
+    expect((await request(app).get('/api/podcast?tag=SALÚD%20MENTAL')).body).toHaveLength(1);
+    expect((await request(app).get('/api/podcast?tag=autoestima')).body).toHaveLength(0);
+    expect((await editor.delete(`/api/admin/podcast/${id}`).set(CSRF)).status).toBe(200);
+    expect((await request(app).get('/api/podcast')).body).toHaveLength(0);
+  });
+});

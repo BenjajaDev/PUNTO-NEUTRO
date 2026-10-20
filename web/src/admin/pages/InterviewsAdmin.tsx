@@ -1,11 +1,13 @@
 import { ArrowLeft, Eye, MessageSquareQuote, Pencil, Plus, Save, Send, Trash2, Undo2 } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { formatDate } from '@/lib/format';
-import type { Interview } from '@/lib/types';
+import { INTERVIEW_CATEGORIES, INTERVIEW_CATEGORY_LABEL, type Interview, type InterviewCategory } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { Badge, Button, buttonClass, EmptyState, ErrorState, PageHeader, SkeletonRows, TextArea, TextField, useFeedback } from '@/ui';
 import { ImagePicker } from '../components/ImagePicker';
+import { InterviewCategoryPicker, SUGGESTED_QUESTIONS } from '../components/InterviewCategoryPicker';
 import { useEntityEditor } from '../components/useEntityEditor';
 import { StatusBadge } from './TrendsAdmin';
 
@@ -13,6 +15,12 @@ export function InterviewsAdmin() {
   const { confirm, notify } = useFeedback();
   const navigate = useNavigate();
   const items = useResource((signal) => api<Interview[]>('/admin/interviews', { signal }), []);
+  const [category, setCategory] = useState<InterviewCategory | 'TODAS'>('TODAS');
+  const counts = useMemo(
+    () => Object.fromEntries(INTERVIEW_CATEGORIES.map((c) => [c.key, (items.data || []).filter((i) => i.category === c.key).length])) as Record<InterviewCategory, number>,
+    [items.data],
+  );
+  const visible = (items.data || []).filter((i) => category === 'TODAS' || i.category === category);
 
   const remove = async (item: Interview) => {
     const done = await confirm({
@@ -30,7 +38,19 @@ export function InterviewsAdmin() {
 
   return (
     <>
-      <PageHeader title="Pequeñas Entrevistas" subtitle="Formato fijo de tres preguntas a creadoras de contenido." actions={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Nueva entrevista</Button>} />
+      <PageHeader title="Pequeñas Entrevistas" subtitle="Tres preguntas a expertas, influencers y personas comunes." actions={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Nueva entrevista</Button>} />
+      {items.data?.length ? (
+        <div className="row" role="group" aria-label="Filtrar por categoría" style={{ marginBottom: 16 }}>
+          <button type="button" className="chip" aria-pressed={category === 'TODAS'} onClick={() => setCategory('TODAS')}>
+            Todas <span className="chip__count">{items.data.length}</span>
+          </button>
+          {INTERVIEW_CATEGORIES.map((c) => (
+            <button key={c.key} type="button" className="chip" aria-pressed={category === c.key} onClick={() => setCategory(c.key)}>
+              {c.label} <span className="chip__count">{counts[c.key]}</span>
+            </button>
+          ))}
+        </div>
+      ) : null}
       {items.loading ? (
         <SkeletonRows />
       ) : items.error ? (
@@ -43,18 +63,20 @@ export function InterviewsAdmin() {
             <thead>
               <tr>
                 <th scope="col">Entrevistada</th>
+                <th scope="col">Categoría</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Actualizada</th>
                 <th scope="col"><span className="visually-hidden">Acciones</span></th>
               </tr>
             </thead>
             <tbody>
-              {items.data.map((item) => (
+              {visible.map((item) => (
                 <tr key={item.id}>
                   <td>
                     <Link to={`/admin/entrevistas/${item.id}`} className="table-link">{item.guestName}</Link>
                     {item.guestHandle ? <span className="text-xs text-muted" style={{ display: 'block' }}>{item.guestHandle}</span> : null}
                   </td>
+                  <td><Badge tone="brand">{INTERVIEW_CATEGORY_LABEL[item.category]}</Badge></td>
                   <td><StatusBadge status={item.status} /></td>
                   <td className="text-secondary">{formatDate(item.updatedAt)}</td>
                   <td>
@@ -78,21 +100,37 @@ export function InterviewsAdmin() {
   );
 }
 
-const EMPTY: Interview = {
-  id: 0, slug: '', guestName: '', guestHandle: '', guestBio: '', photoId: null, intro: '',
-  question1: '¿Cómo vives el escrutinio público sobre tu cuerpo en redes sociales?', answer1: '',
-  question2: '¿Has sentido presión por mantener cierta estética para tu contenido?', answer2: '',
-  question3: '¿Qué herramientas de autocuidado usas para gestionar la exposición mediática?', answer3: '',
+/** En el formulario la categoría puede estar vacía hasta que se elija (la API la exige). */
+type InterviewForm = Omit<Interview, 'category'> & { category: InterviewCategory | '' };
+
+const EMPTY: InterviewForm = {
+  id: 0, slug: '', category: '', guestName: '', guestHandle: '', guestBio: '', photoId: null, intro: '',
+  question1: '', answer1: '', question2: '', answer2: '', question3: '', answer3: '',
   status: 'DRAFT', publishedAt: null, updatedAt: '',
 };
-const EDITABLE: (keyof Interview)[] = ['guestName', 'slug', 'guestHandle', 'guestBio', 'photoId', 'intro', 'question1', 'answer1', 'question2', 'answer2', 'question3', 'answer3'];
+const EDITABLE: (keyof InterviewForm)[] = ['category', 'guestName', 'slug', 'guestHandle', 'guestBio', 'photoId', 'intro', 'question1', 'answer1', 'question2', 'answer2', 'question3', 'answer3'];
+const QUESTION_KEYS = ['question1', 'question2', 'question3'] as const;
 
 export function InterviewEditor() {
   const { id = 'nuevo' } = useParams();
   const { confirm } = useFeedback();
-  const editor = useEntityEditor<Interview>({ endpoint: '/admin/interviews', id, empty: EMPTY, listPath: '/admin/entrevistas', editable: EDITABLE });
+  const editor = useEntityEditor<InterviewForm>({ endpoint: '/admin/interviews', id, empty: EMPTY, listPath: '/admin/entrevistas', editable: EDITABLE });
   const { form, set, errors, isNew, dirty, save } = editor;
   const published = editor.original?.status === 'PUBLISHED';
+
+  /**
+   * Al elegir la categoría se proponen sus preguntas, pero solo donde la
+   * pregunta está vacía o sigue siendo la sugerida de la categoría anterior:
+   * nunca se pisa algo que el equipo escribió.
+   */
+  const chooseCategory = (next: InterviewCategory) => {
+    const previous = form.category ? SUGGESTED_QUESTIONS[form.category] : null;
+    QUESTION_KEYS.forEach((key, index) => {
+      const current = form[key].trim();
+      if (!current || (previous && current === previous[index])) set(key, SUGGESTED_QUESTIONS[next][index]);
+    });
+    set('category', next);
+  };
 
   if (editor.loading) return <SkeletonRows rows={5} label="Cargando entrevista" />;
   if (editor.loadError) return <ErrorState message={editor.loadError} />;
@@ -125,12 +163,22 @@ export function InterviewEditor() {
 
       <div className="editor__layout">
         <div className="stack-lg">
+          <section className="card stack" aria-label="Categoría">
+            <InterviewCategoryPicker value={form.category} onChange={chooseCategory} error={errors.category} />
+          </section>
           <section className="card stack" aria-label="Introducción">
             <TextArea label="Introducción" rows={3} maxLength={1500} showCount value={form.intro} onChange={(e) => set('intro', e.target.value)} error={errors.intro} hint="Contexto breve antes de las preguntas." />
           </section>
           {([1, 2, 3] as const).map((n) => (
             <section key={n} className="card stack" aria-label={`Pregunta ${n}`}>
-              <TextField label={`Pregunta ${n} *`} value={form[`question${n}`]} maxLength={300} onChange={(e) => set(`question${n}`, e.target.value)} error={errors[`question${n}`]} />
+              <TextField
+                label={`Pregunta ${n} *`}
+                value={form[`question${n}`]}
+                maxLength={300}
+                placeholder={form.category ? undefined : 'Elige una categoría para ver una pregunta sugerida'}
+                onChange={(e) => set(`question${n}`, e.target.value)}
+                error={errors[`question${n}`]}
+              />
               <TextArea label={`Respuesta ${n} *`} rows={6} maxLength={5000} value={form[`answer${n}`]} onChange={(e) => set(`answer${n}`, e.target.value)} error={errors[`answer${n}`]} />
             </section>
           ))}

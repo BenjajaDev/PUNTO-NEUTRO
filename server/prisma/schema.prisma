@@ -212,30 +212,40 @@ model Reflection {
   @@index([status, publishedAt])
 }
 
+/// A quién se entrevista. Define la sección pública en que aparece.
+enum InterviewCategory {
+  EXPERTAS // especialistas: psicología, salud, comunicación…
+  INFLUENCERS // creadoras de contenido e influencers digitales
+  PERSONAS_COMUNES // personas sin exposición pública
+}
+
 /// Sección 4 · Pequeñas Entrevistas: formato fijo de tres preguntas.
 model Interview {
-  id          Int           @id @default(autoincrement())
-  slug        String        @unique
+  id          Int               @id @default(autoincrement())
+  slug        String            @unique
+  /// Obligatoria: sin ella la entrevista no sabe en qué sección mostrarse.
+  category    InterviewCategory
   guestName   String
-  guestHandle String        @default("")
-  guestBio    String        @default("")
+  guestHandle String            @default("")
+  guestBio    String            @default("")
   photoId     Int?
-  photo       Media?        @relation("InterviewPhoto", fields: [photoId], references: [id], onDelete: SetNull)
-  intro       String        @default("")
+  photo       Media?            @relation("InterviewPhoto", fields: [photoId], references: [id], onDelete: SetNull)
+  intro       String            @default("")
   question1   String
   answer1     String
   question2   String
   answer2     String
   question3   String
   answer3     String
-  status      ContentStatus @default(DRAFT)
+  status      ContentStatus     @default(DRAFT)
   publishedAt DateTime?
   authorId    Int?
-  author      User?         @relation(fields: [authorId], references: [id], onDelete: SetNull)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  author      User?             @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 
   @@index([status, publishedAt])
+  @@index([category, status, publishedAt])
 }
 
 /// Sección 5 · Glosario de Palabras Normalizadas.
@@ -255,12 +265,21 @@ model GlossaryTerm {
 }
 
 /// Sección 7 · Podcast «A Pausar el Filtro» (reproductor de SoundCloud).
+/// Tarjeta de episodio: carátula, título, resumen, palabras clave y enlace
+/// directo a SoundCloud (donde vive el audio).
 model PodcastEpisode {
   id            Int       @id @default(autoincrement())
   number        Int?
   title         String
-  description   String    @default("")
+  /// Resumen breve que se muestra en la tarjeta.
+  summary       String    @default("")
+  /// Palabras clave (normalizadas y sin duplicados, ver lib/tags.ts).
+  tags          String[]  @default([])
+  /// Carátula guardada en la biblioteca de medios (se sirve en /api/media/:id).
+  coverId       Int?
+  cover         Media?    @relation("EpisodeCover", fields: [coverId], references: [id], onDelete: SetNull)
   guests        String    @default("")
+  /// Enlace canónico al episodio (https://soundcloud.com/…), ver lib/soundcloud.ts.
   soundcloudUrl String
   durationMin   Int?
   published     Boolean   @default(false)
@@ -324,20 +343,21 @@ model Media {
   uploadedBy   User?    @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
   createdAt    DateTime @default(now())
 
-  siteLogos         SiteSettings[] @relation("SiteLogo")
-  siteFavicons      SiteSettings[] @relation("SiteFavicon")
-  heroImages        SiteSettings[] @relation("HeroImage")
-  aboutCovers       SiteSettings[] @relation("AboutCover")
-  trendsCovers      SiteSettings[] @relation("TrendsCover")
-  interviewsCovers  SiteSettings[] @relation("InterviewsCover")
-  glossaryCovers    SiteSettings[] @relation("GlossaryCover")
-  reflectionsCovers SiteSettings[] @relation("ReflectionsCover")
-  mailboxCovers     SiteSettings[] @relation("MailboxCover")
-  podcastCovers     SiteSettings[] @relation("PodcastCover")
-  teamPhotos        TeamMember[]   @relation("TeamPhoto")
-  trendCovers       Trend[]        @relation("TrendCover")
-  reflectionCovers  Reflection[]   @relation("ReflectionCover")
-  interviewPhotos   Interview[]    @relation("InterviewPhoto")
+  siteLogos         SiteSettings[]   @relation("SiteLogo")
+  siteFavicons      SiteSettings[]   @relation("SiteFavicon")
+  heroImages        SiteSettings[]   @relation("HeroImage")
+  aboutCovers       SiteSettings[]   @relation("AboutCover")
+  trendsCovers      SiteSettings[]   @relation("TrendsCover")
+  interviewsCovers  SiteSettings[]   @relation("InterviewsCover")
+  glossaryCovers    SiteSettings[]   @relation("GlossaryCover")
+  reflectionsCovers SiteSettings[]   @relation("ReflectionsCover")
+  mailboxCovers     SiteSettings[]   @relation("MailboxCover")
+  podcastCovers     SiteSettings[]   @relation("PodcastCover")
+  teamPhotos        TeamMember[]     @relation("TeamPhoto")
+  trendCovers       Trend[]          @relation("TrendCover")
+  reflectionCovers  Reflection[]     @relation("ReflectionCover")
+  interviewPhotos   Interview[]      @relation("InterviewPhoto")
+  episodeCovers     PodcastEpisode[] @relation("EpisodeCover")
 }
 
 // ─── Historial de cambios del panel ──────────────────────────────────
