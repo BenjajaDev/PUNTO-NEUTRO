@@ -156,7 +156,7 @@ export function InterviewEditor() {
             <TextArea label="Introducción" rows={3} maxLength={1500} showCount value={form.intro} onChange={(e) => set('intro', e.target.value)} error={errors.intro} hint="Contexto breve antes de las preguntas." />
           </section>
           <section className="card stack" aria-label="Preguntas y respuestas">
-            <InterviewQuestionsField value={form.questions} onChange={(v) => set('questions', v)} category={form.category} errors={errors} />
+            <InterviewQuestionsField value={form.questions} onChange={(v) => set('questions', v)} errors={errors} />
           </section>
         </div>
         <aside className="stack-lg">

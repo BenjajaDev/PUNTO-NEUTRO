@@ -1,54 +1,22 @@
-import { ArrowDown, ArrowUp, Check, Lightbulb, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
 import { useId, useRef } from 'react';
-import { INTERVIEW_CATEGORIES, type InterviewCategory, type InterviewQuestion } from '@/lib/types';
+import type { InterviewQuestion } from '@/lib/types';
 import { Button, TextArea, useFeedback } from '@/ui';
 
 export const MAX_QUESTIONS = 20;
 
-/**
- * Banco de preguntas de ejemplo por categoría. Son solo sugerencias: no se
- * escriben solas en la entrevista, se agregan con un clic y se pueden editar.
- */
-export const SUGGESTED_QUESTIONS: Record<InterviewCategory, string[]> = {
-  EXPERTAS: [
-    '¿Por qué las tendencias sobre el cuerpo en redes sociales afectan tanto la forma en que nos vemos?',
-    '¿Qué señales indican que la preocupación por la imagen corporal se está volviendo un problema?',
-    '¿Qué le recomendarías a una adolescente que siente presión por encajar?',
-    '¿Qué es la neutralidad corporal y en qué se diferencia del body positive?',
-    '¿Cómo podemos hablar del cuerpo de otras personas sin hacer daño?',
-    '¿Dónde puede pedir ayuda alguien que lo está pasando mal con su imagen corporal?',
-  ],
-  INFLUENCERS: [
-    '¿Cómo vives el escrutinio público sobre tu cuerpo en redes sociales?',
-    '¿Has sentido presión por mantener cierta estética para tu contenido?',
-    '¿Qué herramientas de autocuidado usas para gestionar la exposición mediática?',
-    '¿Cómo manejas los comentarios sobre tu cuerpo?',
-    '¿Qué responsabilidad crees que tienen las creadoras de contenido con su audiencia?',
-    '¿Qué cambiarías de las redes sociales si pudieras?',
-  ],
-  PERSONAS_COMUNES: [
-    '¿Cuándo empezaste a notar la presión por verte de cierta manera?',
-    '¿Cómo influyen las redes sociales o las personas cercanas en la forma en que ves tu cuerpo?',
-    '¿Qué te ha ayudado a sentirte más en paz con tu cuerpo?',
-    '¿Recuerdas algún comentario sobre tu cuerpo que te haya marcado?',
-    '¿Qué le dirías a tu yo de 15 años?',
-    '¿Qué te gustaría que cambiara en la forma en que hablamos de los cuerpos?',
-  ],
-};
-
 type Props = {
   value: InterviewQuestion[];
   onChange: (value: InterviewQuestion[]) => void;
-  category: InterviewCategory | '';
   /** Errores de la API: `questions` y `questions.<n>.question|answer`. */
   errors: Record<string, string>;
 };
 
 /**
- * Preguntas y respuestas de la entrevista: el equipo agrega las que quiera
- * (en blanco o desde las sugeridas), las ordena y las quita.
+ * Preguntas y respuestas de la entrevista: el equipo agrega las que quiera,
+ * las ordena y las quita.
  */
-export function InterviewQuestionsField({ value, onChange, category, errors }: Props) {
+export function InterviewQuestionsField({ value, onChange, errors }: Props) {
   const id = useId();
   const { confirm } = useFeedback();
   // Claves estables por fila: al reordenar o quitar, cada campo conserva su foco y su texto.
@@ -59,13 +27,12 @@ export function InterviewQuestionsField({ value, onChange, category, errors }: P
   const focusLater = (elementId: string) => requestAnimationFrame(() => document.getElementById(elementId)?.focus());
   const full = value.length >= MAX_QUESTIONS;
 
-  const add = (question = '') => {
+  const add = () => {
     if (full) return;
     const key = nextKey.current++;
     keys.current = [...keys.current, key];
-    onChange([...value, { question, answer: '' }]);
-    // Desde una sugerencia, lo que falta es la respuesta; en blanco, la pregunta.
-    focusLater(`${id}-${question ? 'a' : 'q'}-${key}`);
+    onChange([...value, { question: '', answer: '' }]);
+    focusLater(`${id}-q-${key}`);
   };
 
   const update = (index: number, patch: Partial<InterviewQuestion>) => onChange(value.map((item, i) => (i === index ? { ...item, ...patch } : item)));
@@ -90,10 +57,6 @@ export function InterviewQuestionsField({ value, onChange, category, errors }: P
     keys.current = keys.current.filter((_, i) => i !== index);
     onChange(value.filter((_, i) => i !== index));
   };
-
-  const suggestions = category ? SUGGESTED_QUESTIONS[category] : [];
-  const categoryLabel = INTERVIEW_CATEGORIES.find((c) => c.key === category)?.label;
-  const timesUsed = (question: string) => value.filter((item) => item.question.trim() === question).length;
 
   return (
     <fieldset className="questions-field" aria-describedby={`${id}-hint`}>
@@ -124,7 +87,7 @@ export function InterviewQuestionsField({ value, onChange, category, errors }: P
           })}
         </ol>
       ) : (
-        <p className="questions-field__empty">Aún no hay preguntas. Escribe una propia o elige una de las sugeridas.</p>
+        <p className="questions-field__empty">Aún no hay preguntas. Presiona «Agregar pregunta» para escribir la primera.</p>
       )}
 
       {errors.questions ? (
@@ -133,37 +96,10 @@ export function InterviewQuestionsField({ value, onChange, category, errors }: P
         </span>
       ) : null}
 
-      <Button variant="secondary" icon={Plus} onClick={() => add()} disabled={full} style={{ alignSelf: 'flex-start' }}>
+      <Button variant="secondary" icon={Plus} onClick={add} disabled={full} style={{ alignSelf: 'flex-start' }}>
         Agregar pregunta
       </Button>
       {full ? <p className="field__hint">Llegaste al máximo de {MAX_QUESTIONS} preguntas.</p> : null}
-
-      <section className="questions-field__suggestions" aria-labelledby={`${id}-sug`}>
-        <h3 id={`${id}-sug`} className="questions-field__sug-title">
-          <Lightbulb size={16} aria-hidden /> Preguntas sugeridas{categoryLabel ? ` para ${categoryLabel.toLowerCase()}` : ''}
-        </h3>
-        {category ? (
-          <>
-            <p className="field__hint">Haz clic en una para agregarla al final. Puedes usar la misma pregunta las veces que quieras y editarla después.</p>
-            <ul className="questions-field__sug-list">
-              {suggestions.map((question) => {
-                const used = timesUsed(question);
-                return (
-                  <li key={question}>
-                    <button type="button" className="suggestion-chip" onClick={() => add(question)} disabled={full} data-used={used > 0 || undefined}>
-                      {used ? <Check size={14} aria-hidden /> : <Plus size={14} aria-hidden />}
-                      <span>{question}</span>
-                      {used ? <span className="suggestion-chip__count">{used === 1 ? 'Agregada' : `Agregada ${used} veces`}</span> : null}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </>
-        ) : (
-          <p className="field__hint">Elige la categoría de la entrevista para ver preguntas de ejemplo.</p>
-        )}
-      </section>
     </fieldset>
   );
 }

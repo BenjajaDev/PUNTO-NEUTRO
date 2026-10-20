@@ -146,7 +146,7 @@ web/src
 ├── site/pages/PodcastPage.tsx          Grilla de PodcastCard + filtro por palabra clave
 ├── site/pages/HomePage.tsx             «Último episodio» con carátula y categoría en la entrevista destacada
 ├── admin/components/InterviewCategoryPicker.tsx   Radios como tarjetas
-├── admin/components/InterviewQuestionsField.tsx   Lista de preguntas: agregar, ordenar, quitar + SUGGESTED_QUESTIONS
+├── admin/components/InterviewQuestionsField.tsx   Lista de preguntas: agregar, ordenar, quitar
 ├── admin/components/CrudDialogPage.tsx            + validate por campo, + preview del ítem en edición
 ├── admin/pages/InterviewsAdmin.tsx     Filtro y columna de categoría; categoría obligatoria en el editor
 └── admin/pages/PodcastAdmin.tsx        CRUD de tarjetas con vista previa en vivo
@@ -190,10 +190,9 @@ web/src
 - **Estructura:** `fieldset` + `legend` con tres `input type="radio"` reales. Cada opción se ve como tarjeta, con nombre y descripción de la sección.
 - **Accesibilidad:** foco visible con `:has(input:focus-visible)`. Con error usa `aria-invalid` y un mensaje `role="alert"`.
 
-### `<InterviewQuestionsField value onChange category errors>`
+### `<InterviewQuestionsField value onChange errors>`
 
 - **Agregar pregunta:** el botón agrega una pregunta en blanco al final y le da el foco. Se puede presionar todas las veces que se quiera, hasta 20.
-- **Sugerencias:** banco de preguntas de ejemplo por categoría (`SUGGESTED_QUESTIONS`, 6 por categoría). No se escriben solas en la entrevista: cada una es un botón que la agrega al final con la respuesta vacía, y el foco pasa a la respuesta. La misma sugerencia se puede agregar varias veces; la tarjeta muestra «Agregada» o «Agregada N veces». Sin categoría elegida, el recuadro invita a elegirla.
 - **Ordenar y quitar:** botones ↑ ↓ y basurero por fila, con `aria-label` («Subir la pregunta 2»). Al mover, el foco sigue a la fila (o pasa al otro botón si llegó al extremo). Quitar una pregunta con respuesta pide confirmación.
 - **Claves estables:** cada fila tiene una clave propia (no su índice), así al reordenar o quitar los campos conservan su texto y su foco.
 - **Errores:** muestra `questions.<n>.question|answer` bajo su campo. `useEntityEditor.set` limpia también los errores `campo.*` al editar una lista, porque sus índices cambian.
@@ -265,7 +264,7 @@ Un slug desconocido cae en «Todas».
 **Editor:** la categoría es lo primero del formulario, y es obligatoria tanto en el cliente como en la API.
 
 - **Tipado.** El formulario usa `Omit<Interview, 'category'> & { category: InterviewCategory | '' }`. El estado «sin elegir» existe solo en el formulario; el tipo `Interview` nunca acepta `''`.
-- **Preguntas:** una entrevista nueva empieza sin preguntas. Se agregan con «Agregar pregunta» o desde las sugeridas de su categoría, y se ordenan y quitan con `InterviewQuestionsField`. Elegir o cambiar la categoría no toca las preguntas ya escritas.
+- **Preguntas:** una entrevista nueva empieza sin preguntas. El equipo las escribe con «Agregar pregunta» y las ordena y quita con `InterviewQuestionsField`. No hay preguntas sugeridas: cada entrevista se arma desde cero.
 - **Borrador con respuestas pendientes:** sirve para enviar las preguntas a la persona entrevistada antes de tener sus respuestas.
 
 ### Podcast (CRUD completo)
@@ -305,7 +304,7 @@ Un slug desconocido cae en «Todas».
 - `PodcastCard`: enlace externo, reproductor diferido y vista previa sin enlaces;
 - filtro por tema sin distinguir mayúsculas ni tildes;
 - selector de categoría accesible;
-- preguntas: sin sugerencias escritas solas, «Agregar pregunta» repetido, la misma sugerencia agregada varias veces, ordenar con foco y quitar con confirmación;
+- preguntas: empieza vacía y sin sugerencias, «Agregar pregunta» repetido, ordenar con foco y quitar con confirmación;
 - validación compartida.
 
 **Verificación:** `pnpm typecheck && pnpm test && pnpm build`.

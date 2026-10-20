@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { InterviewCategoryPicker } from '@/admin/components/InterviewCategoryPicker';
-import { InterviewQuestionsField, SUGGESTED_QUESTIONS } from '@/admin/components/InterviewQuestionsField';
+import { InterviewQuestionsField } from '@/admin/components/InterviewQuestionsField';
 import { normalizeSoundcloudUrl, normalizeTags } from '@/lib/soundcloud';
 import type { InterviewCategory, InterviewQuestion, InterviewSummary, PodcastEpisode } from '@/lib/types';
 import { PodcastCard } from '@/site/components/PodcastCard';
@@ -175,22 +175,25 @@ describe('Selector de categoría (panel)', () => {
 });
 
 describe('Preguntas de la entrevista (panel)', () => {
-  function Harness({ category = 'EXPERTAS', initial = [] }: { category?: InterviewCategory | ''; initial?: InterviewQuestion[] }) {
+  function Harness({ initial = [] }: { initial?: InterviewQuestion[] }) {
     const [value, setValue] = useState<InterviewQuestion[]>(initial);
     return (
       <FeedbackProvider>
-        <InterviewQuestionsField value={value} onChange={setValue} category={category} errors={{}} />
+        <InterviewQuestionsField value={value} onChange={setValue} errors={{}} />
         <output data-testid="value">{JSON.stringify(value)}</output>
       </FeedbackProvider>
     );
   }
   const current = () => JSON.parse(screen.getByTestId('value').textContent || '[]') as InterviewQuestion[];
 
-  it('empieza sin preguntas: las sugeridas no se escriben solas', () => {
+  it('empieza sin preguntas y sin sugerencias', () => {
     render(<Harness />);
     expect(current()).toEqual([]);
     expect(screen.getByText(/Aún no hay preguntas/)).toBeInTheDocument();
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+    expect(screen.queryByText(/sugerida/i)).not.toBeInTheDocument();
+    // El único botón es el de agregar.
+    expect(screen.getAllByRole('button').map((b) => b.textContent)).toEqual(['Agregar pregunta']);
   });
 
   it('el botón agrega preguntas en blanco todas las veces que se presione', async () => {
@@ -201,28 +204,6 @@ describe('Preguntas de la entrevista (panel)', () => {
     await waitFor(() => expect(screen.getByLabelText('Pregunta 4 *')).toHaveFocus());
     await user.type(screen.getByLabelText('Pregunta 4 *'), '¿Una pregunta propia?');
     expect(current()[3]).toEqual({ question: '¿Una pregunta propia?', answer: '' });
-  });
-
-  it('una sugerencia se agrega al hacer clic y se puede agregar varias veces', async () => {
-    const user = userEvent.setup();
-    render(<Harness />);
-    const suggestion = SUGGESTED_QUESTIONS.EXPERTAS[0];
-    const chip = () => screen.getByRole('button', { name: new RegExp(suggestion.slice(1, 30)) });
-    await user.click(chip());
-    await waitFor(() => expect(screen.getByLabelText('Respuesta 1')).toHaveFocus());
-    expect(chip()).toHaveTextContent('Agregada');
-    await user.click(chip());
-    expect(chip()).toHaveTextContent('Agregada 2 veces');
-    expect(current()).toEqual([
-      { question: suggestion, answer: '' },
-      { question: suggestion, answer: '' },
-    ]);
-  });
-
-  it('sin categoría pide elegirla para mostrar sugerencias', () => {
-    render(<Harness category="" />);
-    expect(screen.getByText(/Elige la categoría de la entrevista para ver preguntas de ejemplo/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Agregar pregunta' })).toBeEnabled();
   });
 
   it('reordena y quita preguntas; si tiene respuesta, pide confirmación', async () => {

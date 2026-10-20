@@ -38,7 +38,7 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 - Llamadas solo con `api()` de `lib/api.ts` (agrega `X-Requested-With`, convierte errores en `ApiError`).
 - Datos asíncronos con `useResource(loader, deps)` (aborta al desmontar) y estados loading/error/vacío explícitos.
 - Tipos de respuesta en `lib/types.ts` (espejo del schema). Si cambias el schema, actualiza los tipos.
-- Componentes reutilizables: `Tabs` + `tabPanelProps` (`@/ui`, patrón WAI-ARIA con flechas/Inicio/Fin), `PodcastCard` (`site/components`, también es la vista previa del panel con `preview`), `InterviewCategoryPicker` (radios como tarjetas), `InterviewQuestionsField` (preguntas dinámicas + banco `SUGGESTED_QUESTIONS`). `CrudDialogPage` acepta `validate` por campo y `preview` del ítem en edición.
+- Componentes reutilizables: `Tabs` + `tabPanelProps` (`@/ui`, patrón WAI-ARIA con flechas/Inicio/Fin), `PodcastCard` (`site/components`, también es la vista previa del panel con `preview`), `InterviewCategoryPicker` (radios como tarjetas), `InterviewQuestionsField` (preguntas dinámicas; sin preguntas sugeridas, por decisión del equipo). `CrudDialogPage` acepta `validate` por campo y `preview` del ítem en edición.
 - Filtros de páginas públicas en la URL (`useSearchParams` + `preventScrollReset`), para que se puedan compartir y el botón «atrás» funcione.
 - Rutas en `App.tsx` (sitio) y `admin/AdminApp.tsx` (panel). Enlaces internos con `viewTransition`.
 
