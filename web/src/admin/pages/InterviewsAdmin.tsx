@@ -7,7 +7,8 @@ import { INTERVIEW_CATEGORIES, INTERVIEW_CATEGORY_LABEL, type Interview, type In
 import { useResource } from '@/lib/useResource';
 import { Badge, Button, buttonClass, EmptyState, ErrorState, PageHeader, SkeletonRows, TextArea, TextField, useFeedback } from '@/ui';
 import { ImagePicker } from '../components/ImagePicker';
-import { InterviewCategoryPicker, SUGGESTED_QUESTIONS } from '../components/InterviewCategoryPicker';
+import { InterviewCategoryPicker } from '../components/InterviewCategoryPicker';
+import { InterviewQuestionsField } from '../components/InterviewQuestionsField';
 import { useEntityEditor } from '../components/useEntityEditor';
 import { StatusBadge } from './TrendsAdmin';
 
@@ -38,7 +39,7 @@ export function InterviewsAdmin() {
 
   return (
     <>
-      <PageHeader title="Pequeñas Entrevistas" subtitle="Tres preguntas a expertas, influencers y personas comunes." actions={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Nueva entrevista</Button>} />
+      <PageHeader title="Pequeñas Entrevistas" subtitle="Preguntas breves a expertas, influencers y personas comunes." actions={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Nueva entrevista</Button>} />
       {items.data?.length ? (
         <div className="row" role="group" aria-label="Filtrar por categoría" style={{ marginBottom: 16 }}>
           <button type="button" className="chip" aria-pressed={category === 'TODAS'} onClick={() => setCategory('TODAS')}>
@@ -105,11 +106,10 @@ type InterviewForm = Omit<Interview, 'category'> & { category: InterviewCategory
 
 const EMPTY: InterviewForm = {
   id: 0, slug: '', category: '', guestName: '', guestHandle: '', guestBio: '', photoId: null, intro: '',
-  question1: '', answer1: '', question2: '', answer2: '', question3: '', answer3: '',
+  questions: [],
   status: 'DRAFT', publishedAt: null, updatedAt: '',
 };
-const EDITABLE: (keyof InterviewForm)[] = ['category', 'guestName', 'slug', 'guestHandle', 'guestBio', 'photoId', 'intro', 'question1', 'answer1', 'question2', 'answer2', 'question3', 'answer3'];
-const QUESTION_KEYS = ['question1', 'question2', 'question3'] as const;
+const EDITABLE: (keyof InterviewForm)[] = ['category', 'guestName', 'slug', 'guestHandle', 'guestBio', 'photoId', 'intro', 'questions'];
 
 export function InterviewEditor() {
   const { id = 'nuevo' } = useParams();
@@ -117,20 +117,6 @@ export function InterviewEditor() {
   const editor = useEntityEditor<InterviewForm>({ endpoint: '/admin/interviews', id, empty: EMPTY, listPath: '/admin/entrevistas', editable: EDITABLE });
   const { form, set, errors, isNew, dirty, save } = editor;
   const published = editor.original?.status === 'PUBLISHED';
-
-  /**
-   * Al elegir la categoría se proponen sus preguntas, pero solo donde la
-   * pregunta está vacía o sigue siendo la sugerida de la categoría anterior:
-   * nunca se pisa algo que el equipo escribió.
-   */
-  const chooseCategory = (next: InterviewCategory) => {
-    const previous = form.category ? SUGGESTED_QUESTIONS[form.category] : null;
-    QUESTION_KEYS.forEach((key, index) => {
-      const current = form[key].trim();
-      if (!current || (previous && current === previous[index])) set(key, SUGGESTED_QUESTIONS[next][index]);
-    });
-    set('category', next);
-  };
 
   if (editor.loading) return <SkeletonRows rows={5} label="Cargando entrevista" />;
   if (editor.loadError) return <ErrorState message={editor.loadError} />;
@@ -164,24 +150,14 @@ export function InterviewEditor() {
       <div className="editor__layout">
         <div className="stack-lg">
           <section className="card stack" aria-label="Categoría">
-            <InterviewCategoryPicker value={form.category} onChange={chooseCategory} error={errors.category} />
+            <InterviewCategoryPicker value={form.category} onChange={(v) => set('category', v)} error={errors.category} />
           </section>
           <section className="card stack" aria-label="Introducción">
             <TextArea label="Introducción" rows={3} maxLength={1500} showCount value={form.intro} onChange={(e) => set('intro', e.target.value)} error={errors.intro} hint="Contexto breve antes de las preguntas." />
           </section>
-          {([1, 2, 3] as const).map((n) => (
-            <section key={n} className="card stack" aria-label={`Pregunta ${n}`}>
-              <TextField
-                label={`Pregunta ${n} *`}
-                value={form[`question${n}`]}
-                maxLength={300}
-                placeholder={form.category ? undefined : 'Elige una categoría para ver una pregunta sugerida'}
-                onChange={(e) => set(`question${n}`, e.target.value)}
-                error={errors[`question${n}`]}
-              />
-              <TextArea label={`Respuesta ${n} *`} rows={6} maxLength={5000} value={form[`answer${n}`]} onChange={(e) => set(`answer${n}`, e.target.value)} error={errors[`answer${n}`]} />
-            </section>
-          ))}
+          <section className="card stack" aria-label="Preguntas y respuestas">
+            <InterviewQuestionsField value={form.questions} onChange={(v) => set('questions', v)} category={form.category} errors={errors} />
+          </section>
         </div>
         <aside className="stack-lg">
           <section className="card stack" aria-label="Persona entrevistada">

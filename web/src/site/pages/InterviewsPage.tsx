@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { formatDate, mediaUrl } from '@/lib/format';
-import { INTERVIEW_CATEGORIES, INTERVIEW_CATEGORY_LABEL, type Interview, type InterviewCategory } from '@/lib/types';
+import { INTERVIEW_CATEGORIES, INTERVIEW_CATEGORY_LABEL, type InterviewCategory, type InterviewSummary } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { Button, EmptyState, ErrorState, SkeletonCards, tabPanelProps, Tabs } from '@/ui';
 import { PageHero } from '../components/Common';
@@ -20,7 +20,7 @@ export const initials = (name: string) =>
 type TabKey = 'TODAS' | InterviewCategory;
 const TAB_PREFIX = 'entrevistas';
 
-export function InterviewCard({ item, showCategory = true }: { item: Interview; showCategory?: boolean }) {
+export function InterviewCard({ item, showCategory = true }: { item: InterviewSummary; showCategory?: boolean }) {
   return (
     <article className="card card--raised interview-card lift">
       <div className="row" style={{ gap: 14 }}>
@@ -41,7 +41,7 @@ export function InterviewCard({ item, showCategory = true }: { item: Interview; 
           <p className="text-muted text-small">{[item.guestHandle, formatDate(item.publishedAt)].filter(Boolean).join(' · ')}</p>
         </div>
       </div>
-      <blockquote className="interview-card__quote">«{item.question1}»</blockquote>
+      <blockquote className="interview-card__quote">«{item.firstQuestion}»</blockquote>
       <span className="link-arrow" aria-hidden>
         Leer entrevista <ArrowRight size={18} />
       </span>
@@ -51,7 +51,7 @@ export function InterviewCard({ item, showCategory = true }: { item: Interview; 
 
 /** Sección 4 · Pequeñas Entrevistas, separadas en Expertas, Influencers y Personas comunes. */
 export function InterviewsPage() {
-  const { data, loading, error, reload } = useResource((signal) => api<Interview[]>('/interviews', { signal }), []);
+  const { data, loading, error, reload } = useResource((signal) => api<InterviewSummary[]>('/interviews', { signal }), []);
   const { settings } = useSiteData();
   usePageTitle('Pequeñas Entrevistas');
   const [params, setParams] = useSearchParams();
@@ -67,7 +67,7 @@ export function InterviewsPage() {
   };
 
   const byCategory = useMemo(() => {
-    const groups = Object.fromEntries(INTERVIEW_CATEGORIES.map((c) => [c.key, [] as Interview[]])) as Record<InterviewCategory, Interview[]>;
+    const groups = Object.fromEntries(INTERVIEW_CATEGORIES.map((c) => [c.key, [] as InterviewSummary[]])) as Record<InterviewCategory, InterviewSummary[]>;
     (data || []).forEach((item) => groups[item.category]?.push(item));
     return groups;
   }, [data]);
@@ -82,8 +82,8 @@ export function InterviewsPage() {
     <>
       <PageHero
         eyebrow="Pequeñas Entrevistas"
-        title="Tres preguntas, una conversación honesta"
-        intro="Expertas, influencers y personas comunes responden tres preguntas sobre el escrutinio sobre los cuerpos, la presión por mantener estéticas hegemónicas y las formas de cuidarse."
+        title="Preguntas simples, conversaciones honestas"
+        intro="Expertas, influencers y personas comunes responden preguntas sobre el escrutinio sobre los cuerpos, la presión por mantener estéticas hegemónicas y las formas de cuidarse."
         art="interviews"
         coverId={settings?.interviewsCoverId}
       />

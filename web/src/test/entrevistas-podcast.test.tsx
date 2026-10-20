@@ -1,15 +1,16 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { InterviewCategoryPicker } from '@/admin/components/InterviewCategoryPicker';
+import { InterviewQuestionsField, SUGGESTED_QUESTIONS } from '@/admin/components/InterviewQuestionsField';
 import { normalizeSoundcloudUrl, normalizeTags } from '@/lib/soundcloud';
-import type { Interview, InterviewCategory, PodcastEpisode } from '@/lib/types';
+import type { InterviewCategory, InterviewQuestion, InterviewSummary, PodcastEpisode } from '@/lib/types';
 import { PodcastCard } from '@/site/components/PodcastCard';
 import { InterviewsPage } from '@/site/pages/InterviewsPage';
 import { PodcastPage } from '@/site/pages/PodcastPage';
-import { Tabs } from '@/ui';
+import { FeedbackProvider, Tabs } from '@/ui';
 
 const fetchMock = vi.fn();
 const json = (data: unknown) => new Response(JSON.stringify(data), { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -26,7 +27,7 @@ function LocationProbe() {
   return <output data-testid="location">{location.search}</output>;
 }
 
-const interview = (id: number, category: InterviewCategory, guestName: string): Interview => ({
+const interview = (id: number, category: InterviewCategory, guestName: string): InterviewSummary => ({
   id,
   slug: `entrevista-${id}`,
   category,
@@ -35,12 +36,8 @@ const interview = (id: number, category: InterviewCategory, guestName: string): 
   guestBio: '',
   photoId: null,
   intro: '',
-  question1: `Pregunta de ${guestName}`,
-  answer1: '',
-  question2: '',
-  answer2: '',
-  question3: '',
-  answer3: '',
+  firstQuestion: `Pregunta de ${guestName}`,
+  questionCount: 3,
   status: 'PUBLISHED',
   publishedAt: '2026-10-01T12:00:00.000Z',
   updatedAt: '2026-10-01T12:00:00.000Z',
@@ -174,6 +171,75 @@ describe('Selector de categoría (panel)', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Elige la categoría');
     await user.click(screen.getByRole('radio', { name: /Influencers/ }));
     expect(onChange).toHaveBeenCalledWith('INFLUENCERS');
+  });
+});
+
+describe('Preguntas de la entrevista (panel)', () => {
+  function Harness({ category = 'EXPERTAS', initial = [] }: { category?: InterviewCategory | ''; initial?: InterviewQuestion[] }) {
+    const [value, setValue] = useState<InterviewQuestion[]>(initial);
+    return (
+      <FeedbackProvider>
+        <InterviewQuestionsField value={value} onChange={setValue} category={category} errors={{}} />
+        <output data-testid="value">{JSON.stringify(value)}</output>
+      </FeedbackProvider>
+    );
+  }
+  const current = () => JSON.parse(screen.getByTestId('value').textContent || '[]') as InterviewQuestion[];
+
+  it('empieza sin preguntas: las sugeridas no se escriben solas', () => {
+    render(<Harness />);
+    expect(current()).toEqual([]);
+    expect(screen.getByText(/Aún no hay preguntas/)).toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
+  });
+
+  it('el botón agrega preguntas en blanco todas las veces que se presione', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    for (let i = 0; i < 4; i++) await user.click(screen.getByRole('button', { name: 'Agregar pregunta' }));
+    expect(current()).toHaveLength(4);
+    await waitFor(() => expect(screen.getByLabelText('Pregunta 4 *')).toHaveFocus());
+    await user.type(screen.getByLabelText('Pregunta 4 *'), '¿Una pregunta propia?');
+    expect(current()[3]).toEqual({ question: '¿Una pregunta propia?', answer: '' });
+  });
+
+  it('una sugerencia se agrega al hacer clic y se puede agregar varias veces', async () => {
+    const user = userEvent.setup();
+    render(<Harness />);
+    const suggestion = SUGGESTED_QUESTIONS.EXPERTAS[0];
+    const chip = () => screen.getByRole('button', { name: new RegExp(suggestion.slice(1, 30)) });
+    await user.click(chip());
+    await waitFor(() => expect(screen.getByLabelText('Respuesta 1')).toHaveFocus());
+    expect(chip()).toHaveTextContent('Agregada');
+    await user.click(chip());
+    expect(chip()).toHaveTextContent('Agregada 2 veces');
+    expect(current()).toEqual([
+      { question: suggestion, answer: '' },
+      { question: suggestion, answer: '' },
+    ]);
+  });
+
+  it('sin categoría pide elegirla para mostrar sugerencias', () => {
+    render(<Harness category="" />);
+    expect(screen.getByText(/Elige la categoría de la entrevista para ver preguntas de ejemplo/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Agregar pregunta' })).toBeEnabled();
+  });
+
+  it('reordena y quita preguntas; si tiene respuesta, pide confirmación', async () => {
+    const user = userEvent.setup();
+    render(<Harness initial={[{ question: '¿Primera?', answer: '' }, { question: '¿Segunda?', answer: 'Ya respondida.' }]} />);
+    await user.click(screen.getByRole('button', { name: 'Subir la pregunta 2' }));
+    expect(current().map((q) => q.question)).toEqual(['¿Segunda?', '¿Primera?']);
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Bajar la pregunta 1' })).toHaveFocus());
+
+    await user.click(screen.getByRole('button', { name: 'Quitar la pregunta 1' }));
+    expect(await screen.findByText('¿Quitar la pregunta 1?')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Quitar pregunta' }));
+    expect(current().map((q) => q.question)).toEqual(['¿Primera?']);
+
+    // Sin respuesta, se quita de inmediato.
+    await user.click(screen.getByRole('button', { name: 'Quitar la pregunta 1' }));
+    expect(current()).toEqual([]);
   });
 });
 

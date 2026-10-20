@@ -30,7 +30,7 @@ publicRouter.get('/home', async (_req, res) => {
   const [settings, trends, interview, glossary, glossaryCount, episode, stories, reflections] = await Promise.all([
     getSettings(),
     prisma.trend.findMany({ where: published, orderBy: { publishedAt: 'desc' }, take: 3, omit: longText, include: { authorMember } }),
-    prisma.interview.findFirst({ where: published, orderBy: { publishedAt: 'desc' } }),
+    prisma.interview.findFirst({ where: published, orderBy: { publishedAt: 'desc' } }).then((i) => i && interviewSummary(i)),
     prisma.glossaryTerm.findMany({ where: { published: true }, orderBy: [{ order: 'asc' }, { term: 'asc' }], take: 3 }),
     prisma.glossaryTerm.count({ where: { published: true } }),
     prisma.podcastEpisode.findFirst({ where: { published: true }, orderBy: [{ publishedAt: 'desc' }, { number: 'desc' }] }),
@@ -71,6 +71,15 @@ publicRouter.get('/trends/:slug', async (req, res) => {
 
 type InterviewCategory = (typeof INTERVIEW_CATEGORIES)[number];
 
+/**
+ * Las listas solo muestran la primera pregunta: no se envían todas las
+ * respuestas (pueden ser largas) a cada visita del listado o la portada.
+ */
+function interviewSummary<T extends { questions: unknown }>({ questions, ...rest }: T) {
+  const list = Array.isArray(questions) ? (questions as { question?: string }[]) : [];
+  return { ...rest, firstQuestion: list[0]?.question ?? '', questionCount: list.length };
+}
+
 /** ?category=EXPERTAS|INFLUENCERS|PERSONAS_COMUNES filtra; sin parámetro, todas. */
 publicRouter.get('/interviews', async (req, res) => {
   const category = INTERVIEW_CATEGORIES.includes(req.query.category as InterviewCategory) ? (req.query.category as InterviewCategory) : undefined;
@@ -78,8 +87,8 @@ publicRouter.get('/interviews', async (req, res) => {
     await prisma.interview.findMany({
       where: { ...published, category },
       orderBy: { publishedAt: 'desc' },
-      select: { id: true, slug: true, category: true, guestName: true, guestHandle: true, guestBio: true, photoId: true, intro: true, question1: true, publishedAt: true },
-    }),
+      select: { id: true, slug: true, category: true, guestName: true, guestHandle: true, guestBio: true, photoId: true, intro: true, questions: true, publishedAt: true },
+    }).then((items) => items.map(interviewSummary)),
   );
 });
 

@@ -28,11 +28,6 @@ export function InterviewDetailPage() {
   if (!data) return <NotFoundPage />;
 
   const category = INTERVIEW_CATEGORIES.find((c) => c.key === data.category);
-  const qa = [
-    [data.question1, data.answer1],
-    [data.question2, data.answer2],
-    [data.question3, data.answer3],
-  ];
 
   return (
     <article className="article">
@@ -57,11 +52,11 @@ export function InterviewDetailPage() {
       <div className="container reading stack-lg">
         {data.intro ? <Prose text={data.intro} className="prose--lead" /> : null}
         <ol className="qa">
-          {qa.map(([q, a], i) => (
+          {data.questions.map(({ question, answer }, i) => (
             <li key={i} className="qa__item reveal">
               <p className="qa__number" aria-hidden>{i + 1}</p>
-              <h2 className="qa__question">{q}</h2>
-              <Prose text={a} />
+              <h2 className="qa__question">{question}</h2>
+              <Prose text={answer} />
             </li>
           ))}
         </ol>

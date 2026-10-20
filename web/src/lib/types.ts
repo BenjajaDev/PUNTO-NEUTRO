@@ -113,7 +113,9 @@ export type Reflection = ReflectionSummary & { body: string; related?: Reflectio
 // Espejo de InterviewCategory (server/prisma/schema.prisma).
 export type InterviewCategory = 'EXPERTAS' | 'INFLUENCERS' | 'PERSONAS_COMUNES';
 
-export type Interview = {
+export type InterviewQuestion = { question: string; answer: string };
+
+type InterviewBase = {
   id: number;
   slug: string;
   category: InterviewCategory;
@@ -122,17 +124,17 @@ export type Interview = {
   guestBio: string;
   photoId: number | null;
   intro: string;
-  question1: string;
-  answer1: string;
-  question2: string;
-  answer2: string;
-  question3: string;
-  answer3: string;
   status: ContentStatus;
   publishedAt: string | null;
   updatedAt: string;
   author?: { name: string } | null;
 };
+
+/** Entrevista completa (detalle y panel): todas sus preguntas, en orden. */
+export type Interview = InterviewBase & { questions: InterviewQuestion[] };
+
+/** Listado y portada: solo la primera pregunta y cuántas son (sin respuestas). */
+export type InterviewSummary = InterviewBase & { firstQuestion: string; questionCount: number };
 
 export type GlossaryTerm = {
   id: number;
@@ -196,7 +198,7 @@ export type AuditEntry = { id: number; action: string; entity: string; entityId:
 export type HomeData = {
   settings: SiteSettings;
   trends: TrendSummary[];
-  interview: Interview | null;
+  interview: InterviewSummary | null;
   glossary: GlossaryTerm[];
   glossaryCount: number;
   episode: PodcastEpisode | null;

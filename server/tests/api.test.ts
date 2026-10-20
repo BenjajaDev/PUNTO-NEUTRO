@@ -364,12 +364,10 @@ describe('Identidad editable', () => {
 describe('Entrevistas por categoría', () => {
   const base = {
     guestName: 'Invitada de prueba',
-    question1: '¿Pregunta uno de prueba?',
-    answer1: 'Respuesta uno de prueba.',
-    question2: '¿Pregunta dos de prueba?',
-    answer2: 'Respuesta dos de prueba.',
-    question3: '¿Pregunta tres de prueba?',
-    answer3: 'Respuesta tres de prueba.',
+    questions: [
+      { question: '¿Pregunta uno de prueba?', answer: 'Respuesta uno de prueba.' },
+      { question: '¿Pregunta dos de prueba?', answer: 'Respuesta dos de prueba.' },
+    ],
     status: 'PUBLISHED',
   };
 
@@ -397,6 +395,57 @@ describe('Entrevistas por categoría', () => {
     expect(experts.map((i: { guestName: string; category: string }) => [i.guestName, i.category])).toEqual([['Psicóloga', 'EXPERTAS']]);
     // Un valor desconocido no rompe nada: devuelve todas.
     expect((await request(app).get('/api/interviews?category=OTRA')).body).toHaveLength(3);
+  });
+});
+
+describe('Entrevistas con preguntas dinámicas', () => {
+  const base = { guestName: 'Invitada de prueba', category: 'EXPERTAS' };
+  const ask = (n: number, answer = `Respuesta ${n} de prueba.`) => ({ question: `¿Pregunta ${n} de prueba?`, answer });
+
+  beforeEach(async () => {
+    await prisma.interview.deleteMany();
+  });
+
+  it('guarda tantas preguntas como se agreguen, en orden, y la misma pregunta puede repetirse', async () => {
+    const editor = await agentFor('EDITOR');
+    const questions = [ask(1), ask(2), ask(3), ask(4), ask(5), ask(1)];
+    const res = await editor.post('/api/admin/interviews').set(CSRF).send({ ...base, questions, status: 'PUBLISHED' });
+    expect(res.status).toBe(201);
+    expect(res.body.questions).toEqual(questions);
+
+    const detail = (await request(app).get(`/api/interviews/${res.body.slug}`)).body;
+    expect(detail.questions).toHaveLength(6);
+    // El listado y la portada solo llevan la primera pregunta y el total.
+    const [item] = (await request(app).get('/api/interviews')).body;
+    expect(item).toMatchObject({ firstQuestion: '¿Pregunta 1 de prueba?', questionCount: 6 });
+    expect(item.questions).toBeUndefined();
+    expect((await request(app).get('/api/home')).body.interview).toMatchObject({ firstQuestion: '¿Pregunta 1 de prueba?', questionCount: 6 });
+  });
+
+  it('un borrador acepta preguntas sin responder; publicar exige al menos una y todas respondidas', async () => {
+    const editor = await agentFor('EDITOR');
+    const draft = await editor.post('/api/admin/interviews').set(CSRF).send({ ...base, questions: [ask(1, ''), ask(2, '')] });
+    expect(draft.status).toBe(201);
+
+    const empty = await editor.put(`/api/admin/interviews/${draft.body.id}`).set(CSRF).send({ ...base, questions: [], status: 'PUBLISHED' });
+    expect(empty.status).toBe(400);
+    expect(empty.body.fields.questions).toMatch(/al menos una pregunta/);
+
+    const unanswered = await editor.put(`/api/admin/interviews/${draft.body.id}`).set(CSRF).send({ ...base, questions: [ask(1), ask(2, '')], status: 'PUBLISHED' });
+    expect(unanswered.status).toBe(400);
+    expect(unanswered.body.fields['questions.1.answer']).toMatch(/respuesta/);
+    expect(unanswered.body.fields['questions.0.answer']).toBeUndefined();
+
+    const noQuestion = await editor.put(`/api/admin/interviews/${draft.body.id}`).set(CSRF).send({ ...base, questions: [{ question: '', answer: '' }] });
+    expect(noQuestion.status).toBe(400);
+    expect(noQuestion.body.fields['questions.0.question']).toBeTruthy();
+  });
+
+  it('limita la cantidad de preguntas', async () => {
+    const editor = await agentFor('EDITOR');
+    const res = await editor.post('/api/admin/interviews').set(CSRF).send({ ...base, questions: Array.from({ length: 21 }, (_, i) => ask(i + 1)) });
+    expect(res.status).toBe(400);
+    expect(res.body.fields.questions).toMatch(/Máximo 20/);
   });
 });
 

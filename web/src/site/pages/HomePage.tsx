@@ -182,14 +182,14 @@ export function HomePage() {
                     {interview.guestHandle ? <p className="text-muted text-small">{interview.guestHandle}</p> : null}
                   </div>
                 </div>
-                <blockquote className="feature-card__quote">«{interview.question1}»</blockquote>
+                <blockquote className="feature-card__quote">«{interview.firstQuestion}»</blockquote>
                 <Link to={`/entrevistas/${interview.slug}`} className="link-arrow" viewTransition>
-                  Leer las tres preguntas <ArrowRight size={18} aria-hidden />
+                  {interview.questionCount > 1 ? `Leer las ${interview.questionCount} preguntas` : 'Leer la entrevista'} <ArrowRight size={18} aria-hidden />
                 </Link>
               </>
             ) : (
               <>
-                <h2 className="feature-card__title">Tres preguntas, una conversación honesta</h2>
+                <h2 className="feature-card__title">Preguntas simples, conversaciones honestas</h2>
                 <p className="text-secondary">Creadoras de contenido chilenas hablan sobre el escrutinio digital, la presión estética y el autocuidado. Muy pronto.</p>
               </>
             )}

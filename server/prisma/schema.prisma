@@ -231,12 +231,9 @@ model Interview {
   photoId     Int?
   photo       Media?            @relation("InterviewPhoto", fields: [photoId], references: [id], onDelete: SetNull)
   intro       String            @default("")
-  question1   String
-  answer1     String
-  question2   String
-  answer2     String
-  question3   String
-  answer3     String
+  /// Preguntas y respuestas en orden: [{ question, answer }]. El equipo agrega
+  /// las que quiera; para publicar se exige al menos una, todas respondidas.
+  questions   Json              @default("[]")
   status      ContentStatus     @default(DRAFT)
   publishedAt DateTime?
   authorId    Int?

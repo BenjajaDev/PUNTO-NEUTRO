@@ -43,7 +43,11 @@ export function useEntityEditor<T extends { id?: number; status?: string }>({ en
 
   const set = useCallback(<K extends keyof T>(key: K, value: T[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
-    setErrors((prev) => (prev[key as string] ? { ...prev, [key as string]: '' } : prev));
+    // También los errores de sus elementos (`questions.2.answer`): al editar una lista, los índices cambian.
+    setErrors((prev) => {
+      const stale = Object.keys(prev).filter((k) => prev[k] && (k === key || k.startsWith(`${String(key)}.`)));
+      return stale.length ? { ...prev, ...Object.fromEntries(stale.map((k) => [k, ''])) } : prev;
+    });
   }, []);
 
   const save = useCallback(

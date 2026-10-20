@@ -66,7 +66,7 @@ const ART: Record<ArtKind, () => ReactElement> = {
       <path d="M96 120l5 11 11 5-11 5-5 11-5-11-11-5 11-5z" fill={C.rosa} />
     </>
   ),
-  // Dos voces que conversan: tres preguntas.
+  // Dos voces que conversan.
   interviews: () => (
     <>
       <Backdrop />

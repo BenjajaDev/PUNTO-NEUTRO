@@ -29,6 +29,7 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 - RF-04: una nota de Anatomía de un Trend solo se publica con autora (`authorMemberId` → `TeamMember`, perfil visible) y ≥ 1 referencia (`references: [{ citation, url }]`). Los artículos de Querer encajar exigen referencias; la autora es opcional. Lo valida `publishRules` en `schemas.ts`.
 - Identidad editable: `/api/favicon` (index.html apunta ahí; sin favicon propio redirige a `/favicon.svg`), `siteTitle` + `usePageTitle()` en cada página, portadas por sección (`*CoverId`) y `heroImageId`.
 - Entrevistas: `category` (enum `InterviewCategory`: `EXPERTAS`, `INFLUENCERS`, `PERSONAS_COMUNES`) es obligatoria, sin valor por defecto. `GET /api/interviews?category=` filtra; en el sitio la pestaña vive en `?categoria=<slug>` (`INTERVIEW_CATEGORIES` en `web/src/lib/types.ts` tiene key, slug, etiqueta y descripción).
+- Entrevistas: `questions Json` = `[{ question, answer }]` (≤ 20, sin cantidad fija). Borrador con respuestas vacías; publicar exige ≥ 1 y todas respondidas (`interviewSchema.superRefine`). Las listas públicas y `/api/home` devuelven `InterviewSummary` (`firstQuestion`, `questionCount`), no las respuestas.
 - Podcast: tarjeta = `title`, `summary`, `tags` (≤ 8, deduplicadas por `tagKey`), `coverId` (→ `Media`) y `soundcloudUrl`. El enlace pasa por `normalizeSoundcloudUrl` (`server/src/lib/soundcloud.ts`: solo soundcloud.com / m. / www. / on.soundcloud.com, sin query ni hash). `server/src/lib/{soundcloud,tags}.ts` son TS puro y el panel los reexporta desde `web/src/lib/soundcloud.ts`: **una sola implementación de la validación** para API y navegador. `GET /api/podcast?tag=` filtra. Arquitectura completa en `docs/arquitectura-entrevistas-podcast.md`.
 - Medios: imágenes en Postgres (`Media.data`), sin SVG, máx. 5 MB, servidas con caché inmutable en `/api/media/:id`.
 
@@ -37,7 +38,7 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 - Llamadas solo con `api()` de `lib/api.ts` (agrega `X-Requested-With`, convierte errores en `ApiError`).
 - Datos asíncronos con `useResource(loader, deps)` (aborta al desmontar) y estados loading/error/vacío explícitos.
 - Tipos de respuesta en `lib/types.ts` (espejo del schema). Si cambias el schema, actualiza los tipos.
-- Componentes reutilizables: `Tabs` + `tabPanelProps` (`@/ui`, patrón WAI-ARIA con flechas/Inicio/Fin), `PodcastCard` (`site/components`, también es la vista previa del panel con `preview`), `InterviewCategoryPicker` (radios como tarjetas, con `SUGGESTED_QUESTIONS`). `CrudDialogPage` acepta `validate` por campo y `preview` del ítem en edición.
+- Componentes reutilizables: `Tabs` + `tabPanelProps` (`@/ui`, patrón WAI-ARIA con flechas/Inicio/Fin), `PodcastCard` (`site/components`, también es la vista previa del panel con `preview`), `InterviewCategoryPicker` (radios como tarjetas), `InterviewQuestionsField` (preguntas dinámicas + banco `SUGGESTED_QUESTIONS`). `CrudDialogPage` acepta `validate` por campo y `preview` del ítem en edición.
 - Filtros de páginas públicas en la URL (`useSearchParams` + `preventScrollReset`), para que se puedan compartir y el botón «atrás» funcione.
 - Rutas en `App.tsx` (sitio) y `admin/AdminApp.tsx` (panel). Enlaces internos con `viewTransition`.
 

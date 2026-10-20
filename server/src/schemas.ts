@@ -134,6 +134,7 @@ export const reflectionSchema = z
   .superRefine(publishRules(false));
 
 export const INTERVIEW_CATEGORIES = ['EXPERTAS', 'INFLUENCERS', 'PERSONAS_COMUNES'] as const;
+export const MAX_INTERVIEW_QUESTIONS = 20;
 
 export const interviewSchema = z.object({
   category: z.enum(INTERVIEW_CATEGORIES, 'Elige la categoría de la entrevista.'),
@@ -143,14 +144,21 @@ export const interviewSchema = z.object({
   guestBio: optText(600),
   photoId: mediaId,
   intro: optText(1500),
-  question1: text(300, 5),
-  answer1: text(5000, 5),
-  question2: text(300, 5),
-  answer2: text(5000, 5),
-  question3: text(300, 5),
-  answer3: text(5000, 5),
+  questions: z
+    .array(z.object({ question: text(300, 5), answer: optText(5000) }))
+    .max(MAX_INTERVIEW_QUESTIONS, `Máximo ${MAX_INTERVIEW_QUESTIONS} preguntas.`)
+    .default([]),
   status,
-});
+})
+  // Un borrador puede tener preguntas sin responder (se envían antes a la
+  // persona entrevistada); para publicar, al menos una y todas con respuesta.
+  .superRefine((data, ctx) => {
+    if (data.status !== 'PUBLISHED') return;
+    if (!data.questions.length) ctx.addIssue({ code: 'custom', path: ['questions'], message: 'Agrega al menos una pregunta para publicar.' });
+    data.questions.forEach((q, i) => {
+      if (q.answer.length < 5) ctx.addIssue({ code: 'custom', path: ['questions', i, 'answer'], message: 'Escribe la respuesta para publicar.' });
+    });
+  });
 
 export const glossarySchema = z.object({
   term: text(120),
