@@ -5,7 +5,7 @@ description: Guía de desarrollo de Punto Neutro — monorepo pnpm con sitio + p
 
 # Punto Neutro — desarrollo
 
-Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: Punto Neutro» (proyecto de título de Periodismo, U. Autónoma de Chile). Secciones: Inicio, Nosotras, Anatomía de un Trend, Pequeñas Entrevistas, Glosario, Buzón Comunitario, Podcast «A Pausar el Filtro», Cierre y footer.
+Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: Punto Neutro» (proyecto de título de Periodismo, U. Autónoma de Chile). Secciones: Inicio, Nosotras, Anatomía de un Trend, Pequeñas Entrevistas, Glosario, **Querer encajar** (salud mental, prejuicios y manejo emocional; modelo `Reflection`), Buzón Comunitario, Podcast «A Pausar el Filtro», Cierre y footer. Requerimientos vigentes (RF-01…04, RNF-01/02): ver «Reglas de la API» y `docs/estrategia-difusion-audiovisual.md`.
 
 ## Estructura
 
@@ -24,6 +24,10 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 - Validación SIEMPRE con zod en `schemas.ts` y `parse()` (errores por campo en español). Mensajes de error para personas, en español.
 - Todo cambio del panel queda en `audit()`.
 - Buzón: anonimato estricto (si `anonymous`, alias y correo se descartan), sin IP, consentimiento obligatorio, publicar solo `publicExcerpt` revisado y solo si `allowPublication`.
+  - RF-01: `topic` es un enum (`TOPICS` en `schemas.ts`, espejo en `web/src/lib/types.ts`); con «Otros» `topicOther` es obligatorio y nunca se publica.
+  - RF-02: `acceptRules` obligatorio (normas en `SiteSettings.communityRules`). `lib/moderation.ts` **marca** (`flagged`, `flagReasons`, `flagMatches`) pero nunca rechaza: un testimonio puede citar insultos. El equipo etiqueta con `MODERATION_LABELS` y descarta (`REJECTED`).
+- RF-04: una nota de Anatomía de un Trend solo se publica con autora (`authorMemberId` → `TeamMember`, perfil visible) y ≥ 1 referencia (`references: [{ citation, url }]`). Los artículos de Querer encajar exigen referencias; la autora es opcional. Lo valida `publishRules` en `schemas.ts`.
+- Identidad editable: `/api/favicon` (index.html apunta ahí; sin favicon propio redirige a `/favicon.svg`), `siteTitle` + `usePageTitle()` en cada página, portadas por sección (`*CoverId`) y `heroImageId`.
 - Medios: imágenes en Postgres (`Media.data`), sin SVG, máx. 5 MB, servidas con caché inmutable en `/api/media/:id`.
 
 ## Reglas del cliente
@@ -36,7 +40,7 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 ## Recetas
 
 - **Modelo nuevo (tabla)**: además de lo anterior, su migración debe terminar con `ALTER TABLE "<Tabla>" ENABLE ROW LEVEL SECURITY;` (Supabase expone `public` por la Data API; lo exige `tests/db.test.ts`) y la tabla se agrega a `TABLES` en `prisma/copy-data.ts` en orden de claves foráneas.
-- **Campo nuevo en un contenido**: `schema.prisma` → `pnpm db:migrate` (nombre descriptivo) → `schemas.ts` → `lib/types.ts` → editor del panel (y `EDITABLE` si usa `useEntityEditor`) → página pública → test en `server/tests`.
+- **Campo nuevo en un contenido**: `schema.prisma` → migración (ver «Migraciones» abajo) → `schemas.ts` → `lib/types.ts` → editor del panel (y `EDITABLE` si usa `useEntityEditor`) → página pública → test en `server/tests`.
 - **Sección nueva del sitio**: modelo + migración → rutas públicas y `crudRouter` en admin → página en `site/pages` (con `PageHero`, skeleton, vacío) → enlace en `NAV` de `SiteLayout` → página del panel (`CrudDialogPage` si es simple) → entrada en `SECTIONS` de `AdminLayout`.
 - **Texto institucional editable**: campo en `SiteSettings` + `settingsSchema` + `SettingsAdmin` (`SECTIONS`) + tipo `SiteSettings`.
 - **Rol o permiso**: enum `Role` + `requireRole(...)` + `adminOnly` en `AdminApp` + `adminOnly` en el menú.
@@ -47,6 +51,14 @@ Fuente de la verdad del producto: la «Propuesta de Arquitectura y Diseño Web: 
 - Nunca secretos en el cliente; variables del servidor en `server/.env` (ver `.env.example`).
 - Dependencias con `pnpm add --filter <web|server> <pkg>` y versión fijada con `^`.
 - Migraciones: nunca editar una ya aplicada; nunca `migrate reset` sobre bases con datos.
+  - **`prisma migrate dev` no funciona** con la base sombra: `20261017120000_enable_rls` altera `_prisma_migrations`, que no existe ahí. Genera el SQL sin base sombra y aplícalo con deploy:
+    ```bash
+    git show HEAD:server/prisma/schema.prisma > /tmp/old.prisma
+    mkdir prisma/migrations/<AAAAMMDDHHMMSS>_<nombre>
+    pnpm prisma migrate diff --from-schema /tmp/old.prisma --to-schema prisma/schema.prisma --script -o prisma/migrations/<…>/migration.sql
+    pnpm prisma migrate deploy && pnpm prisma generate
+    ```
+  - Contenido que debe llegar a bases ya inicializadas (producción) va en la migración como `UPDATE … WHERE campo = ''` / `INSERT … ON CONFLICT DO NOTHING` (nunca pisa ediciones). Las bases nuevas lo reciben igual; si el seed crea esas filas, refleja el contenido en `prisma/seed-content.ts`. Si la migración inserta filas, agrega la tabla a `MIGRATION_CONTENT` en `prisma/copy-data.ts`.
 - Conexión: la API usa `DATABASE_URL` (pooler en modo transacción de Supabase) vía `pgConfig()`; las migraciones usan `DIRECT_URL` (modo sesión) si existe. No usar sentencias preparadas con nombre ni `SET` de sesión en la API: el pooler en modo transacción no las conserva.
 
 ## Verificación antes de entregar (obligatoria)

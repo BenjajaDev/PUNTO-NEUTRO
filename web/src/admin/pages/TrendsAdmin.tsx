@@ -6,6 +6,7 @@ import { formatDate, normalize } from '@/lib/format';
 import { PLATFORM_LABEL, type Platform, type Trend, type TrendSummary } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { Badge, Button, buttonClass, EmptyState, ErrorState, PageHeader, SelectField, SkeletonRows, TextArea, TextField, useFeedback } from '@/ui';
+import { AuthorSelect, ReferencesField } from '../components/AuthorFields';
 import { ImagePicker } from '../components/ImagePicker';
 import { ListField } from '../components/ListField';
 import { useEntityEditor } from '../components/useEntityEditor';
@@ -85,7 +86,11 @@ export function TrendsAdmin() {
                 <tr key={t.id}>
                   <td>
                     <Link to={`/admin/trends/${t.id}`} className="table-link">{t.title}</Link>
-                    {t.author?.name ? <span className="text-xs text-muted" style={{ display: 'block' }}>Por {t.author.name}</span> : null}
+                    {t.authorMember?.name ? (
+                      <span className="text-xs text-muted" style={{ display: 'block' }}>Por {t.authorMember.name}</span>
+                    ) : (
+                      <span style={{ display: 'block', marginTop: 4 }}><Badge tone="warning">Sin autora asignada</Badge></span>
+                    )}
                   </td>
                   <td>{PLATFORM_LABEL[t.platform]}</td>
                   <td><StatusBadge status={t.status} /></td>
@@ -114,8 +119,12 @@ export function TrendsAdmin() {
 const EMPTY: Trend = {
   id: 0, slug: '', title: '', summary: '', platform: 'MULTIPLATFORM', tags: [], coverId: null,
   origin: '', mechanism: '', impact: '', neutralView: '', status: 'DRAFT', publishedAt: null, updatedAt: '',
+  everydayExample: '', references: [], capsuleUrl: '', authorMemberId: null,
 };
-const EDITABLE: (keyof Trend)[] = ['title', 'slug', 'summary', 'platform', 'tags', 'coverId', 'origin', 'mechanism', 'impact', 'neutralView'];
+const EDITABLE: (keyof Trend)[] = ['title', 'slug', 'summary', 'platform', 'tags', 'coverId', 'origin', 'mechanism', 'impact', 'neutralView', 'everydayExample', 'references', 'capsuleUrl', 'authorMemberId'];
+
+/** Primer error de la lista de referencias («references» o «references.0.url»). */
+export const referencesError = (errors: Record<string, string>) => errors.references || Object.entries(errors).find(([k, v]) => k.startsWith('references.') && v)?.[1];
 
 const PARTS: { key: 'origin' | 'mechanism' | 'impact' | 'neutralView'; label: string; hint: string }[] = [
   { key: 'origin', label: 'a. Origen y viralización', hint: '¿Dónde y cómo nació el trend? ¿Cómo se masificó?' },
@@ -133,6 +142,9 @@ export function TrendEditor() {
 
   if (editor.loading) return <SkeletonRows rows={5} label="Cargando nota" />;
   if (editor.loadError) return <ErrorState message={editor.loadError} />;
+
+  // RF-04: autora y referencias son obligatorias para publicar (también lo valida la API).
+  const missingForPublish = [!form.authorMemberId && 'la autora', !form.references.some((r) => r.citation.trim()) && 'al menos una referencia'].filter(Boolean) as string[];
 
   const publish = () =>
     confirm({
@@ -169,6 +181,11 @@ export function TrendEditor() {
       </div>
 
       <h1 style={{ fontSize: 26 }}>{isNew ? 'Nueva nota' : 'Editar nota'}</h1>
+      {missingForPublish.length ? (
+        <p className="editor__notice" role="status">
+          Para publicar falta: {missingForPublish.join(' y ')}.
+        </p>
+      ) : null}
 
       <div className="editor__layout">
         <div className="stack-lg">
@@ -185,8 +202,21 @@ export function TrendEditor() {
               <TextArea key={part.key} label={`${part.label} *`} hint={part.hint} rows={6} maxLength={8000} value={form[part.key]} onChange={(e) => set(part.key, e.target.value)} error={errors[part.key]} />
             ))}
           </section>
+          <section className="card stack" aria-labelledby="cotidiano">
+            <div>
+              <h2 id="cotidiano" style={{ fontSize: 20 }}>Situación cotidiana</h2>
+              <p className="text-secondary text-small">Un ejemplo breve y reconocible que aterrice el análisis (se muestra destacado antes de la nota).</p>
+            </div>
+            <TextArea label="Ejemplo" rows={3} maxLength={1500} showCount value={form.everydayExample} onChange={(e) => set('everydayExample', e.target.value)} error={errors.everydayExample} placeholder="Ej.: Martina, 16 años, mira tres videos de rutinas antes del colegio y…" />
+          </section>
+          <section className="card stack" aria-label="Referencias">
+            <ReferencesField value={form.references} onChange={(v) => set('references', v)} error={referencesError(errors)} required />
+          </section>
         </div>
         <aside className="stack-lg">
+          <section className="card stack" aria-label="Autoría">
+            <AuthorSelect value={form.authorMemberId} onChange={(v) => set('authorMemberId', v)} error={errors.authorMemberId} required />
+          </section>
           <section className="card stack" aria-label="Clasificación">
             <SelectField label="Plataforma" value={form.platform} onChange={(e) => set('platform', e.target.value as Platform)} options={(Object.keys(PLATFORM_LABEL) as Platform[]).map((p) => ({ value: p, label: PLATFORM_LABEL[p] }))} />
             <ListField label="Etiquetas" value={form.tags} max={8} onChange={(v) => set('tags', v)} placeholder="Ej. Skincare" />
@@ -194,6 +224,9 @@ export function TrendEditor() {
           </section>
           <section className="card stack" aria-label="Portada">
             <ImagePicker label="Portada" value={form.coverId} onChange={(v) => set('coverId', v)} hint="Formato horizontal. Sin portada se usa una ilustración con la paleta." />
+          </section>
+          <section className="card stack" aria-label="Cápsula audiovisual">
+            <TextField label="Cápsula en redes (opcional)" type="url" value={form.capsuleUrl} onChange={(e) => set('capsuleUrl', e.target.value)} error={errors.capsuleUrl} placeholder="https://www.tiktok.com/@…" hint="Enlace al short, reel o TikTok que resume esta nota." />
           </section>
         </aside>
       </div>

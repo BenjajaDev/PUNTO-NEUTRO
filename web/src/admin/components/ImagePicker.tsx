@@ -6,7 +6,7 @@ import type { MediaItem } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { Button, Dialog, EmptyState, Skeleton, useFeedback } from '@/ui';
 
-export const ACCEPTED_IMAGES = 'image/png,image/jpeg,image/webp,image/avif,image/gif';
+export const ACCEPTED_IMAGES = 'image/png,image/jpeg,image/webp,image/avif,image/gif,image/x-icon,.ico';
 export const MAX_IMAGE_MB = 5;
 
 /** Sube una imagen a la biblioteca (guardada en Postgres). */

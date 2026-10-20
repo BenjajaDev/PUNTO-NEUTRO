@@ -6,17 +6,18 @@ import { useResource } from '@/lib/useResource';
 import { buttonClass, EmptyState, ErrorState, SkeletonRows } from '@/ui';
 import { PageHero } from '../components/Common';
 import { SoundCloudPlayer } from '../components/SoundCloudPlayer';
-import { useSiteData } from '../SiteDataProvider';
+import { usePageTitle, useSiteData } from '../SiteDataProvider';
 
 /** Sección 7 · Podcast «A Pausar el Filtro» con reproductor de SoundCloud. */
 export function PodcastPage() {
   const { settings } = useSiteData();
   const { data, loading, error, reload } = useResource((signal) => api<PodcastEpisode[]>('/podcast', { signal }), []);
   const profile = settings?.soundcloudProfile;
+  usePageTitle('Podcast');
 
   return (
     <>
-      <PageHero eyebrow="Podcast" title={settings?.podcastName || 'A Pausar el Filtro'} intro={settings?.podcastDescription}>
+      <PageHero eyebrow="Podcast" title={settings?.podcastName || 'A Pausar el Filtro'} intro={settings?.podcastDescription} art="podcast" coverId={settings?.podcastCoverId}>
         {profile ? (
           <a href={profile} target="_blank" rel="noopener noreferrer" className={buttonClass({ variant: 'secondary', className: 'page-hero__action' })}>
             Seguir en SoundCloud <ExternalLink size={16} aria-hidden />

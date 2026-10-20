@@ -36,6 +36,8 @@ Paleta «Positive Feminism» de la propuesta, con su rol:
 
 ## 3. Componentes (`import { … } from '@/ui'`)
 
+Contenido editorial: `SectionCover` / `PageHero art=… coverId=…` (portada subida o ilustración `SectionArt`), `AuthorCard`, `ReferencesList`, `EverydayExample` (situación cotidiana), `CapsuleLink` (cápsula en redes), `HelpResources` (obligatorio en contenidos de salud mental), `Prose` (admite «## » y «- »).
+
 Reutiliza antes de crear: `Button` (primary/accent/secondary/ghost/danger + `loading`), `buttonClass()` para enlaces con forma de botón, `Card`, `Badge`, `TextField`, `TextArea` (`showCount`), `SelectField`, `Switch`, `Checkbox`, `Dialog` (`<dialog>` nativo), `Spinner`, `Skeleton`, `SkeletonCards`, `SkeletonRows`, `EmptyState`, `ErrorState`, `PageHeader`, `StatTile`. Sitio: `SectionHeading`, `PageHero`, `Prose`, `TrendCard`, `SoundCloudPlayer`, `Logo`. Panel: `CrudDialogPage`, `ImagePicker`, `ListField`, `useEntityEditor`, `useUnsavedChanges`.
 
 ## 4. Feedback y asincronía (reglas del producto)
@@ -65,6 +67,8 @@ const { confirm, runBlocking, notify } = useFeedback();
 - **Buzón**: anonimato activado por defecto, consentimiento explícito, nunca publicar el texto original (solo el extracto editado), recordar el recurso de ayuda (Salud Responde).
 - Imágenes de cuerpos: evitar fotos que refuercen cánones; sin imagen se usan las portadas generadas con la paleta (`TrendCover`).
 - Vacíos amables («Pronto publicaremos…»), nunca pantallas en blanco.
+- **Salud mental (Querer encajar)**: psicoeducación general con fuentes, sin consejos clínicos individuales, sin describir métodos ni conductas de riesgo, y siempre `HelpResources` (*4141, Salud Responde 600 360 7777, 131).
+- Cada concepto teórico se acompaña de una situación cotidiana (`everydayExample`, ejemplo del glosario).
 
 ## 7. Animaciones (sutiles)
 

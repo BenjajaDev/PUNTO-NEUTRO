@@ -26,7 +26,7 @@
 .site-nav { display: none; gap: 2px; margin-inline: auto; }
 .site-nav__link {
   position: relative;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: var(--radius-pill);
   font-size: 14.5px;
   font-weight: 600;
@@ -50,7 +50,7 @@
 }
 .site-header__actions { display: flex; align-items: center; gap: var(--space-2); margin-left: auto; }
 .site-header__cta { display: none; }
-@media (min-width: 1120px) {
+@media (min-width: 1240px) {
   .site-nav { display: flex; }
   .site-header__actions { margin-left: 0; }
   .site-header__cta { display: inline-flex; }
@@ -66,7 +66,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .mobile-menu[data-open='true'] { animation: rise-in-sm var(--duration-base) var(--ease-out); }
 }
-@media (min-width: 1120px) { .mobile-menu { display: none; } }
+@media (min-width: 1240px) { .mobile-menu { display: none; } }
 
 /* ── Footer ────────────────────────────────────────────────────────── */
 .site-footer { background: var(--color-surface); border-top: 1px solid var(--color-border); margin-top: auto; }
@@ -313,3 +313,85 @@
 .closing__inner { display: flex; flex-direction: column; align-items: center; text-align: center; gap: var(--space-5); }
 .closing__title { font-size: clamp(34px, 5vw, 56px); }
 .closing__text { font-size: 19px; color: var(--color-text-secondary); max-width: 620px; }
+
+/* ── Portadas de sección (imagen del panel o ilustración) ─────────── */
+.section-art { width: 100%; height: auto; }
+.section-cover { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+.hero__art.section-cover { width: min(100%, 480px); justify-self: center; }
+.page-hero__inner { display: grid; gap: var(--space-8); align-items: center; }
+.page-hero__cover { width: min(100%, 360px); justify-self: center; }
+.page-hero__cover.section-art { max-width: 300px; }
+@media (min-width: 900px) {
+  .page-hero--with-art .page-hero__inner { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  .page-hero__cover { justify-self: end; }
+}
+@media (max-width: 899px) {
+  /* En móvil la ilustración no empuja el contenido: solo se muestra la portada subida, más baja. */
+  .page-hero__cover.section-art { display: none; }
+  .page-hero__cover.section-cover { aspect-ratio: 16 / 9; width: 100%; }
+}
+.cover--art { display: grid; place-items: center; background: var(--color-section); }
+.cover--art svg { width: min(60%, 320px); height: auto; }
+
+/* ── Autoría (RF-04) ───────────────────────────────────────────────── */
+.author-card { display: inline-flex; align-items: center; gap: var(--space-3); padding: 10px 18px 10px 10px; border-radius: var(--radius-pill); background: var(--color-surface-raised); border: 1px solid var(--color-border); align-self: flex-start; }
+.author-card__photo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.author-card__photo--initials { display: grid; place-items: center; background: var(--gradient-warm); color: var(--color-on-accent); font-family: var(--font-serif); font-weight: 600; font-size: 18px; }
+.author-card__body { display: grid; line-height: 1.3; }
+.author-card__label { font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-muted); }
+.author-card__name { font-family: var(--font-serif); font-size: 18px; font-weight: 600; color: var(--color-heading); text-decoration: none; }
+a.author-card__name:hover { text-decoration: underline; }
+.author-card__role { font-size: 13.5px; color: var(--color-text-secondary); }
+.trend-card__author { color: var(--color-text-muted); margin-top: auto; }
+.team-card { scroll-margin-top: calc(var(--header-height) + 24px); }
+
+/* ── Referencias (RF-04) ───────────────────────────────────────────── */
+.references { padding-top: var(--space-6); border-top: 1px solid var(--color-border); }
+.references__title { display: flex; align-items: center; gap: var(--space-2); font-size: 22px; margin-bottom: var(--space-4); }
+.references__list { margin: 0; padding-left: 1.4em; display: grid; gap: var(--space-3); font-size: 15px; color: var(--color-text-secondary); }
+.references__list a { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; font-weight: 600; }
+.references { scroll-margin-top: calc(var(--header-height) + 24px); }
+
+/* ── Ejemplos cotidianos (RNF-01) ──────────────────────────────────── */
+.everyday { display: flex; gap: var(--space-4); margin: 0; padding: var(--space-6); border-radius: var(--radius-lg); background: var(--color-accent-soft); border-left: 5px solid var(--color-accent); }
+.everyday__icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--color-surface-raised); color: var(--color-primary); flex-shrink: 0; }
+.everyday__title { font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-primary); margin-bottom: 6px; }
+.everyday__text { margin: 0; font-family: var(--font-serif); font-size: 18px; line-height: 1.6; color: var(--color-text-primary); }
+.speech { margin: 0; display: grid; gap: 6px; }
+.speech__label { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-muted); }
+.speech__bubble { position: relative; margin: 0; padding: 12px 16px; border-radius: 16px 16px 16px 4px; background: var(--color-accent-soft); color: var(--color-text-primary); font-style: italic; }
+
+/* ── Cápsula audiovisual (RNF-02) ──────────────────────────────────── */
+.capsule-link { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); border: 1.5px solid var(--color-border-strong); background: var(--color-surface-raised); color: var(--color-text-primary); text-decoration: none; transition: border-color var(--duration-fast), background-color var(--duration-fast); }
+.capsule-link > span:not(.visually-hidden) { display: grid; flex: 1; }
+.capsule-link svg:first-child { color: var(--color-primary); flex-shrink: 0; }
+.capsule-link:hover { border-color: var(--color-primary); background: var(--color-primary-soft); }
+
+/* ── Querer encajar (RF-03) ────────────────────────────────────────── */
+.reflection-card { position: relative; display: flex; flex-direction: column; gap: var(--space-3); height: 100%; }
+.reflection-card .badge { align-self: flex-start; }
+.reflection-card__icon { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; background: var(--color-primary-soft); color: var(--color-primary); }
+.reflection-card__cover { width: calc(100% + 2 * var(--space-6)); margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) 0; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.reflection-card__title { font-size: 22px; }
+.reflection-card .link-arrow { margin-top: auto; }
+.help-box { display: flex; gap: var(--space-4); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); background: var(--color-info-soft); color: var(--color-text-primary); border: 1px solid color-mix(in srgb, var(--color-info) 30%, transparent); }
+.help-box__icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--color-surface-raised); color: var(--color-info-text); flex-shrink: 0; }
+.help-box__title { font-family: var(--font-sans); font-size: 16px; font-weight: 700; color: var(--color-info-text); }
+.help-box__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 15px; }
+.help-box__list a { color: inherit; }
+.help-box--compact { padding: var(--space-4); }
+.help-box--compact .help-box__icon { display: none; }
+.key-ideas { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-quote); color: var(--color-on-quote); }
+.key-ideas__title { display: flex; align-items: center; gap: 8px; font-family: var(--font-sans); font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: inherit; margin-bottom: var(--space-3); }
+.key-ideas ul { margin: 0; padding-left: 1.2em; display: grid; gap: var(--space-2); font-weight: 500; }
+@media (min-width: 1000px) { .article__layout > aside.stack { position: sticky; top: calc(var(--header-height) + 24px); align-self: start; } }
+.prose ul { margin: 0; padding-left: 1.3em; display: grid; gap: 0.5em; }
+.prose h3 { font-size: 23px; margin-top: 0.6em; }
+
+/* ── Buzón: normas de convivencia y campo «Otros» ──────────────────── */
+.rules-box { display: grid; gap: var(--space-3); padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-section); border: 1px solid var(--color-border); }
+.rules-box__title { display: flex; align-items: center; gap: 8px; font-size: 19px; }
+.rules-box__list { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; font-size: 14.5px; color: var(--color-text-secondary); }
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-field { animation: rise-in-sm var(--duration-base) var(--ease-out); }
+}

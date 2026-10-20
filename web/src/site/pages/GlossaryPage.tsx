@@ -6,6 +6,7 @@ import type { GlossaryTerm } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { EmptyState, ErrorState, SkeletonCards } from '@/ui';
 import { PageHero } from '../components/Common';
+import { usePageTitle, useSiteData } from '../SiteDataProvider';
 
 function TermCard({ term, open, onToggle }: { term: GlossaryTerm; open: boolean; onToggle: () => void }) {
   const panelId = `reformulacion-${term.slug}`;
@@ -22,6 +23,12 @@ function TermCard({ term, open, onToggle }: { term: GlossaryTerm; open: boolean;
           <dd>{term.bias}</dd>
         </div>
       </dl>
+      {term.example ? (
+        <figure className="speech">
+          <figcaption className="speech__label">Así suena en el día a día</figcaption>
+          <blockquote className="speech__bubble">{term.example}</blockquote>
+        </figure>
+      ) : null}
       <button type="button" className="term-card__toggle" aria-expanded={open} aria-controls={panelId} onClick={onToggle}>
         {open ? 'Ocultar reformulación neutra' : 'Ver reformulación neutra'}
         <ChevronDown size={18} aria-hidden className="term-card__chevron" />
@@ -41,6 +48,8 @@ function TermCard({ term, open, onToggle }: { term: GlossaryTerm; open: boolean;
 /** Sección 5 · Glosario interactivo: visibilizar, resignificar y desnaturalizar. */
 export function GlossaryPage() {
   const { data, loading, error, reload } = useResource((signal) => api<GlossaryTerm[]>('/glossary', { signal }), []);
+  const { settings } = useSiteData();
+  usePageTitle('Glosario');
   const [query, setQuery] = useState('');
   const [openIds, setOpenIds] = useState<Set<number>>(new Set());
 
@@ -64,6 +73,8 @@ export function GlossaryPage() {
         eyebrow="Glosario de palabras normalizadas"
         title="Las palabras también moldean los cuerpos"
         intro="Un diccionario pedagógico para visibilizar, resignificar y desnaturalizar términos de uso común que refuerzan prejuicios sobre los cuerpos. Lee la definición, piensa en el sesgo y descubre una forma más neutra de decirlo."
+        art="glossary"
+        coverId={settings?.glossaryCoverId}
       />
       <section className="section section--tight">
         <div className="container stack-lg">

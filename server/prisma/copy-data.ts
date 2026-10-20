@@ -22,6 +22,7 @@ const TABLES = [
   'SiteSettings',
   'TeamMember',
   'Trend',
+  'Reflection',
   'Interview',
   'GlossaryTerm',
   'PodcastEpisode',
@@ -29,15 +30,22 @@ const TABLES = [
   'AuditLog',
 ];
 
+// Tablas cuyas filas iniciales las insertan las migraciones (no el seed): en un
+// destino recién migrado ya traen contenido. Se reemplaza por el del origen
+// (que puede haberse editado o borrado), dentro de la misma transacción.
+const MIGRATION_CONTENT = ['Reflection'];
+
 // Media guarda imágenes de hasta 5 MB: lotes chicos para no cargar cientos de MB en memoria.
 const BATCH_SIZE: Record<string, number> = { Media: 5 };
 const DEFAULT_BATCH = 200;
 
-// Fechas como texto tal cual: evita cualquier corrimiento por zona horaria al reinsertarlas.
-const RAW_DATE_OIDS = new Set([1082, 1114, 1184]);
+// Fechas y JSON como texto tal cual: las fechas no se corren por zona horaria, y
+// el JSON no pasa por objetos de JS (pg enviaría un arreglo como array de
+// Postgres y no como JSON). Postgres los vuelve a interpretar al insertar.
+const RAW_TEXT_OIDS = new Set([1082, 1114, 1184, 114, 3802]);
 const types = {
   getTypeParser: ((oid: number, format?: 'text' | 'binary') =>
-    RAW_DATE_OIDS.has(oid) ? (value: string) => value : pg.types.getTypeParser(oid, format)) as typeof pg.types.getTypeParser,
+    RAW_TEXT_OIDS.has(oid) ? (value: string) => value : pg.types.getTypeParser(oid, format)) as typeof pg.types.getTypeParser,
 };
 
 function required(name: string) {
@@ -145,6 +153,7 @@ async function main() {
     if (missing.length) throw new Error(`Hay tablas que el script no conoce: ${missing.join(', ')}. Agrégalas a TABLES en prisma/copy-data.ts.`);
 
     for (const table of TABLES) {
+      if (MIGRATION_CONTENT.includes(table)) continue;
       if ((await count(target, table)) > 0) {
         throw new Error(
           `El destino ya tiene datos en "${table}". El script solo copia a una base vacía (con las migraciones aplicadas y sin seed).`,
@@ -156,6 +165,7 @@ async function main() {
     await source.query('BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY');
     await target.query('BEGIN');
     try {
+      for (const table of MIGRATION_CONTENT) await target.query(`DELETE FROM "${table}"`);
       for (const table of TABLES) {
         const copied = await copyTable(source, target, table);
         console.log(`  ${table.padEnd(18)} ${copied}`);

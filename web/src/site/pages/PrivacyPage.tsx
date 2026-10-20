@@ -1,11 +1,12 @@
 import { paragraphs } from '@/lib/format';
 import { Skeleton } from '@/ui';
 import { PageHero } from '../components/Common';
-import { useSiteData } from '../SiteDataProvider';
+import { usePageTitle, useSiteData } from '../SiteDataProvider';
 
 /** Política de privacidad del Buzón (editable en el panel). Líneas «1. Título» se vuelven subtítulos. */
 export function PrivacyPage() {
   const { settings, loading } = useSiteData();
+  usePageTitle('Privacidad y protección de datos');
   return (
     <>
       <PageHero eyebrow="Avisos legales" title="Privacidad y protección de datos" />

@@ -6,18 +6,23 @@ import type { Interview } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { EmptyState, ErrorState, SkeletonCards } from '@/ui';
 import { PageHero } from '../components/Common';
+import { usePageTitle, useSiteData } from '../SiteDataProvider';
 
 export const initials = (name: string) => name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 
 /** Sección 4 · Pequeñas Entrevistas: formato fijo de tres preguntas. */
 export function InterviewsPage() {
   const { data, loading, error, reload } = useResource((signal) => api<Interview[]>('/interviews', { signal }), []);
+  const { settings } = useSiteData();
+  usePageTitle('Pequeñas Entrevistas');
   return (
     <>
       <PageHero
         eyebrow="Pequeñas Entrevistas"
         title="Tres preguntas, una conversación honesta"
         intro="Creadoras de contenido e influencers digitales chilenas cuentan cómo viven el escrutinio público, la presión por mantener estéticas hegemónicas y las herramientas de autocuidado que usan para gestionar la exposición."
+        art="interviews"
+        coverId={settings?.interviewsCoverId}
       />
       <section className="section section--tight">
         <div className="container">

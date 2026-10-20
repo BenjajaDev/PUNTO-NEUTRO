@@ -23,16 +23,41 @@ const SECTIONS: { id: string; title: string; description: string; fields: FieldD
     ],
   },
   {
+    id: 'pestana',
+    title: 'Pestaña del navegador y buscadores',
+    description: 'Título que se ve en la pestaña, ícono (favicon) y descripción para Google y redes.',
+    fields: [
+      { key: 'siteTitle', label: 'Título de la página *', max: 120, hint: 'En cada sección se antepone su nombre: «Glosario · …».' },
+      { key: 'faviconId', label: 'Favicon', type: 'image', hint: 'Cuadrado, idealmente PNG de 512×512 px (también acepta ICO). Sin favicon se usa el de por defecto.' },
+      { key: 'metaDescription', label: 'Descripción para buscadores', type: 'textarea', rows: 2, max: 300, hint: 'Una o dos frases; aparece bajo el título en Google.' },
+    ],
+  },
+  {
     id: 'inicio',
     title: 'Inicio',
     description: 'Portada: qué es Punto Neutro, objetivo, misión y visión.',
     fields: [
+      { key: 'heroImageId', label: 'Imagen junto al título', type: 'image', hint: 'Reemplaza la ilustración de la portada. Formato 4:3 u horizontal, mínimo 1200 px de ancho.' },
       { key: 'heroTitle', label: 'Título principal', max: 160 },
       { key: 'heroSubtitle', label: 'Texto bajo el título', type: 'textarea', rows: 2, max: 400 },
       { key: 'whatIs', label: '¿Qué es Punto Neutro?', type: 'textarea', rows: 4, max: 3000 },
       { key: 'objective', label: 'Objetivo de la página', type: 'textarea', rows: 3, max: 2000 },
       { key: 'mission', label: 'Misión', type: 'textarea', rows: 3, max: 2000 },
       { key: 'vision', label: 'Visión', type: 'textarea', rows: 3, max: 2000 },
+    ],
+  },
+  {
+    id: 'portadas',
+    title: 'Portadas de secciones',
+    description: 'Imagen destacada en la cabecera de cada sección. Si una queda vacía se usa su ilustración con la paleta.',
+    fields: [
+      { key: 'aboutCoverId', label: 'Nosotras', type: 'image' },
+      { key: 'trendsCoverId', label: 'Anatomía de un Trend', type: 'image' },
+      { key: 'interviewsCoverId', label: 'Pequeñas Entrevistas', type: 'image' },
+      { key: 'glossaryCoverId', label: 'Glosario', type: 'image' },
+      { key: 'reflectionsCoverId', label: 'Querer encajar', type: 'image' },
+      { key: 'mailboxCoverId', label: 'Buzón comunitario', type: 'image' },
+      { key: 'podcastCoverId', label: 'Podcast', type: 'image' },
     ],
   },
   {
@@ -52,7 +77,14 @@ const SECTIONS: { id: string; title: string; description: string; fields: FieldD
     fields: [
       { key: 'mailboxIntro', label: 'Presentación del buzón', type: 'textarea', rows: 3, max: 2000 },
       { key: 'consentText', label: 'Texto de consentimiento informado', type: 'textarea', rows: 4, max: 3000 },
+      { key: 'communityRules', label: 'Normas de convivencia', type: 'textarea', rows: 6, max: 3000, hint: 'Una norma por línea. Se muestran antes de enviar y deben aceptarse.' },
     ],
+  },
+  {
+    id: 'encajar',
+    title: 'Querer encajar',
+    description: 'Presentación de la sección de salud mental (los artículos se editan en «Querer encajar»).',
+    fields: [{ key: 'reflectionsIntro', label: 'Presentación de la sección', type: 'textarea', rows: 3, max: 2000 }],
   },
   {
     id: 'podcast',

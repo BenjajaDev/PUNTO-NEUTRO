@@ -12,6 +12,7 @@ import { InterviewEditor, InterviewsAdmin } from './pages/InterviewsAdmin';
 import { MailboxAdmin } from './pages/MailboxAdmin';
 import { MediaAdmin } from './pages/MediaAdmin';
 import { PodcastAdmin } from './pages/PodcastAdmin';
+import { ReflectionEditor, ReflectionsAdmin } from './pages/ReflectionsAdmin';
 import { SettingsAdmin } from './pages/SettingsAdmin';
 import { TeamAdmin } from './pages/TeamAdmin';
 import { TrendEditor, TrendsAdmin } from './pages/TrendsAdmin';
@@ -39,6 +40,8 @@ function Gate() {
         <Route path="entrevistas" element={<InterviewsAdmin />} />
         <Route path="entrevistas/:id" element={<InterviewEditor />} />
         <Route path="glosario" element={<GlossaryAdmin />} />
+        <Route path="querer-encajar" element={<ReflectionsAdmin />} />
+        <Route path="querer-encajar/:id" element={<ReflectionEditor />} />
         <Route path="podcast" element={<PodcastAdmin />} />
         <Route path="buzon" element={<MailboxAdmin />} />
         <Route path="equipo" element={<TeamAdmin />} />

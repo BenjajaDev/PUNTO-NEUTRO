@@ -12,6 +12,7 @@ import {
   mediaUpdateSchema,
   moderationSchema,
   podcastSchema,
+  reflectionSchema,
   settingsSchema,
   teamSchema,
   trendSchema,
@@ -35,7 +36,7 @@ function publishDate(status: 'DRAFT' | 'PUBLISHED', existing: Record<string, unk
 // ─── Resumen ───────────────────────────────────────────────────────────
 
 adminRouter.get('/stats', async (_req, res) => {
-  const [trends, trendDrafts, interviews, glossary, episodes, team, pending, approved, media, settings, recent] = await Promise.all([
+  const [trends, trendDrafts, interviews, glossary, episodes, team, pending, approved, media, settings, recent, reflections, flaggedPending, trendsMissingAuthor] = await Promise.all([
     prisma.trend.count({ where: { status: 'PUBLISHED' } }),
     prisma.trend.count({ where: { status: 'DRAFT' } }),
     prisma.interview.count({ where: { status: 'PUBLISHED' } }),
@@ -47,6 +48,10 @@ adminRouter.get('/stats', async (_req, res) => {
     prisma.media.count(),
     getSettings(),
     prisma.auditLog.findMany({ orderBy: { createdAt: 'desc' }, take: 6, include: { user: { select: { name: true } } } }),
+    prisma.reflection.count({ where: { status: 'PUBLISHED' } }),
+    prisma.mailboxSubmission.count({ where: { status: 'PENDING', flagged: true } }),
+    // Notas publicadas antes de que la autoría fuera obligatoria (RF-04).
+    prisma.trend.findMany({ where: { status: 'PUBLISHED', authorMemberId: null }, select: { id: true, title: true } }),
   ]);
   // Pendientes de configuración que el resumen muestra como lista de tareas.
   const missing = [
@@ -55,8 +60,10 @@ adminRouter.get('/stats', async (_req, res) => {
     !settings.facebookUrl && 'Facebook',
     !settings.soundcloudProfile && 'Perfil de SoundCloud',
     !settings.logoId && 'Logo propio (se usa el logo por defecto)',
+    !settings.faviconId && 'Favicon propio (se usa el de por defecto)',
+    !settings.heroImageId && 'Imagen de portada del inicio (se usa la ilustración)',
   ].filter(Boolean);
-  res.json({ trends, trendDrafts, interviews, glossary, episodes, team, pending, approved, media, missing, recent });
+  res.json({ trends, trendDrafts, interviews, glossary, episodes, team, pending, approved, media, missing, recent, reflections, flaggedPending, trendsMissingAuthor });
 });
 
 // ─── Configuración del sitio (solo administración) ────────────────────
@@ -92,13 +99,33 @@ adminRouter.use(
     delegate: prisma.trend as never,
     schema: trendSchema,
     orderBy: { updatedAt: 'desc' },
-    listArgs: { omit: { origin: true, mechanism: true, impact: true, neutralView: true }, include: { author: { select: { name: true } } } },
+    listArgs: {
+      omit: { origin: true, mechanism: true, impact: true, neutralView: true },
+      include: { author: { select: { name: true } }, authorMember: { select: { name: true } } },
+    },
     describe: (t) => String(t.title),
     prepare: async ({ slug, ...data }, { req, existing }) => ({
       ...data,
       slug: await uniqueSlug(slug || data.title, async (s) => Boolean(await prisma.trend.findFirst({ where: { slug: s, id: { not: (existing?.id as number) ?? 0 } } }))),
       publishedAt: publishDate(data.status, existing),
       authorId: (existing?.authorId as number | null | undefined) ?? req.user?.id,
+    }),
+  }),
+);
+
+adminRouter.use(
+  '/reflections',
+  crudRouter({
+    entity: 'reflection',
+    delegate: prisma.reflection as never,
+    schema: reflectionSchema,
+    orderBy: { updatedAt: 'desc' },
+    listArgs: { omit: { body: true }, include: { authorMember: { select: { name: true } } } },
+    describe: (r) => String(r.title),
+    prepare: async ({ slug, ...data }, { existing }) => ({
+      ...data,
+      slug: await uniqueSlug(slug || data.title, async (s) => Boolean(await prisma.reflection.findFirst({ where: { slug: s, id: { not: (existing?.id as number) ?? 0 } } }))),
+      publishedAt: publishDate(data.status, existing),
     }),
   }),
 );
@@ -154,8 +181,9 @@ adminRouter.use(
 
 adminRouter.get('/mailbox', async (req, res) => {
   const status = ['PENDING', 'APPROVED', 'REJECTED', 'ARCHIVED'].includes(String(req.query.status)) ? (req.query.status as never) : undefined;
+  const flagged = req.query.flagged === 'true' ? true : undefined;
   const items = await prisma.mailboxSubmission.findMany({
-    where: { status },
+    where: { status, flagged },
     orderBy: { createdAt: 'desc' },
     include: { reviewedBy: { select: { name: true } } },
   });
@@ -190,14 +218,15 @@ adminRouter.delete('/mailbox/:id', adminOnly, async (req, res) => {
 
 // ─── Medios ────────────────────────────────────────────────────────────
 
-const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/webp', 'image/avif', 'image/gif'];
+// ICO solo para el favicon; se sirve con su tipo y nosniff, como el resto.
+const ALLOWED_IMAGES = ['image/png', 'image/jpeg', 'image/webp', 'image/avif', 'image/gif', 'image/x-icon', 'image/vnd.microsoft.icon'];
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024, files: 1 },
   fileFilter: (_req, file, cb) => {
     // SVG queda fuera a propósito: puede traer scripts y se sirve desde nuestro dominio.
     if (ALLOWED_IMAGES.includes(file.mimetype)) cb(null, true);
-    else cb(new HttpError(400, 'Formato no permitido. Usa PNG, JPG, WEBP, AVIF o GIF.'));
+    else cb(new HttpError(400, 'Formato no permitido. Usa PNG, JPG, WEBP, AVIF, GIF o ICO.'));
   },
 });
 

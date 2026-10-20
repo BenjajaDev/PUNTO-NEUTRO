@@ -13,6 +13,8 @@ import { MailboxPage } from './site/pages/MailboxPage';
 import { NotFoundPage } from './site/pages/NotFoundPage';
 import { PodcastPage } from './site/pages/PodcastPage';
 import { PrivacyPage } from './site/pages/PrivacyPage';
+import { ReflectionDetailPage } from './site/pages/ReflectionDetailPage';
+import { ReflectionsPage } from './site/pages/ReflectionsPage';
 import { TrendDetailPage } from './site/pages/TrendDetailPage';
 import { TrendsPage } from './site/pages/TrendsPage';
 
@@ -38,6 +40,8 @@ const router = createBrowserRouter([
       { path: 'entrevistas', element: <InterviewsPage /> },
       { path: 'entrevistas/:slug', element: <InterviewDetailPage /> },
       { path: 'glosario', element: <GlossaryPage /> },
+      { path: 'querer-encajar', element: <ReflectionsPage /> },
+      { path: 'querer-encajar/:slug', element: <ReflectionDetailPage /> },
       { path: 'buzon', element: <MailboxPage /> },
       { path: 'podcast', element: <PodcastPage /> },
       { path: 'privacidad', element: <PrivacyPage /> },

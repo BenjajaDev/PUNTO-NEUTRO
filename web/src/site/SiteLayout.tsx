@@ -13,6 +13,7 @@ export const NAV = [
   { to: '/anatomia-de-un-trend', label: 'Anatomía de un Trend' },
   { to: '/entrevistas', label: 'Entrevistas' },
   { to: '/glosario', label: 'Glosario' },
+  { to: '/querer-encajar', label: 'Querer encajar' },
   { to: '/podcast', label: 'Podcast' },
 ];
 

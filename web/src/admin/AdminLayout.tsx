@@ -1,6 +1,7 @@
 import {
   ExternalLink,
   FileText,
+  HeartHandshake,
   Headphones,
   History,
   Image,
@@ -37,6 +38,7 @@ const SECTIONS: { label: string; items: NavItem[] }[] = [
       { to: '/admin/trends', label: 'Anatomía de un Trend', icon: FileText },
       { to: '/admin/entrevistas', label: 'Pequeñas Entrevistas', icon: MessageSquareQuote },
       { to: '/admin/glosario', label: 'Glosario', icon: SpellCheck },
+      { to: '/admin/querer-encajar', label: 'Querer encajar', icon: HeartHandshake },
       { to: '/admin/podcast', label: 'Podcast', icon: Headphones },
     ],
   },

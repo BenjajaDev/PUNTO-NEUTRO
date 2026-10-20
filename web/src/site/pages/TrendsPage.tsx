@@ -7,6 +7,7 @@ import { useResource } from '@/lib/useResource';
 import { EmptyState, ErrorState, SkeletonCards } from '@/ui';
 import { PageHero } from '../components/Common';
 import { TrendCard } from '../components/TrendCard';
+import { usePageTitle, useSiteData } from '../SiteDataProvider';
 
 const FILTERS: { key: Platform | 'ALL'; label: string }[] = [
   { key: 'ALL', label: 'Todas' },
@@ -18,6 +19,8 @@ const FILTERS: { key: Platform | 'ALL'; label: string }[] = [
 /** Sección 3 · Anatomía de un Trend: listado con filtro por plataforma y búsqueda. */
 export function TrendsPage() {
   const { data, loading, error, reload } = useResource((signal) => api<TrendSummary[]>('/trends', { signal }), []);
+  const { settings } = useSiteData();
+  usePageTitle('Anatomía de un Trend');
   const [platform, setPlatform] = useState<Platform | 'ALL'>('ALL');
   const [query, setQuery] = useState('');
 
@@ -32,6 +35,8 @@ export function TrendsPage() {
         eyebrow="Anatomía de un Trend"
         title="Tendencias virales, desarmadas con calma"
         intro="Notas breves que desglosan tendencias de TikTok e Instagram: su origen, el mecanismo algorítmico que las impulsa, su impacto y una mirada desde la neutralidad corporal."
+        art="trends"
+        coverId={settings?.trendsCoverId}
       />
       <section className="section section--tight">
         <div className="container stack-lg">

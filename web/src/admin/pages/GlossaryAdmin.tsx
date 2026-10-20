@@ -3,7 +3,7 @@ import type { GlossaryTerm } from '@/lib/types';
 import { Badge } from '@/ui';
 import { CrudDialogPage } from '../components/CrudDialogPage';
 
-const empty = { term: '', commonDefinition: '', bias: '', neutralReformulation: '', order: 0, published: true } as GlossaryTerm;
+const empty = { term: '', commonDefinition: '', bias: '', neutralReformulation: '', example: '', order: 0, published: true } as GlossaryTerm;
 
 export function GlossaryAdmin() {
   return (
@@ -22,6 +22,7 @@ export function GlossaryAdmin() {
         { key: 'commonDefinition', label: 'Definición común', type: 'textarea', required: true, maxLength: 1500 },
         { key: 'bias', label: 'Sesgo / impacto inconsciente', type: 'textarea', required: true, maxLength: 1500 },
         { key: 'neutralReformulation', label: 'Reformulación neutra', type: 'textarea', required: true, maxLength: 1500 },
+        { key: 'example', label: 'Ejemplo cotidiano (cómo suena en el día a día)', type: 'textarea', maxLength: 600, hint: 'Ej.: En la once familiar: «¿Ya estás preparando el cuerpo para el verano?»' },
         { key: 'published', label: 'Visible en el sitio', type: 'switch', full: true },
       ]}
       columns={[

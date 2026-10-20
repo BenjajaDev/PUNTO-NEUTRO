@@ -32,6 +32,7 @@ export function TrendCard({ trend }: { trend: TrendSummary }) {
           </Link>
         </h3>
         <p className="text-secondary trend-card__summary">{trend.summary}</p>
+        {trend.authorMember?.name ? <p className="trend-card__author text-small">Por {trend.authorMember.name}</p> : null}
       </div>
     </article>
   );

@@ -8,10 +8,12 @@ import { ErrorState, Skeleton } from '@/ui';
 import { Prose } from '../components/Common';
 import { initials } from './InterviewsPage';
 import { NotFoundPage } from './NotFoundPage';
+import { usePageTitle } from '../SiteDataProvider';
 
 export function InterviewDetailPage() {
   const { slug = '' } = useParams();
   const { data, loading, error, reload } = useResource((signal) => api<Interview>(`/interviews/${slug}`, { signal }), [slug]);
+  usePageTitle(data ? `Entrevista a ${data.guestName}` : 'Pequeñas Entrevistas');
 
   if (loading) {
     return (

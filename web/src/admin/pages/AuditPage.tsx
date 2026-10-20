@@ -6,7 +6,7 @@ import { useResource } from '@/lib/useResource';
 import { EmptyState, ErrorState, PageHeader, SkeletonRows } from '@/ui';
 
 const ENTITY: Record<string, string> = {
-  trend: 'la nota', interview: 'la entrevista', glossary: 'el término', podcast: 'el episodio', team: 'a la integrante',
+  trend: 'la nota', reflection: 'el artículo', interview: 'la entrevista', glossary: 'el término', podcast: 'el episodio', team: 'a la integrante',
   settings: 'la configuración del sitio', media: 'la imagen', user: 'la cuenta', mailbox: 'el relato',
 };
 const ACTION: Record<string, string> = {

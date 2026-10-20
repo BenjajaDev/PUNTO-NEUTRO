@@ -8,6 +8,7 @@
  */
 import { prisma } from '../src/db.js';
 import { hashPassword } from '../src/lib/password.js';
+import { COMMUNITY_RULES, GLOSSARY_EXAMPLES, REFLECTIONS_INTRO, TREND_EXTRAS } from './seed-content.js';
 
 const PRIVACY = `Punto Neutro es un proyecto de título periodístico de la carrera de Periodismo de la Universidad Autónoma de Chile. Esta política explica cómo tratamos la información que recibimos a través del Buzón Comunitario.
 
@@ -71,6 +72,8 @@ async function main() {
         'Un espacio seguro y bidireccional donde mujeres y adolescentes pueden compartir sus relatos, vivencias y reflexiones sobre su relación con la imagen corporal.',
       consentText:
         'Entiendo que mi relato será leído únicamente por el equipo editorial de Punto Neutro. Si autorizo su publicación, el equipo podrá publicar un extracto editado que no incluya datos que me identifiquen. Puedo pedir que lo eliminen en cualquier momento.',
+      communityRules: COMMUNITY_RULES,
+      reflectionsIntro: REFLECTIONS_INTRO,
       podcastName: 'A Pausar el Filtro',
       podcastDescription:
         'Conversaciones profundas con expertas y expertos en psicología, salud y comunicación, que aterrizan conceptos complejos en un lenguaje cercano, empático y libre de tecnicismos excesivos.',
@@ -109,6 +112,7 @@ async function main() {
       data: [
         {
           slug: 'cuerpo-de-verano',
+          example: GLOSSARY_EXAMPLES['cuerpo-de-verano'],
           term: 'Cuerpo de verano',
           commonDefinition: 'Preparación física orientada a encajar en ropa ligera o traje de baño.',
           bias: 'Asocia la exposición corporal al cumplimiento de un estándar estético estacional.',
@@ -117,6 +121,7 @@ async function main() {
         },
         {
           slug: 'flaca-gorda',
+          example: GLOSSARY_EXAMPLES['flaca-gorda'],
           term: 'Flaca / Gorda (halago / insulto)',
           commonDefinition: 'Uso de la corporalidad como juicio moral o valorativo de belleza.',
           bias: 'Perpetúa la gordofobia y la idea de que la delgadez equivale a éxito o virtud.',
@@ -125,6 +130,7 @@ async function main() {
         },
         {
           slug: 'autoobjetivacion',
+          example: GLOSSARY_EXAMPLES['autoobjetivacion'],
           term: 'Autoobjetivación',
           commonDefinition: 'Ver el propio cuerpo como un objeto para ser mirado y juzgado por otros.',
           bias: 'Prioriza la apariencia externa sobre la vivencia interna y la salud mental.',
@@ -143,6 +149,7 @@ async function main() {
       data: [
         {
           slug: 'clean-girl',
+          ...TREND_EXTRAS['clean-girl'],
           title: 'Clean girl: la naturalidad que exige trabajo',
           summary: 'Piel luminosa, moño tirante y «cero maquillaje» que en realidad requiere muchos productos. Desarmamos la estética que promete sencillez.',
           platform: 'MULTIPLATFORM',
@@ -160,6 +167,7 @@ async function main() {
         },
         {
           slug: 'heroin-chic-revival',
+          ...TREND_EXTRAS['heroin-chic-revival'],
           title: 'Heroin chic revival: el regreso de la delgadez extrema',
           summary: 'Una estética de los 90 vuelve con otro nombre. Por qué su reaparición en redes merece una mirada crítica.',
           platform: 'INSTAGRAM',
@@ -177,6 +185,7 @@ async function main() {
         },
         {
           slug: 'filtros-de-alteracion-facial',
+          ...TREND_EXTRAS['filtros-de-alteracion-facial'],
           title: 'Filtros de alteración facial: el rostro que no existe',
           summary: 'Afinan la nariz, agrandan los ojos y borran la textura de la piel en tiempo real. ¿Qué pasa cuando el espejo es la cámara?',
           platform: 'TIKTOK',

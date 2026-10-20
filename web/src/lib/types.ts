@@ -8,6 +8,19 @@ export type SiteSettings = {
   siteName: string;
   tagline: string;
   logoId: number | null;
+  siteTitle: string;
+  metaDescription: string;
+  faviconId: number | null;
+  heroImageId: number | null;
+  aboutCoverId: number | null;
+  trendsCoverId: number | null;
+  interviewsCoverId: number | null;
+  glossaryCoverId: number | null;
+  reflectionsCoverId: number | null;
+  mailboxCoverId: number | null;
+  podcastCoverId: number | null;
+  communityRules: string;
+  reflectionsIntro: string;
   heroTitle: string;
   heroSubtitle: string;
   whatIs: string;
@@ -45,6 +58,9 @@ export type TeamMember = {
   published: boolean;
 };
 
+export type Reference = { citation: string; url: string };
+export type AuthorProfile = { id: number; name: string; role: string; bio: string; photoId: number | null };
+
 export type TrendSummary = {
   id: number;
   slug: string;
@@ -57,6 +73,8 @@ export type TrendSummary = {
   publishedAt: string | null;
   updatedAt: string;
   author?: { name: string } | null;
+  authorMemberId: number | null;
+  authorMember?: AuthorProfile | null;
 };
 
 export type Trend = TrendSummary & {
@@ -64,8 +82,33 @@ export type Trend = TrendSummary & {
   mechanism: string;
   impact: string;
   neutralView: string;
+  everydayExample: string;
+  references: Reference[];
+  capsuleUrl: string;
   related?: TrendSummary[];
 };
+
+export type ReflectionCategory = 'TRASTORNOS' | 'PREJUICIOS' | 'ESTRATEGIAS';
+
+export type ReflectionSummary = {
+  id: number;
+  slug: string;
+  title: string;
+  category: ReflectionCategory;
+  summary: string;
+  coverId: number | null;
+  keyIdeas: string[];
+  everydayExample: string;
+  references: Reference[];
+  capsuleUrl: string;
+  authorMemberId: number | null;
+  authorMember?: AuthorProfile | null;
+  status: ContentStatus;
+  publishedAt: string | null;
+  updatedAt: string;
+};
+
+export type Reflection = ReflectionSummary & { body: string; related?: ReflectionSummary[] };
 
 export type Interview = {
   id: number;
@@ -94,6 +137,7 @@ export type GlossaryTerm = {
   commonDefinition: string;
   bias: string;
   neutralReformulation: string;
+  example: string;
   order: number;
   published: boolean;
 };
@@ -119,9 +163,15 @@ export type Submission = {
   contactEmail: string | null;
   ageRange: string | null;
   topic: string | null;
+  topicOther: string | null;
   story: string;
   allowPublication: boolean;
   consentAt: string;
+  acceptedRulesAt: string | null;
+  flagged: boolean;
+  flagReasons: string[];
+  flagMatches: string[];
+  labels: string[];
   status: SubmissionStatus;
   publicExcerpt: string | null;
   editorNote: string | null;
@@ -145,6 +195,7 @@ export type HomeData = {
   glossaryCount: number;
   episode: PodcastEpisode | null;
   storiesCount: number;
+  reflections: ReflectionSummary[];
 };
 
 export type Stats = {
@@ -159,7 +210,19 @@ export type Stats = {
   media: number;
   missing: string[];
   recent: AuditEntry[];
+  reflections: number;
+  flaggedPending: number;
+  trendsMissingAuthor: { id: number; title: string }[];
 };
 
 export const PLATFORM_LABEL: Record<Platform, string> = { TIKTOK: 'TikTok', INSTAGRAM: 'Instagram', MULTIPLATFORM: 'TikTok + Instagram' };
 export const AGE_RANGES = ['Menos de 18', '18 a 24', '25 a 34', '35 o más', 'Prefiero no decir'];
+// Espejo de server/src/schemas.ts (TOPICS y MODERATION_LABELS).
+export const OTHER_TOPIC = 'Otros';
+export const TOPICS = ['Redes sociales y comparación', 'Comentarios sobre mi cuerpo', 'Alimentación', 'Filtros y edición de fotos', 'Ropa y tallas', 'Salud mental', OTHER_TOPIC];
+export const MODERATION_LABELS = ['Testimonio', 'Pasivo-agresivo', 'Ofensivo', 'Spam', 'Fuera de tema', 'Requiere contención', 'Derivar a especialista'];
+export const REFLECTION_CATEGORY: Record<ReflectionCategory, string> = {
+  TRASTORNOS: 'Trastornos de salud mental',
+  PREJUICIOS: 'Prejuicios de la mente',
+  ESTRATEGIAS: 'Manejo emocional',
+};

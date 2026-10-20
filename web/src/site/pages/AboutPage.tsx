@@ -5,7 +5,7 @@ import type { TeamMember } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { EmptyState, ErrorState, SkeletonCards } from '@/ui';
 import { PageHero, Prose, SectionHeading } from '../components/Common';
-import { useSiteData } from '../SiteDataProvider';
+import { usePageTitle, useSiteData } from '../SiteDataProvider';
 
 const initials = (name: string) => name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 
@@ -13,10 +13,11 @@ const initials = (name: string) => name.split(/\s+/).slice(0, 2).map((w) => w[0]
 export function AboutPage() {
   const { settings } = useSiteData();
   const team = useResource((signal) => api<TeamMember[]>('/team', { signal }), []);
+  usePageTitle('Nosotras');
 
   return (
     <>
-      <PageHero eyebrow="Nosotras" title="Quiénes somos" intro={settings?.aboutIntro} />
+      <PageHero eyebrow="Nosotras" title="Quiénes somos" intro={settings?.aboutIntro} art="about" coverId={settings?.aboutCoverId} />
 
       <section className="section" aria-labelledby="equipo">
         <div className="container stack-lg">
@@ -30,7 +31,7 @@ export function AboutPage() {
           ) : (
             <div className="grid-2">
               {team.data.map((member) => (
-                <article key={member.id} className="card card--raised team-card reveal">
+                <article key={member.id} id={`integrante-${member.id}`} className="card card--raised team-card reveal">
                   {mediaUrl(member.photoId) ? (
                     <img className="team-card__photo" src={mediaUrl(member.photoId)!} alt={`Retrato de ${member.name}`} width={96} height={96} loading="lazy" />
                   ) : (

@@ -1,28 +1,14 @@
-import { ArrowRight, BookOpen, Compass, Eye, Headphones, Mail, MessageSquareQuote, Target } from 'lucide-react';
+import { ArrowRight, BookOpen, Compass, Eye, Headphones, HeartHandshake, Mail, MessageSquareQuote, Target } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { mediaUrl } from '@/lib/format';
-import type { HomeData } from '@/lib/types';
+import { REFLECTION_CATEGORY, type HomeData } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { buttonClass, ErrorState, Skeleton, SkeletonCards } from '@/ui';
-import { Prose, SectionHeading } from '../components/Common';
+import { Prose, SectionCover, SectionHeading } from '../components/Common';
 import { SoundCloudPlayer } from '../components/SoundCloudPlayer';
 import { TrendCard } from '../components/TrendCard';
-
-/** Composición decorativa: cuerpos/círculos sin forma impuesta. Estática a propósito. */
-function HeroArt() {
-  return (
-    <svg className="hero__art" viewBox="0 0 420 420" aria-hidden focusable="false">
-      <circle cx="210" cy="210" r="190" fill="var(--color-section)" />
-      <circle cx="160" cy="170" r="110" fill="var(--palette-lavanda-claro)" opacity="0.75" />
-      <circle cx="270" cy="250" r="105" fill="var(--palette-rosa-suave)" opacity="0.7" />
-      <circle cx="225" cy="150" r="64" fill="var(--palette-magenta-suave)" opacity="0.55" />
-      <circle cx="210" cy="210" r="150" fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeDasharray="2 10" strokeLinecap="round" />
-      <circle cx="210" cy="210" r="26" fill="var(--color-primary)" />
-      <circle cx="210" cy="210" r="9" fill="var(--palette-blanco-crema)" />
-    </svg>
-  );
-}
+import { usePageTitle } from '../SiteDataProvider';
 
 function HomeSkeleton() {
   return (
@@ -37,11 +23,12 @@ function HomeSkeleton() {
 
 export function HomePage() {
   const { data, loading, error, reload } = useResource((signal) => api<HomeData>('/home', { signal }), []);
+  usePageTitle(null);
 
   if (loading && !data) return <HomeSkeleton />;
   if (error || !data) return <div className="container section"><ErrorState message={error || ''} onRetry={reload} /></div>;
 
-  const { settings: s, trends, interview, glossary, glossaryCount, episode, storiesCount } = data;
+  const { settings: s, trends, interview, glossary, glossaryCount, episode, storiesCount, reflections } = data;
 
   return (
     <>
@@ -63,7 +50,8 @@ export function HomePage() {
               </Link>
             </div>
           </div>
-          <HeroArt />
+          {/* Imagen editable en el panel; sin imagen, la ilustración de la marca. */}
+          <SectionCover coverId={s.heroImageId} art="home" className="hero__art" />
         </div>
       </section>
 
@@ -144,6 +132,33 @@ export function HomePage() {
                     <span className="badge badge--success">Reformulación neutra</span>
                     <p>{term.neutralReformulation}</p>
                   </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ── Querer encajar ── */}
+      {reflections.length ? (
+        <section className="section" aria-labelledby="encajar-title">
+          <div className="container stack-lg">
+            <SectionHeading
+              id="encajar-title"
+              eyebrow="Querer encajar"
+              title="Salud mental, prejuicios y presión social"
+              intro={s.reflectionsIntro || undefined}
+              action={{ to: '/querer-encajar', label: 'Leer la sección' }}
+            />
+            <div className="grid-3">
+              {reflections.map((r) => (
+                <article key={r.id} className="card card--raised reflection-card lift reveal">
+                  <span className="reflection-card__icon" aria-hidden><HeartHandshake size={22} /></span>
+                  <span className="badge">{REFLECTION_CATEGORY[r.category]}</span>
+                  <h3 className="reflection-card__title">
+                    <Link to={`/querer-encajar/${r.slug}`} className="stretched-link" viewTransition>{r.title}</Link>
+                  </h3>
+                  <p className="text-secondary text-small">{r.summary}</p>
                 </article>
               ))}
             </div>

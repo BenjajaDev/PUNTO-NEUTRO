@@ -5,7 +5,8 @@ import { formatDate, readingTime } from '@/lib/format';
 import { PLATFORM_LABEL, type Trend } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { Button, EmptyState, ErrorState, Skeleton, useFeedback } from '@/ui';
-import { Prose } from '../components/Common';
+import { AuthorCard, CapsuleLink, EverydayExample, Prose, ReferencesList } from '../components/Common';
+import { usePageTitle } from '../SiteDataProvider';
 import { TrendCard, TrendCover } from '../components/TrendCard';
 import { NotFoundPage } from './NotFoundPage';
 
@@ -21,6 +22,7 @@ export function TrendDetailPage() {
   const { slug = '' } = useParams();
   const { notify } = useFeedback();
   const { data: trend, loading, error, reload } = useResource((signal) => api<Trend>(`/trends/${slug}`, { signal }), [slug]);
+  usePageTitle(trend?.title ?? 'Anatomía de un Trend');
 
   if (loading) {
     return (
@@ -59,8 +61,8 @@ export function TrendDetailPage() {
         </div>
         <h1 className="article__title">{trend.title}</h1>
         <p className="article__summary">{trend.summary}</p>
+        <AuthorCard author={trend.authorMember} fallbackName={trend.author?.name} />
         <div className="article__meta">
-          {trend.author?.name ? <span>Por {trend.author.name}</span> : null}
           {trend.publishedAt ? <time dateTime={trend.publishedAt}>{formatDate(trend.publishedAt)}</time> : null}
           <span className="row" style={{ gap: 6 }}><Clock size={15} aria-hidden /> {minutes} min de lectura</span>
           <Button variant="ghost" size="sm" icon={Link2} onClick={share}>Copiar enlace</Button>
@@ -82,10 +84,16 @@ export function TrendDetailPage() {
                 </a>
               </li>
             ))}
+            {trend.references.length ? (
+              <li>
+                <a href="#referencias">Referencias y fuentes</a>
+              </li>
+            ) : null}
           </ol>
         </nav>
 
         <div className="article__body">
+          <EverydayExample text={trend.everydayExample} />
           {PARTS.map(({ key, letter, title, icon: Icon }) => (
             <section key={key} id={key} className={`article__part reveal${key === 'neutralView' ? ' article__part--neutral' : ''}`} aria-labelledby={`${key}-title`}>
               <div className="article__part-head">
@@ -97,6 +105,8 @@ export function TrendDetailPage() {
               <Prose text={trend[key]} />
             </section>
           ))}
+          <CapsuleLink url={trend.capsuleUrl} />
+          <ReferencesList references={trend.references} />
         </div>
       </div>
 
@@ -106,7 +116,7 @@ export function TrendDetailPage() {
             <h2 id="relacionadas" className="section-heading__title">Sigue leyendo</h2>
             <div className="grid-3">
               {trend.related.map((t) => (
-                <TrendCard key={t.id} trend={{ ...t, tags: [], status: 'PUBLISHED', updatedAt: t.publishedAt || '' }} />
+                <TrendCard key={t.id} trend={{ ...t, tags: [], status: 'PUBLISHED', updatedAt: t.publishedAt || '', authorMemberId: null }} />
               ))}
             </div>
           </div>

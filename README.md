@@ -2,7 +2,7 @@
 
 Sitio periodístico transmedia sobre **neutralidad corporal**, con perspectiva de género. Proyecto de Título de Periodismo — Universidad Autónoma de Chile (Anabel Duarte Leiva y Constanza Torres Muñoz).
 
-- **Sitio público** (React 19 + Vite): Inicio · Nosotras · Anatomía de un Trend · Pequeñas Entrevistas · Glosario interactivo · Buzón Comunitario · Podcast «A Pausar el Filtro» · Cierre y footer. Tema claro/oscuro, animaciones sutiles, accesible (WCAG 2.1 AA).
+- **Sitio público** (React 19 + Vite): Inicio · Nosotras · Anatomía de un Trend (con autora y referencias) · Pequeñas Entrevistas · Glosario interactivo · Querer encajar (salud mental y prejuicios) · Buzón Comunitario (normas de convivencia y filtro de moderación) · Podcast «A Pausar el Filtro» · Cierre y footer. Portadas, favicon y título de la página editables desde el panel. Tema claro/oscuro, animaciones sutiles, accesible (WCAG 2.1 AA).
 - **Panel de administración** (`/admin`): todas las secciones editables, moderación del buzón con filtro editorial, biblioteca de medios, configuración del sitio (logo, textos, contacto, redes, legal), usuarios con roles (*Administración* / *Editora*) e historial de cambios.
 - **API** (Express 5) con **PostgreSQL vía Prisma 7**. Las imágenes también se guardan en la base.
 
@@ -49,3 +49,4 @@ server/   API Express (src/routes), Prisma (prisma/schema.prisma, migrations, se
 ## Despliegue
 
 Cloudflare Pages (sitio) + Render (API) + Supabase (PostgreSQL). Paso a paso en **[DESPLIEGUE.md](DESPLIEGUE.md)** y **[SUPABASE.md](SUPABASE.md)**.
+- Estrategia de cápsulas para redes (RNF-02): [docs/estrategia-difusion-audiovisual.md](docs/estrategia-difusion-audiovisual.md).

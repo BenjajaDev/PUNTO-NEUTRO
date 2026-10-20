@@ -1,14 +1,13 @@
-import { EyeOff, FileCheck2, HeartHandshake, Quote, Send, ShieldCheck } from 'lucide-react';
+import { EyeOff, FileCheck2, HandHeart, HeartHandshake, Quote, Send, ShieldCheck } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { api, ApiError, errorMessage } from '@/lib/api';
-import { AGE_RANGES, type PublicStory } from '@/lib/types';
+import { AGE_RANGES, OTHER_TOPIC, TOPICS, type PublicStory } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { Button, Checkbox, SelectField, Switch, TextArea, TextField, useFeedback } from '@/ui';
 import { PageHero } from '../components/Common';
-import { useSiteData } from '../SiteDataProvider';
+import { usePageTitle, useSiteData } from '../SiteDataProvider';
 
-const TOPICS = ['Redes sociales y comparación', 'Comentarios sobre mi cuerpo', 'Alimentación', 'Filtros y edición de fotos', 'Ropa y tallas', 'Otro'];
 
 type Form = {
   anonymous: boolean;
@@ -16,13 +15,15 @@ type Form = {
   contactEmail: string;
   ageRange: string;
   topic: string;
+  topicOther: string;
   story: string;
   allowPublication: boolean;
   consent: boolean;
+  acceptRules: boolean;
   website: string;
 };
 
-const EMPTY: Form = { anonymous: true, alias: '', contactEmail: '', ageRange: '', topic: '', story: '', allowPublication: false, consent: false, website: '' };
+const EMPTY: Form = { anonymous: true, alias: '', contactEmail: '', ageRange: '', topic: '', topicOther: '', story: '', allowPublication: false, consent: false, acceptRules: false, website: '' };
 const MIN_STORY = 30;
 const MAX_STORY = 5000;
 
@@ -36,6 +37,7 @@ const PROTOCOL = [
 export function MailboxPage() {
   const { settings } = useSiteData();
   const { notify } = useFeedback();
+  usePageTitle('Buzón comunitario');
   const stories = useResource((signal) => api<PublicStory[]>('/mailbox/stories', { signal }), []);
   const [form, setForm] = useState<Form>(EMPTY);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -49,8 +51,11 @@ export function MailboxPage() {
 
   const validate = () => {
     const next: Record<string, string> = {};
+    // RF-01: con «Otros» el tema escrito es obligatorio.
+    if (form.topic === OTHER_TOPIC && form.topicOther.trim().length < 3) next.topicOther = 'Cuéntanos de qué tema se trata (mínimo 3 caracteres).';
     if (form.story.trim().length < MIN_STORY) next.story = `Cuéntanos un poco más (mínimo ${MIN_STORY} caracteres).`;
     if (!form.anonymous && form.contactEmail && !/^\S+@\S+\.\S+$/.test(form.contactEmail)) next.contactEmail = 'Revisa el formato del correo.';
+    if (!form.acceptRules) next.acceptRules = 'Para enviar, acepta las normas de convivencia.';
     if (!form.consent) next.consent = 'Necesitamos tu consentimiento para recibir el relato.';
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -73,9 +78,11 @@ export function MailboxPage() {
           contactEmail: form.anonymous ? undefined : form.contactEmail || undefined,
           ageRange: form.ageRange || undefined,
           topic: form.topic || undefined,
+          topicOther: form.topic === OTHER_TOPIC ? form.topicOther.trim() : undefined,
           story: form.story,
           allowPublication: form.allowPublication,
           consent: form.consent,
+          acceptRules: form.acceptRules,
           website: form.website || undefined,
         },
       });
@@ -92,7 +99,7 @@ export function MailboxPage() {
 
   return (
     <>
-      <PageHero eyebrow="Buzón comunitario" title="Un espacio seguro para tu historia" intro={settings?.mailboxIntro} />
+      <PageHero eyebrow="Buzón comunitario" title="Un espacio seguro para tu historia" intro={settings?.mailboxIntro} art="mailbox" coverId={settings?.mailboxCoverId} />
 
       <section className="section section--tight" aria-label="Protocolo ético">
         <div className="container grid-3">
@@ -136,9 +143,32 @@ export function MailboxPage() {
                 ) : null}
 
                 <div className="grid-2">
-                  <SelectField label="Tema (opcional)" value={form.topic} onChange={(e) => set('topic', e.target.value)} options={[{ value: '', label: 'Elige un tema' }, ...TOPICS.map((t) => ({ value: t, label: t }))]} />
+                  <SelectField
+                    label="Tema (opcional)"
+                    value={form.topic}
+                    onChange={(e) => {
+                      set('topic', e.target.value);
+                      if (e.target.value === OTHER_TOPIC) requestAnimationFrame(() => document.getElementById('tema-otro')?.focus());
+                    }}
+                    options={[{ value: '', label: 'Elige un tema' }, ...TOPICS.map((t) => ({ value: t, label: t }))]}
+                  />
                   <SelectField label="Rango de edad (opcional)" value={form.ageRange} onChange={(e) => set('ageRange', e.target.value)} options={[{ value: '', label: 'Prefiero no indicarlo' }, ...AGE_RANGES.map((a) => ({ value: a, label: a }))]} />
                 </div>
+
+                {form.topic === OTHER_TOPIC ? (
+                  <div className="reveal-field">
+                    <TextField
+                      id="tema-otro"
+                      label="¿De qué tema se trata? *"
+                      value={form.topicOther}
+                      maxLength={80}
+                      onChange={(e) => set('topicOther', e.target.value)}
+                      error={errors.topicOther}
+                      hint="Escríbelo en pocas palabras. Solo lo verá el equipo."
+                      required
+                    />
+                  </div>
+                ) : null}
 
                 <TextArea
                   label="Tu relato"
@@ -159,6 +189,24 @@ export function MailboxPage() {
                     <input tabIndex={-1} autoComplete="off" value={form.website} onChange={(e) => set('website', e.target.value)} />
                   </label>
                 </div>
+
+                <section className="rules-box" aria-labelledby="normas-title">
+                  <h3 id="normas-title" className="rules-box__title">
+                    <HandHeart size={20} aria-hidden /> Normas de convivencia
+                  </h3>
+                  <ul className="rules-box__list">
+                    {(settings?.communityRules || 'Escribe desde tu experiencia y con respeto hacia las demás personas.')
+                      .split('\n')
+                      .map((rule) => rule.trim())
+                      .filter(Boolean)
+                      .map((rule) => (
+                        <li key={rule}>{rule}</li>
+                      ))}
+                  </ul>
+                  <Checkbox checked={form.acceptRules} onChange={(e) => set('acceptRules', e.target.checked)} error={errors.acceptRules} required>
+                    Leí y acepto las normas de convivencia.
+                  </Checkbox>
+                </section>
 
                 <Checkbox checked={form.allowPublication} onChange={(e) => set('allowPublication', e.target.checked)}>
                   Autorizo que el equipo publique un <strong>extracto editado</strong> de mi relato, sin datos que me identifiquen.

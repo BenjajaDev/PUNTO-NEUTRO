@@ -20,11 +20,42 @@ const optionalUrl = z
 const mediaId = z.number().int().positive().nullable().optional();
 const stringList = (maxItems: number, maxLen: number) => z.array(z.string().trim().min(1).max(maxLen)).max(maxItems).default([]);
 const status = z.enum(['DRAFT', 'PUBLISHED']).default('DRAFT');
+const memberId = z.number().int().positive().nullable().optional();
+
+/** Fuentes de respaldo de una nota: cita en formato libre (APA sugerido) y enlace opcional. */
+export const referencesSchema = z
+  .array(z.object({ citation: text(600, 5), url: optionalUrl }))
+  .max(20, 'Máximo 20 referencias.')
+  .default([]);
+
+type Publishable = { status: 'DRAFT' | 'PUBLISHED'; references: unknown[]; authorMemberId?: number | null };
+
+/** Reglas para publicar (RF-04): referencias siempre; autora cuando se exige. */
+function publishRules(requireAuthor: boolean) {
+  return (data: Publishable, ctx: z.RefinementCtx) => {
+    if (data.status !== 'PUBLISHED') return;
+    if (!data.references.length) ctx.addIssue({ code: 'custom', path: ['references'], message: 'Agrega al menos una referencia para publicar.' });
+    if (requireAuthor && !data.authorMemberId) ctx.addIssue({ code: 'custom', path: ['authorMemberId'], message: 'Elige la autora para publicar.' });
+  };
+}
 
 export const settingsSchema = z.object({
   siteName: text(80),
   tagline: optText(160),
   logoId: mediaId,
+  siteTitle: text(120),
+  metaDescription: optText(300),
+  faviconId: mediaId,
+  heroImageId: mediaId,
+  aboutCoverId: mediaId,
+  trendsCoverId: mediaId,
+  interviewsCoverId: mediaId,
+  glossaryCoverId: mediaId,
+  reflectionsCoverId: mediaId,
+  mailboxCoverId: mediaId,
+  podcastCoverId: mediaId,
+  communityRules: optText(3000),
+  reflectionsIntro: optText(2000),
   heroTitle: optText(160),
   heroSubtitle: optText(400),
   whatIs: optText(3000),
@@ -76,8 +107,29 @@ export const trendSchema = z.object({
   mechanism: text(8000, 10),
   impact: text(8000, 10),
   neutralView: text(8000, 10),
+  everydayExample: optText(1500),
+  references: referencesSchema,
+  capsuleUrl: optionalUrl,
+  authorMemberId: memberId,
   status,
-});
+}).superRefine(publishRules(true));
+
+export const reflectionSchema = z
+  .object({
+    title: text(160, 3),
+    slug: z.string().trim().max(90).optional(),
+    category: z.enum(['TRASTORNOS', 'PREJUICIOS', 'ESTRATEGIAS']),
+    summary: text(400, 10),
+    coverId: mediaId,
+    body: text(20000, 50),
+    keyIdeas: stringList(6, 200),
+    everydayExample: optText(1500),
+    references: referencesSchema,
+    capsuleUrl: optionalUrl,
+    authorMemberId: memberId,
+    status,
+  })
+  .superRefine(publishRules(false));
 
 export const interviewSchema = z.object({
   guestName: text(120, 2),
@@ -100,6 +152,7 @@ export const glossarySchema = z.object({
   commonDefinition: text(1500, 5),
   bias: text(1500, 5),
   neutralReformulation: text(1500, 5),
+  example: optText(600),
   order: z.number().int().min(0).max(999).default(0),
   published: z.boolean().default(true),
 });
@@ -117,6 +170,9 @@ export const podcastSchema = z.object({
 });
 
 export const AGE_RANGES = ['Menos de 18', '18 a 24', '25 a 34', '35 o más', 'Prefiero no decir'] as const;
+export const OTHER_TOPIC = 'Otros';
+export const TOPICS = ['Redes sociales y comparación', 'Comentarios sobre mi cuerpo', 'Alimentación', 'Filtros y edición de fotos', 'Ropa y tallas', 'Salud mental', OTHER_TOPIC] as const;
+export const MODERATION_LABELS = ['Testimonio', 'Pasivo-agresivo', 'Ofensivo', 'Spam', 'Fuera de tema', 'Requiere contención', 'Derivar a especialista'] as const;
 
 /** Formulario público del Buzón Comunitario. */
 export const submissionSchema = z
@@ -125,15 +181,24 @@ export const submissionSchema = z
     alias: z.string().trim().max(40).optional(),
     contactEmail: z.union([z.literal(''), z.email('Correo inválido.')]).optional(),
     ageRange: z.enum(AGE_RANGES).optional(),
-    topic: z.string().trim().max(80).optional(),
+    topic: z.enum(TOPICS, 'Elige un tema de la lista.').optional(),
+    topicOther: z.string().trim().max(80, tooLong(80)).optional(),
     story: text(5000, 30),
     allowPublication: z.boolean().default(false),
     consent: z.literal(true, 'Debes aceptar el consentimiento informado para enviar tu relato.'),
+    acceptRules: z.literal(true, 'Debes aceptar las normas de convivencia para enviar tu relato.'),
     // Trampa para bots: un humano nunca ve ni llena este campo.
     website: z.string().max(0, 'Campo inválido.').optional(),
   })
+  .superRefine((data, ctx) => {
+    // RF-01: «Otros» exige escribir el tema.
+    if (data.topic === OTHER_TOPIC && (data.topicOther?.length ?? 0) < 3) {
+      ctx.addIssue({ code: 'custom', path: ['topicOther'], message: 'Cuéntanos de qué tema se trata (mínimo 3 caracteres).' });
+    }
+  })
   .transform((data) => ({
     ...data,
+    topicOther: data.topic === OTHER_TOPIC ? data.topicOther || null : null,
     // Anonimato estricto: si se marca, no guardamos nada que identifique.
     alias: data.anonymous ? null : data.alias || null,
     contactEmail: data.anonymous ? null : data.contactEmail || null,
@@ -143,6 +208,7 @@ export const moderationSchema = z.object({
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'ARCHIVED']),
   publicExcerpt: z.string().trim().max(2000).optional(),
   editorNote: z.string().trim().max(2000).optional(),
+  labels: z.array(z.enum(MODERATION_LABELS)).max(MODERATION_LABELS.length).optional(),
 });
 
 export const loginSchema = z.object({

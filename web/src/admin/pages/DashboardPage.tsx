@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, FileText, Headphones, Inbox, MessageSquareQuote, PenLine, Plus, SpellCheck, Users } from 'lucide-react';
+import { AlertCircle, AlertTriangle, CheckCircle2, FileText, Flag, Headphones, HeartHandshake, Inbox, MessageSquareQuote, PenLine, Plus, SpellCheck, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
@@ -36,12 +36,30 @@ export function DashboardPage() {
         <div className="stack-lg">
           <div className="grid-stats stagger">
             <StatTile icon={Inbox} label="Relatos por revisar" value={data.pending} tone={data.pending ? 'accent' : 'neutral'} />
+            <StatTile icon={Flag} label="Por revisar marcados por el filtro" value={data.flaggedPending} tone={data.flaggedPending ? 'danger' : 'neutral'} />
             <StatTile icon={FileText} label={`Notas publicadas · ${data.trendDrafts} borradores`} value={data.trends} />
             <StatTile icon={MessageSquareQuote} label="Entrevistas publicadas" value={data.interviews} tone="info" />
             <StatTile icon={SpellCheck} label="Términos del glosario" value={data.glossary} tone="success" />
+            <StatTile icon={HeartHandshake} label="Artículos de Querer encajar" value={data.reflections} tone="brand" />
             <StatTile icon={Headphones} label="Episodios publicados" value={data.episodes} tone="warning" />
             <StatTile icon={Users} label="Integrantes del equipo" value={data.team} tone="neutral" />
           </div>
+
+          {data.trendsMissingAuthor.length ? (
+            <section className="card stack notice-card" aria-labelledby="sin-autora">
+              <h2 id="sin-autora" className="row" style={{ fontSize: 20, gap: 8 }}>
+                <AlertTriangle size={20} aria-hidden /> Notas publicadas sin autora
+              </h2>
+              <p className="text-secondary text-small">La autoría y las referencias ahora son obligatorias. Asigna una autora a estas notas (al guardarlas se pedirán ambas).</p>
+              <ul className="todo-list">
+                {data.trendsMissingAuthor.map((t) => (
+                  <li key={t.id}>
+                    <Link to={`/admin/trends/${t.id}`}>{t.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
 
           <div className="grid-2">
             <section className="card stack" aria-labelledby="pendientes">

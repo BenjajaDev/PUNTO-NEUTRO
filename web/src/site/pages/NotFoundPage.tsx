@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { buttonClass } from '@/ui';
 import { LogoMark } from '../components/Logo';
+import { usePageTitle } from '../SiteDataProvider';
 
 export function NotFoundPage() {
+  usePageTitle('Página no encontrada');
   return (
     <section className="container section stack" style={{ alignItems: 'center', textAlign: 'center', minHeight: '50vh', justifyContent: 'center' }}>
       <LogoMark size={64} />
