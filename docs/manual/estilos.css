@@ -1,0 +1,112 @@
+/* Estilos de impresión del manual de uso (A4). Paleta y tipografías de Punto Neutro. */
+@font-face { font-family: 'Lora'; src: url('fuentes/lora-latin-wght-normal.woff2') format('woff2'); font-weight: 400 700; font-style: normal; }
+@font-face { font-family: 'Lora'; src: url('fuentes/lora-latin-ext-wght-normal.woff2') format('woff2'); font-weight: 400 700; font-style: normal; unicode-range: U+0100-024F; }
+@font-face { font-family: 'Lora'; src: url('fuentes/lora-latin-wght-italic.woff2') format('woff2'); font-weight: 400 700; font-style: italic; }
+@font-face { font-family: 'Montserrat'; src: url('fuentes/montserrat-latin-wght-normal.woff2') format('woff2'); font-weight: 100 900; }
+@font-face { font-family: 'Montserrat'; src: url('fuentes/montserrat-latin-ext-wght-normal.woff2') format('woff2'); font-weight: 100 900; unicode-range: U+0100-024F; }
+
+:root {
+  --rosa: #F49A9C;
+  --crema: #EFE9D7;
+  --lila: #9169A4;
+  --morado: #7D4C97;
+  --morado-oscuro: #5E3474;
+  --magenta: #B96EB2;
+  --lavanda: #D198C5;
+  --tinta: #2B1D33;
+  --gris: #54435E;
+  --suave: #F7F3EA;
+  --borde: #DDD1BB;
+}
+
+@page { size: A4; margin: 20mm 18mm 22mm; }
+
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { margin: 0; font-family: 'Montserrat', sans-serif; font-size: 10.5pt; line-height: 1.6; color: var(--tinta); }
+
+h1, h2, h3 { font-family: 'Lora', serif; color: var(--morado-oscuro); line-height: 1.2; margin: 0; }
+h1.capitulo { font-size: 26pt; margin: 0 0 4mm; break-before: page; }
+.capitulo-num { display: block; font-family: 'Montserrat', sans-serif; font-size: 9pt; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--magenta); margin-bottom: 2mm; break-before: page; }
+.capitulo-num + h1.capitulo { break-before: avoid; }
+.intro-capitulo { font-size: 12pt; color: var(--gris); margin: 0 0 7mm; padding-bottom: 5mm; border-bottom: 2px solid var(--crema); }
+h2 { font-size: 15pt; margin: 8mm 0 3mm; break-after: avoid; }
+h3 { font-size: 12pt; margin: 5mm 0 2mm; break-after: avoid; color: var(--morado); }
+p { margin: 0 0 3mm; }
+strong { color: var(--tinta); }
+a { color: var(--morado); }
+ul, ol { margin: 0 0 3mm; padding-left: 6mm; }
+li { margin-bottom: 1.2mm; }
+
+/* Botones y elementos del panel mencionados en el texto */
+.btn { display: inline-block; padding: 0.2mm 2.6mm; border-radius: 999px; background: var(--morado); color: #fff; font-weight: 600; font-size: 9pt; white-space: nowrap; }
+.btn.sec { background: #fff; color: var(--morado); border: 1px solid var(--morado); }
+.btn.peligro { background: #B3261E; }
+.btn.acento { background: var(--rosa); color: var(--tinta); }
+.campo { font-weight: 600; color: var(--morado-oscuro); }
+.menu { font-weight: 600; background: #F0E6F2; color: var(--morado-oscuro); padding: 0 1.6mm; border-radius: 4px; white-space: nowrap; }
+
+/* Pasos numerados */
+ol.pasos { list-style: none; counter-reset: paso; padding-left: 0; margin: 2mm 0 4mm; }
+ol.pasos > li { counter-increment: paso; position: relative; padding-left: 10mm; margin-bottom: 2.4mm; break-inside: avoid; }
+ol.pasos > li::before { content: counter(paso); position: absolute; left: 0; top: -0.2mm; width: 6.4mm; height: 6.4mm; border-radius: 50%; background: var(--rosa); color: var(--tinta); font-weight: 700; font-size: 9pt; display: flex; align-items: center; justify-content: center; }
+
+/* Figuras */
+figure { margin: 3mm 0 5mm; break-inside: avoid; text-align: center; }
+figure img { max-width: 100%; max-height: 120mm; border: 1px solid var(--borde); border-radius: 3mm; box-shadow: 0 1mm 3mm rgba(58, 34, 70, 0.10); }
+figure.w40 img { width: 40%; }
+figure.w50 img { width: 50%; }
+figure.w60 img { width: 60%; }
+figure.w70 img { width: 70%; }
+figure.w80 img { width: 80%; }
+figure.alta img { max-height: 200mm; }
+figure.media-alta img { max-height: 165mm; }
+figcaption { margin-top: 2mm; font-size: 8.5pt; color: var(--gris); font-style: italic; }
+.par { display: flex; gap: 6mm; align-items: flex-start; justify-content: center; break-inside: avoid; }
+.par figure { flex: 1; margin: 2mm 0 4mm; }
+
+/* Recuadros */
+.recuadro { border-radius: 3mm; padding: 3.2mm 4mm 3.2mm 13mm; margin: 3mm 0 5mm; position: relative; break-inside: avoid; font-size: 10pt; }
+.recuadro::before { position: absolute; left: 3.6mm; top: 3mm; width: 6.4mm; height: 6.4mm; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 10pt; }
+.recuadro p:last-child, .recuadro ul:last-child { margin-bottom: 0; }
+.recuadro .titulo { display: block; font-weight: 700; margin-bottom: 1mm; }
+.consejo { background: #EAF4EE; border-left: 1.2mm solid #2F7A57; }
+.consejo::before { content: '✓'; background: #2F7A57; color: #fff; }
+.importante { background: #FBEFDC; border-left: 1.2mm solid #B26A00; }
+.importante::before { content: '!'; background: #B26A00; color: #fff; }
+.nota { background: #F0E6F2; border-left: 1.2mm solid var(--morado); }
+.nota::before { content: 'i'; background: var(--morado); color: #fff; font-family: 'Lora', serif; font-style: italic; }
+.cuidado { background: #F8DEDB; border-left: 1.2mm solid #B3261E; }
+.cuidado::before { content: '♥'; background: #B3261E; color: #fff; font-size: 9pt; }
+
+/* Tablas */
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 5mm; font-size: 9.5pt; break-inside: avoid; }
+th { text-align: left; background: var(--crema); color: var(--morado-oscuro); font-weight: 700; padding: 2mm 3mm; }
+td { padding: 2mm 3mm; border-bottom: 1px solid var(--borde); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+.si { color: #225C41; font-weight: 700; }
+.no { color: #8C1D17; font-weight: 700; }
+
+/* Índice */
+.indice { list-style: none; padding: 0; margin: 0; }
+.indice li { display: flex; align-items: baseline; gap: 2mm; margin-bottom: 1.4mm; }
+.indice li.cap { margin-top: 3.2mm; font-weight: 700; color: var(--morado-oscuro); font-size: 11pt; }
+.indice li.sub { padding-left: 7mm; font-size: 9.8pt; color: var(--gris); }
+.indice .puntos { flex: 1; border-bottom: 1px dotted #B9A9C0; transform: translateY(-1mm); }
+.indice .pag { min-width: 8mm; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Hoja rápida */
+.rapida { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+.rapida div { border: 1px solid var(--borde); border-radius: 3mm; padding: 3mm 4mm; break-inside: avoid; }
+.rapida h3 { margin-top: 0; font-size: 11pt; }
+.rapida ol { margin: 0; padding-left: 5mm; font-size: 9.5pt; }
+
+.glosario dt { font-weight: 700; color: var(--morado-oscuro); margin-top: 2.5mm; }
+.glosario dd { margin: 0.5mm 0 0 0; }
+.salto { break-before: page; }
+.evitar-corte { break-inside: avoid; }
+
+/* Numeración automática de figuras */
+body { counter-reset: fig; }
+figure { counter-increment: fig; }
+figcaption::before { content: 'Imagen ' counter(fig) '. '; font-weight: 700; font-style: normal; color: var(--morado); }

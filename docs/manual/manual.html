@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8" />
+<title>Manual de uso del panel · Punto Neutro</title>
+<link rel="stylesheet" href="estilos.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════ ÍNDICE ═══════════════════════════ -->
+<h1 class="capitulo" style="break-before: auto">Índice</h1>
+<ul class="indice" id="indice"><!-- se completa al generar el PDF --></ul>
+
+<!-- ═══════════════════════════ 1. BIENVENIDA ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 1</span>
+<h1 class="capitulo" id="c1">Bienvenida</h1>
+<p class="intro-capitulo">Este manual te acompaña en el uso del <strong>panel de Punto Neutro</strong>, el lugar desde donde el equipo publica y cuida todo lo que aparece en el sitio. No necesitas saber de computación: cada tarea está explicada paso a paso y con imágenes.</p>
+
+<h2 id="s1-1">1.1 El sitio y el panel</h2>
+<p>Punto Neutro tiene dos partes que trabajan juntas:</p>
+<ul>
+  <li><strong>El sitio:</strong> lo que ve cualquier persona que entra a Punto Neutro. Ahí están las notas, el glosario, el podcast y el Buzón Comunitario.</li>
+  <li><strong>El panel:</strong> un espacio privado, solo para el equipo, donde se escriben, corrigen y publican esos contenidos. Todo lo que cambies en el panel se refleja en el sitio.</li>
+</ul>
+<figure class="w80"><img src="capturas/p01-sitio-inicio.png" alt="" /><figcaption>La portada del sitio, tal como la ven las visitas. Todo lo que aparece aquí se edita desde el panel.</figcaption></figure>
+
+<h2 id="s1-2">1.2 Quién puede hacer qué</h2>
+<p>Cada persona del equipo entra con su propia cuenta. Hay dos tipos de cuenta (llamados <strong>roles</strong>):</p>
+<table>
+  <tr><th>Tarea</th><th>Editora</th><th>Administración</th></tr>
+  <tr><td>Escribir y publicar notas, artículos, entrevistas, glosario y podcast</td><td class="si">Sí</td><td class="si">Sí</td></tr>
+  <tr><td>Editar el equipo (sección Nosotras) y subir imágenes</td><td class="si">Sí</td><td class="si">Sí</td></tr>
+  <tr><td>Revisar y publicar relatos del Buzón Comunitario</td><td class="si">Sí</td><td class="si">Sí</td></tr>
+  <tr><td>Eliminar definitivamente un relato del buzón</td><td class="no">No</td><td class="si">Sí</td></tr>
+  <tr><td>Cambiar textos del sitio, logo, ícono de la pestaña, portadas, contacto y redes</td><td class="no">No</td><td class="si">Sí</td></tr>
+  <tr><td>Crear cuentas para otras personas y ver el historial de cambios</td><td class="no">No</td><td class="si">Sí</td></tr>
+</table>
+<div class="recuadro nota"><span class="titulo">¿No ves alguna opción del menú?</span><p>Es normal: el panel solo muestra lo que tu rol puede usar. Si necesitas acceso a algo más, pídeselo a una persona con rol de Administración.</p></div>
+
+<h2 id="s1-3">1.3 Cómo leer este manual</h2>
+<p>A lo largo del manual encontrarás estos recuadros:</p>
+<div class="recuadro consejo"><span class="titulo">Consejo</span><p>Una recomendación para hacer la tarea más fácil o con mejor resultado.</p></div>
+<div class="recuadro importante"><span class="titulo">Importante</span><p>Algo que conviene revisar antes de continuar para no cometer errores.</p></div>
+<div class="recuadro cuidado"><span class="titulo">Cuidado editorial</span><p>Recordatorios éticos para tratar con respeto temas sensibles y a las personas que nos escriben.</p></div>
+<p>Cuando el manual nombra un botón, aparece así: <span class="btn">Publicar</span>. Las opciones del menú aparecen así: <span class="menu">Glosario</span>. Los nombres de los campos que hay que llenar aparecen en <span class="campo">morado</span>.</p>
+
+<!-- ═══════════════════════════ 2. PRIMEROS PASOS ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 2</span>
+<h1 class="capitulo" id="c2">Primeros pasos</h1>
+<p class="intro-capitulo">Cómo entrar al panel, orientarte en él, cuidar tu cuenta y salir de forma segura.</p>
+
+<h2 id="s2-1">2.1 Entrar al panel</h2>
+<ol class="pasos">
+  <li>Abre el navegador (Chrome, Safari, Firefox o Edge) y escribe la dirección del sitio seguida de <strong>/admin</strong>. Por ejemplo: <em>puntoneutro.cl/admin</em>. También puedes bajar hasta el final de cualquier página del sitio y hacer clic en <strong>Acceso equipo</strong>.</li>
+  <li>Escribe tu <span class="campo">Correo</span> y tu <span class="campo">Contraseña</span>. Te los entrega una persona con rol de Administración.</li>
+  <li>Haz clic en <span class="btn">Ingresar</span>.</li>
+</ol>
+<div class="par">
+  <figure><img src="capturas/a01-ingreso.png" alt="" /><figcaption>Pantalla de ingreso.</figcaption></figure>
+  <figure class="w70"><img src="capturas/a02-ingreso-error.png" alt="" /><figcaption>Si el correo o la contraseña no coinciden, aparece un aviso en rojo.</figcaption></figure>
+</div>
+<div class="recuadro consejo"><span class="titulo">Por seguridad, la sesión dura unas horas</span><p>Unas horas después de ingresar, el panel te pedirá tu correo y contraseña otra vez. Es normal y protege la información del buzón.</p></div>
+
+<h2 id="s2-2">2.2 El Resumen: tu punto de partida</h2>
+<p>Al entrar verás el <strong>Resumen</strong>. Es una foto del estado del sitio y de lo que está pendiente:</p>
+<ul>
+  <li><strong>Tarjetas con números:</strong> relatos por revisar, relatos marcados por el filtro, notas publicadas, entrevistas, términos del glosario, artículos de Querer encajar, episodios e integrantes del equipo.</li>
+  <li><strong>Notas publicadas sin autora:</strong> aparece solo si hay notas que todavía no tienen autora asignada (ver capítulo 4).</li>
+  <li><strong>Pendientes de configuración:</strong> datos que faltan en el sitio, como el correo de contacto o las redes sociales.</li>
+  <li><strong>Actividad reciente:</strong> los últimos cambios hechos por el equipo.</li>
+  <li><strong>Atajos:</strong> los botones <span class="btn">Nueva nota</span> y <span class="btn sec">Revisar buzón</span>, arriba a la derecha.</li>
+</ul>
+<figure class="alta"><img src="capturas/a03-resumen.png" alt="" /><figcaption>El Resumen del panel.</figcaption></figure>
+
+<h2 id="s2-3">2.3 El menú</h2>
+<p>A la izquierda está el menú, ordenado por temas. La opción en la que estás aparece resaltada en morado. El número rosado junto a <span class="menu">Buzón comunitario</span> indica cuántos relatos esperan revisión.</p>
+<div class="par">
+  <figure class="w60"><img src="capturas/a04-menu.png" alt="" /><figcaption>El menú del panel.</figcaption></figure>
+  <div style="flex:1.4">
+    <table>
+      <tr><th>Grupo</th><th>Para qué sirve</th></tr>
+      <tr><td><strong>General</strong></td><td>El Resumen.</td></tr>
+      <tr><td><strong>Contenidos</strong></td><td>Anatomía de un Trend, Pequeñas Entrevistas, Glosario, Querer encajar y Podcast.</td></tr>
+      <tr><td><strong>Comunidad</strong></td><td>El Buzón comunitario.</td></tr>
+      <tr><td><strong>Sitio web</strong></td><td>Equipo (Nosotras), Medios (imágenes) y Configuración del sitio.</td></tr>
+      <tr><td><strong>Administración</strong></td><td>Usuarios y roles, e Historial de cambios.</td></tr>
+    </table>
+    <p>Al final del menú están tu nombre, el botón <strong>Ver sitio</strong> (abre el sitio en otra pestaña), el botón de la luna para cambiar entre modo claro y oscuro, y <strong>Salir</strong>.</p>
+  </div>
+</div>
+
+<h2 id="s2-4">2.4 Cambiar tu contraseña</h2>
+<ol class="pasos">
+  <li>Haz clic en tu nombre, al final del menú. Se abre <strong>Mi cuenta</strong>.</li>
+  <li>Escribe tu <span class="campo">Contraseña actual</span>, luego la <span class="campo">Nueva contraseña</span> (mínimo 10 caracteres) y repítela.</li>
+  <li>Haz clic en <span class="btn">Actualizar contraseña</span>.</li>
+</ol>
+<figure class="w80"><img src="capturas/a06-mi-cuenta.png" alt="" /><figcaption>La página Mi cuenta.</figcaption></figure>
+<div class="recuadro importante"><span class="titulo">La primera vez que entres</span><p>Cambia la contraseña que te entregaron por una propia. Usa una frase fácil de recordar para ti y difícil de adivinar, por ejemplo: <em>MiPerroComeManzanas2026</em>.</p></div>
+
+<h2 id="s2-5">2.5 Cerrar sesión</h2>
+<p>Haz clic en <strong>Salir</strong>, al final del menú. El panel te pedirá confirmar. Hazlo siempre que uses un computador compartido.</p>
+<figure class="w50"><img src="capturas/a05-cerrar-sesion.png" alt="" /><figcaption>Confirmación para cerrar sesión.</figcaption></figure>
+
+<h2 id="s2-6">2.6 Usar el panel desde el celular</h2>
+<p>El panel funciona en el celular. El menú queda escondido para dejar más espacio: tócalo con el botón de las tres líneas (☰), arriba a la izquierda. Para cerrarlo, toca la <strong>X</strong> o cualquier parte fuera del menú.</p>
+<div class="par">
+  <figure class="w60"><img src="capturas/a58-celular-panel.png" alt="" /><figcaption>El panel en el celular.</figcaption></figure>
+  <figure class="w60"><img src="capturas/a59-celular-menu.png" alt="" /><figcaption>El menú abierto en el celular.</figcaption></figure>
+</div>
+<div class="recuadro consejo"><p>Para escribir notas largas es más cómodo un computador. El celular es ideal para revisar el buzón o hacer correcciones rápidas.</p></div>
+
+<!-- ═══════════════════════════ 3. LO BÁSICO ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 3</span>
+<h1 class="capitulo" id="c3">Lo básico que se repite en todo el panel</h1>
+<p class="intro-capitulo">Estas acciones funcionan igual en todas las secciones. Si las aprendes una vez, sirven para todo el panel.</p>
+
+<h2 id="s3-1">3.1 Borrador y publicado</h2>
+<p>Las notas, artículos y entrevistas tienen dos estados:</p>
+<ul>
+  <li><strong>Borrador</strong> (etiqueta amarilla): solo lo ve el equipo en el panel. Puedes guardarlo las veces que quieras, aunque esté incompleto.</li>
+  <li><strong>Publicado</strong> (etiqueta verde): está visible en el sitio para todo público.</li>
+</ul>
+<p>Arriba de cada editor hay una barra con los botones principales. Cambian según el estado:</p>
+<figure><img src="capturas/a19-trend-barra-superior.png" alt="" /><figcaption>En un borrador: <strong>Guardar borrador</strong> y <strong>Publicar</strong>. El aviso «Cambios sin guardar» recuerda que hay algo pendiente de guardar.</figcaption></figure>
+<figure><img src="capturas/a22-trend-publicada-barra.png" alt="" /><figcaption>En un contenido publicado: <strong>Ver en el sitio</strong>, <strong>Despublicar</strong> (vuelve a borrador) y <strong>Guardar</strong> (los cambios se ven de inmediato en el sitio).</figcaption></figure>
+
+<h2 id="s3-2">3.2 Mensajes de confirmación</h2>
+<p>Cada vez que guardas, publicas o eliminas algo, aparece un mensaje en la esquina inferior derecha:</p>
+<div class="par">
+  <figure><img src="capturas/a20-mensaje-guardado.png" alt="" /><figcaption>Mensaje verde: todo salió bien.</figcaption></figure>
+  <figure><img src="capturas/a08-medios-mensaje-exito.png" alt="" /><figcaption>Los mensajes desaparecen solos después de unos segundos.</figcaption></figure>
+</div>
+<p>Si algo falla (por ejemplo, se cortó internet), el mensaje es rojo y explica qué pasó. Tu trabajo no se pierde: espera un momento y vuelve a intentarlo.</p>
+
+<h2 id="s3-3">3.3 Las preguntas de seguridad</h2>
+<p>Antes de una acción importante (publicar, despublicar, eliminar o cambiar datos del sitio), el panel pregunta si estás segura. Lee el mensaje y elige:</p>
+<ul>
+  <li><span class="btn sec">Cancelar</span> si cambiaste de opinión. No pasa nada.</li>
+  <li>El botón de color (por ejemplo <span class="btn">Publicar</span> o <span class="btn peligro">Eliminar nota</span>) para confirmar.</li>
+</ul>
+<div class="par">
+  <figure><img src="capturas/a21-publicar-confirmar.png" alt="" /><figcaption>Confirmación antes de publicar.</figcaption></figure>
+  <figure><img src="capturas/a25-eliminar-confirmar.png" alt="" /><figcaption>Las acciones que no se pueden deshacer usan un botón rojo.</figcaption></figure>
+</div>
+
+<h2 id="s3-4">3.4 Si intentas salir sin guardar</h2>
+<p>Si estás escribiendo y haces clic en otra sección del menú sin guardar, el panel te avisa. Elige <span class="btn sec">Seguir editando</span> para volver a tu texto, o <span class="btn">Salir sin guardar</span> si quieres descartar los cambios.</p>
+<figure class="w50"><img src="capturas/a23-salir-sin-guardar.png" alt="" /><figcaption>Aviso de cambios sin guardar.</figcaption></figure>
+
+<h2 id="s3-5">3.5 Campos obligatorios y avisos</h2>
+<ul>
+  <li>Los campos con <strong>asterisco (*)</strong> son obligatorios.</li>
+  <li>Si falta algo o hay un error, el campo se marca y aparece un mensaje justo debajo explicando qué corregir.</li>
+  <li>Algunos campos tienen un contador (por ejemplo «120 / 400») que indica cuántos caracteres llevas y cuál es el máximo.</li>
+  <li>En los editores de notas, un aviso amarillo te dice qué falta para poder publicar:</li>
+</ul>
+<figure class="w70"><img src="capturas/a26-falta-autora.png" alt="" /><figcaption>Aviso de lo que falta para publicar.</figcaption></figure>
+
+<h2 id="s3-6">3.6 Escribir textos largos</h2>
+<p>Los cuadros de texto grandes no tienen botones de formato como Word. Para que el texto se vea ordenado en el sitio, usa estas tres reglas sencillas:</p>
+<table>
+  <tr><th>Para lograr…</th><th>Escribe…</th><th>Así se ve en el sitio</th></tr>
+  <tr><td>Un párrafo nuevo</td><td>Deja una <strong>línea en blanco</strong> entre párrafos (presiona Enter dos veces).</td><td>Párrafos separados.</td></tr>
+  <tr><td>Un subtítulo</td><td>Empieza la línea con <strong>##</strong> y un espacio.<br /><em>## Busca apoyo</em></td><td>Un título intermedio en morado.</td></tr>
+  <tr><td>Una lista con puntos</td><td>Empieza cada línea con un <strong>guion</strong> y un espacio.<br /><em>- Silencia cuentas</em></td><td>• Silencia cuentas</td></tr>
+</table>
+<p>Los subtítulos y las listas funcionan en los artículos de <span class="menu">Querer encajar</span>. En el resto de las secciones, separa los párrafos con una línea en blanco.</p>
+<figure class="w80"><img src="capturas/a29-encajar-texto.png" alt="" /><figcaption>Un texto con subtítulos (##) y listas (-) dentro del panel.</figcaption></figure>
+<div class="recuadro consejo"><p>Si escribes en Word o Google Docs, puedes copiar y pegar el texto en el panel. Revisa después que los párrafos queden separados por una línea en blanco.</p></div>
+
+<h2 id="s3-7">3.7 Elegir o subir una imagen</h2>
+<p>Donde se puede poner una imagen (portada de una nota, foto de una integrante, logo…) verás un recuadro con el botón <span class="btn sec">Elegir imagen</span>.</p>
+<ol class="pasos">
+  <li>Haz clic en <span class="btn sec">Elegir imagen</span>. Se abre la <strong>biblioteca</strong> con las imágenes que ya subió el equipo.</li>
+  <li>Si la imagen ya está, haz clic sobre ella y listo.</li>
+  <li>Si es nueva, haz clic en <span class="btn">Subir imagen</span>, búscala en tu computador o celular y ábrela. Se agrega a la biblioteca y queda elegida.</li>
+</ol>
+<figure class="w80"><img src="capturas/a17-elegir-imagen.png" alt="" /><figcaption>La biblioteca de imágenes al elegir una portada.</figcaption></figure>
+<p>Una vez elegida, verás una vista previa. Puedes reemplazarla con <strong>Cambiar imagen</strong> o sacarla con <strong>Quitar</strong>.</p>
+<figure class="w50"><img src="capturas/a18-trend-portada-elegida.png" alt="" /><figcaption>Imagen elegida, con las opciones Cambiar imagen y Quitar.</figcaption></figure>
+<div class="recuadro importante"><span class="titulo">Formatos y tamaño</span><p>Se aceptan fotos e ilustraciones en <strong>JPG, PNG, WEBP, AVIF o GIF</strong> de hasta <strong>5 MB</strong>. Si una foto pesa más, puedes achicarla con la opción «Exportar» o «Reducir tamaño» de tu celular o editor de fotos. No se pueden subir audios ni videos (ver capítulo 8).</p></div>
+<div class="recuadro cuidado"><p>Usa solo imágenes propias, con permiso o de bancos gratuitos (por ejemplo Unsplash o Pexels). Evita fotos que muestren cuerpos como «antes y después» o que refuercen cánones de belleza.</p></div>
+
+<h2 id="s3-8">3.8 Cómo escribir una referencia</h2>
+<p>Las notas de <span class="menu">Anatomía de un Trend</span> y los artículos de <span class="menu">Querer encajar</span> llevan <strong>referencias</strong>: los libros, estudios, informes o especialistas que respaldan lo que se afirma.</p>
+<ol class="pasos">
+  <li>En la sección <strong>Referencias y fuentes</strong>, haz clic en <span class="btn sec">+ Agregar referencia</span>.</li>
+  <li>En <span class="campo">Cita</span> escribe la referencia completa. Se sugiere el formato APA: <em>Apellido, inicial del nombre. (año). Título. Revista o editorial, número, páginas.</em></li>
+  <li>Si la fuente está en internet, pega su dirección en <span class="campo">Enlace (opcional)</span>.</li>
+  <li>Repite por cada fuente. Para quitar una, usa el ícono del basurero a su derecha.</li>
+</ol>
+<figure class="w70"><img src="capturas/a15-trend-referencias.png" alt="" /><figcaption>Una referencia con su cita y su enlace.</figcaption></figure>
+<div class="recuadro nota"><span class="titulo">Ejemplo de cita en formato APA</span><p>Fardouly, J., Diedrichs, P. C., Vartanian, L. R., &amp; Halliwell, E. (2015). Social comparisons on social media: The impact of Facebook on young women's body image concerns and mood. <em>Body Image, 13</em>, 38–45.</p></div>
+<div class="recuadro consejo"><p>Si la referencia es una entrevista a una especialista, escríbela así: <em>Nombre Apellido, psicóloga clínica (entrevista personal, octubre de 2026).</em></p></div>
+
+<!-- ═══════════════════════════ 4. ANATOMÍA DE UN TREND ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 4</span>
+<h1 class="capitulo" id="c4">Anatomía de un Trend</h1>
+<p class="intro-capitulo">Notas breves que desglosan tendencias virales de TikTok e Instagram. Cada nota tiene siempre la misma estructura en cuatro partes, una autora visible y referencias que la respaldan.</p>
+
+<h2 id="s4-1">4.1 Ver las notas</h2>
+<p>En el menú, haz clic en <span class="menu">Anatomía de un Trend</span>. Verás todas las notas con su plataforma, su estado y la fecha de su último cambio.</p>
+<ul>
+  <li>Filtra con los botones <strong>Todas</strong>, <strong>Publicadas</strong> o <strong>Borradores</strong>, o busca por palabra en el cuadro <strong>Buscar…</strong>.</li>
+  <li>Bajo cada título aparece la autora. Si dice <strong>Sin autora asignada</strong>, revisa la sección 4.5.</li>
+  <li>A la derecha de cada nota están los íconos para <strong>ver en el sitio</strong> (ojo), <strong>editar</strong> (lápiz) y <strong>eliminar</strong> (basurero).</li>
+</ul>
+<figure><img src="capturas/a11-trends-lista.png" alt="" /><figcaption>La lista de notas.</figcaption></figure>
+
+<h2 id="s4-2">4.2 Escribir una nota nueva, paso a paso</h2>
+<ol class="pasos">
+  <li>Haz clic en <span class="btn">+ Nueva nota</span>. Se abre el editor vacío.</li>
+</ol>
+<figure><img src="capturas/a12-trend-nueva.png" alt="" /><figcaption>El editor de una nota nueva.</figcaption></figure>
+<ol class="pasos" start="2" style="counter-reset: paso 1">
+  <li>Escribe el <span class="campo">Título</span> y la <span class="campo">Bajada / resumen</span>: una o dos frases que invitan a leer. La bajada aparece en las tarjetas del sitio y bajo el título.</li>
+  <li>Completa las <strong>cuatro partes de la nota</strong>. Bajo cada una hay una pista de lo que se espera:
+    <ul>
+      <li><strong>a. Origen y viralización:</strong> dónde y cómo nació la tendencia y cómo se masificó.</li>
+      <li><strong>b. Mecanismo algorítmico y de comparación:</strong> por qué las redes la empujan y cómo instala la comparación.</li>
+      <li><strong>c. Impacto psicológico y autoobjetivación:</strong> qué efectos tiene, con apoyo de fuentes y especialistas.</li>
+      <li><strong>d. Mirada desde la neutralidad corporal:</strong> una forma más amable y funcional de mirar el tema.</li>
+    </ul>
+  </li>
+</ol>
+<figure class="media-alta"><img src="capturas/a13-trend-estructura.png" alt="" /><figcaption>Las cuatro partes de la nota.</figcaption></figure>
+<ol class="pasos" start="4" style="counter-reset: paso 3">
+  <li>En <strong>Situación cotidiana</strong> escribe un ejemplo breve y reconocible que aterrice el tema (por ejemplo, una escena del colegio, de un grupo de WhatsApp o de una once familiar). En el sitio aparece destacado antes de la nota.</li>
+</ol>
+<figure class="w80"><img src="capturas/a14-trend-situacion-cotidiana.png" alt="" /><figcaption>La situación cotidiana.</figcaption></figure>
+<ol class="pasos" start="5" style="counter-reset: paso 4">
+  <li>Agrega las <strong>referencias</strong> (ver sección 3.8). Para publicar se necesita al menos una.</li>
+  <li>En la columna derecha, elige la <span class="campo">Autora</span>. Aparecen las integrantes del equipo; en el sitio se mostrarán su foto, su nombre y su rol. Si la persona no aparece, agrégala primero en <span class="menu">Equipo (Nosotras)</span> (capítulo 9).</li>
+</ol>
+<div class="par">
+  <figure><img src="capturas/a16-trend-autora.png" alt="" /><figcaption>Elegir la autora.</figcaption></figure>
+  <figure class="w80"><img src="capturas/a16b-trend-clasificacion.png" alt="" /><figcaption>Plataforma, etiquetas y dirección web.</figcaption></figure>
+</div>
+<ol class="pasos" start="7" style="counter-reset: paso 6">
+  <li>Elige la <span class="campo">Plataforma</span> (TikTok, Instagram o ambas) y agrega <span class="campo">Etiquetas</span>: escribe una palabra y presiona Enter. Puedes poner hasta 8.</li>
+  <li>El campo <span class="campo">URL (slug)</span> es la dirección web de la nota. <strong>Puedes dejarlo vacío</strong>: se crea solo a partir del título.</li>
+  <li>Elige una <span class="campo">Portada</span> (ver sección 3.7). Si no pones una, el sitio usa una ilustración con los colores de Punto Neutro.</li>
+  <li>Si el equipo grabó un video corto sobre el tema, pega su enlace en <span class="campo">Cápsula en redes</span>. En la nota aparecerá el botón «Mira la cápsula en TikTok».</li>
+</ol>
+<figure class="w50"><img src="capturas/a16c-trend-capsula.png" alt="" /><figcaption>Enlace a la cápsula en redes sociales.</figcaption></figure>
+<ol class="pasos" start="11" style="counter-reset: paso 10">
+  <li>Haz clic en <span class="btn sec">Guardar borrador</span> para guardar sin publicar. Puedes volver a la nota cuando quieras.</li>
+</ol>
+
+<h2 id="s4-3">4.3 Publicar una nota</h2>
+<ol class="pasos">
+  <li>Revisa que la nota tenga autora y al menos una referencia. Si falta algo, el aviso amarillo bajo el título te lo dirá.</li>
+  <li>Haz clic en <span class="btn">Publicar</span>.</li>
+  <li>Confirma con <span class="btn">Publicar</span> en la pregunta de seguridad. La nota queda visible en el sitio de inmediato.</li>
+</ol>
+<figure class="w80"><img src="capturas/a24-trends-lista-con-nota.png" alt="" /><figcaption>La nota publicada aparece en la lista con la etiqueta verde «Publicado».</figcaption></figure>
+
+<h2 id="s4-4">4.4 Corregir, despublicar o eliminar</h2>
+<ul>
+  <li><strong>Corregir una nota publicada:</strong> ábrela con el lápiz, haz los cambios y presiona <span class="btn sec">Guardar</span>. Los cambios se ven al instante en el sitio.</li>
+  <li><strong>Despublicar:</strong> presiona <strong>Despublicar</strong> en la barra superior. La nota vuelve a borrador y deja de verse en el sitio, pero no se borra.</li>
+  <li><strong>Eliminar:</strong> en la lista, haz clic en el basurero y confirma con <span class="btn peligro">Eliminar nota</span>. <strong>Esto no se puede deshacer.</strong></li>
+</ul>
+<div class="recuadro consejo"><p>Si dudas entre despublicar o eliminar, despublica: siempre podrás volver a publicarla.</p></div>
+
+<h2 id="s4-5">4.5 Notas antiguas sin autora</h2>
+<p>La autora y las referencias son obligatorias desde esta versión. Las notas publicadas antes de este cambio siguen visibles, pero el Resumen las muestra en el recuadro <strong>Notas publicadas sin autora</strong>. Para completarlas:</p>
+<ol class="pasos">
+  <li>Haz clic en el nombre de la nota en el Resumen, o ábrela desde la lista.</li>
+  <li>Elige la <span class="campo">Autora</span> y revisa que tenga referencias.</li>
+  <li>Presiona <span class="btn sec">Guardar</span>.</li>
+</ol>
+
+<!-- ═══════════════════════════ 5. QUERER ENCAJAR ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 5</span>
+<h1 class="capitulo" id="c5">Querer encajar</h1>
+<p class="intro-capitulo">Artículos sobre salud mental, los prejuicios que genera nuestra propia mente y estrategias para manejar la presión social por encajar.</p>
+
+<h2 id="s5-1">5.1 Ver y crear artículos</h2>
+<p>En el menú, haz clic en <span class="menu">Querer encajar</span>. Verás la lista de artículos con su tema y estado. Para escribir uno nuevo, presiona <span class="btn">+ Nuevo artículo</span>; para editar uno, haz clic en su título.</p>
+<figure><img src="capturas/a27-encajar-lista.png" alt="" /><figcaption>La lista de artículos de Querer encajar.</figcaption></figure>
+
+<h2 id="s5-2">5.2 Las partes de un artículo</h2>
+<figure class="alta"><img src="capturas/a28-encajar-editor.png" alt="" /><figcaption>El editor de un artículo.</figcaption></figure>
+<table>
+  <tr><th>Campo</th><th>Qué escribir</th></tr>
+  <tr><td><span class="campo">Título</span> y <span class="campo">Bajada</span></td><td>Igual que en las notas: un título claro y una o dos frases de presentación.</td></tr>
+  <tr><td><span class="campo">Texto del artículo</span></td><td>El contenido completo. Usa ## para subtítulos y - para listas (ver sección 3.6).</td></tr>
+  <tr><td><span class="campo">Situación cotidiana</span></td><td>Un ejemplo reconocible que ayude a entender el concepto.</td></tr>
+  <tr><td><span class="campo">Referencias y fuentes</span></td><td>Obligatorias para publicar (ver sección 3.8).</td></tr>
+  <tr><td><span class="campo">Tema</span></td><td><strong>Trastornos de salud mental</strong>, <strong>Prejuicios de la mente</strong> o <strong>Manejo emocional</strong>. Sirve para que las visitas filtren los artículos.</td></tr>
+  <tr><td><span class="campo">Autora</span></td><td>Opcional en esta sección. Si la eliges, se muestra su perfil.</td></tr>
+  <tr><td><span class="campo">Ideas clave</span></td><td>De 1 a 6 frases cortas con lo más importante. Escribe cada idea y presiona Enter. En el sitio aparecen en un recuadro lavanda.</td></tr>
+  <tr><td><span class="campo">Portada</span> y <span class="campo">Cápsula en redes</span></td><td>Igual que en las notas.</td></tr>
+</table>
+<p>Para guardar, publicar, despublicar o eliminar, sigue los mismos pasos del capítulo 4.</p>
+<div class="recuadro cuidado"><span class="titulo">Antes de publicar un artículo de salud mental</span>
+<ul>
+  <li>Usa un lenguaje cuidadoso y sin culpas. Habla de «una persona con un trastorno», no de «una anoréxica».</li>
+  <li>No des consejos médicos o psicológicos individuales; invita a consultar a profesionales.</li>
+  <li>No describas métodos de autolesión ni conductas de riesgo en detalle.</li>
+  <li>Respalda lo que afirmas con fuentes confiables (OMS, Minsal, estudios académicos o especialistas).</li>
+</ul>
+<p>El sitio muestra automáticamente, en cada artículo, un recuadro con líneas de ayuda: *4141 (prevención del suicidio), Salud Responde 600 360 7777 y 131 (urgencias).</p></div>
+
+<!-- ═══════════════════════════ 6. ENTREVISTAS ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 6</span>
+<h1 class="capitulo" id="c6">Pequeñas Entrevistas</h1>
+<p class="intro-capitulo">Conversaciones breves con creadoras de contenido en un formato fijo de tres preguntas.</p>
+
+<h2 id="s6-1">6.1 Crear o editar una entrevista</h2>
+<ol class="pasos">
+  <li>En el menú, haz clic en <span class="menu">Pequeñas Entrevistas</span> y luego en <span class="btn">+ Nueva entrevista</span> (o en el nombre de una entrevista para editarla).</li>
+  <li>Escribe una <span class="campo">Introducción</span> breve para dar contexto.</li>
+  <li>Completa las <strong>tres preguntas con sus respuestas</strong>. Las preguntas vienen sugeridas, pero puedes cambiarlas.</li>
+  <li>En la columna derecha escribe el <span class="campo">Nombre</span> de la persona entrevistada, su <span class="campo">Usuario en redes</span> (por ejemplo @usuaria) y una <span class="campo">Descripción breve</span>.</li>
+  <li>Si tienes su autorización, agrega una <span class="campo">Foto</span>.</li>
+  <li>Presiona <span class="btn sec">Guardar borrador</span> y, cuando esté lista, <span class="btn">Publicar</span>.</li>
+</ol>
+<figure><img src="capturas/a30-entrevistas-lista.png" alt="" /><figcaption>La lista de entrevistas.</figcaption></figure>
+<figure class="alta"><img src="capturas/a31-entrevista-editor.png" alt="" /><figcaption>El editor de una entrevista.</figcaption></figure>
+<div class="recuadro cuidado"><p>Antes de publicar, comparte la versión final con la persona entrevistada y usa su foto solo con su permiso.</p></div>
+
+<!-- ═══════════════════════════ 7. GLOSARIO ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 7</span>
+<h1 class="capitulo" id="c7">Glosario</h1>
+<p class="intro-capitulo">El glosario de palabras normalizadas: términos de uso común que refuerzan prejuicios sobre los cuerpos, con una forma más neutra de decirlos.</p>
+
+<h2 id="s7-1">7.1 Agregar o editar un término</h2>
+<ol class="pasos">
+  <li>En el menú, haz clic en <span class="menu">Glosario</span>.</li>
+  <li>Presiona <span class="btn">+ Nuevo</span> para agregar un término, o el lápiz de un término existente para editarlo. Se abre una ventana.</li>
+  <li>Completa el <span class="campo">Término</span>, la <span class="campo">Definición común</span>, el <span class="campo">Sesgo / impacto inconsciente</span> y la <span class="campo">Reformulación neutra</span>.</li>
+  <li>Si quieres, agrega un <span class="campo">Ejemplo cotidiano</span>: cómo suena la frase en la vida diaria. En el sitio aparece como una burbuja de conversación.</li>
+  <li>El campo <span class="campo">Orden</span> define la posición: los números menores aparecen primero.</li>
+  <li>Deja activado <strong>Visible en el sitio</strong> para que se publique, o desactívalo para ocultarlo sin borrarlo.</li>
+  <li>Presiona <span class="btn">Guardar</span>.</li>
+</ol>
+<figure><img src="capturas/a32-glosario-lista.png" alt="" /><figcaption>La lista de términos del glosario.</figcaption></figure>
+<figure class="w80 alta"><img src="capturas/a33-glosario-dialogo.png" alt="" /><figcaption>La ventana para editar un término.</figcaption></figure>
+
+<!-- ═══════════════════════════ 8. PODCAST ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 8</span>
+<h1 class="capitulo" id="c8">Podcast «A Pausar el Filtro»</h1>
+<p class="intro-capitulo">Los episodios se suben a SoundCloud y el sitio muestra su reproductor. En el panel solo se pega el enlace del episodio.</p>
+
+<h2 id="s8-1">8.1 Copiar el enlace desde SoundCloud</h2>
+<ol class="pasos">
+  <li>Entra a SoundCloud con la cuenta del podcast y abre el episodio.</li>
+  <li>Haz clic en <strong>Compartir</strong> (Share) y luego en <strong>Copiar enlace</strong> (Copy link). El enlace empieza con <em>https://soundcloud.com/…</em>.</li>
+</ol>
+<div class="recuadro importante"><p>El panel no permite subir el audio directamente: los archivos de audio son muy pesados para el sitio. SoundCloud los guarda, los reproduce y además entrega estadísticas de escucha.</p></div>
+
+<h2 id="s8-2">8.2 Agregar un episodio</h2>
+<ol class="pasos">
+  <li>En el menú, haz clic en <span class="menu">Podcast</span> y luego en <span class="btn">+ Nuevo</span>.</li>
+  <li>Escribe el <span class="campo">Título</span>, el <span class="campo">N° de episodio</span> y la <span class="campo">Duración</span> en minutos.</li>
+  <li>Pega el enlace en <span class="campo">Enlace de SoundCloud</span>.</li>
+  <li>Completa <span class="campo">Invitadas e invitados</span> y una <span class="campo">Descripción</span>.</li>
+  <li>Activa <strong>Publicado</strong> cuando quieras que aparezca en el sitio.</li>
+  <li>Presiona <span class="btn">Guardar</span>.</li>
+</ol>
+<figure><img src="capturas/a34-podcast-lista.png" alt="" /><figcaption>La lista de episodios.</figcaption></figure>
+<figure class="w80"><img src="capturas/a35-podcast-dialogo.png" alt="" /><figcaption>La ventana para editar un episodio.</figcaption></figure>
+<div class="recuadro consejo"><p>Si un episodio no se escucha en el sitio, revisa en SoundCloud que esté configurado como <strong>público</strong>.</p></div>
+
+<!-- ═══════════════════════════ 9. EQUIPO ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 9</span>
+<h1 class="capitulo" id="c9">Equipo (Nosotras)</h1>
+<p class="intro-capitulo">Las integrantes que aparecen en la sección Nosotras del sitio. Estos perfiles también se usan para mostrar la autora de cada nota.</p>
+
+<h2 id="s9-1">9.1 Agregar o editar una integrante</h2>
+<ol class="pasos">
+  <li>En el menú, haz clic en <span class="menu">Equipo (Nosotras)</span>.</li>
+  <li>Presiona <span class="btn">+ Nuevo</span> o el lápiz de una integrante.</li>
+  <li>Completa su <span class="campo">Nombre</span> y <span class="campo">Rol</span> (por ejemplo: «Periodista · Entrevistas y estrategia digital»).</li>
+  <li>Agrega una <span class="campo">Foto</span> (ideal: cuadrada, de frente) y una <span class="campo">Biografía breve</span>.</li>
+  <li>En <span class="campo">Responsabilidades</span>, escribe cada tarea y presiona Enter. Para quitar una, haz clic en su <strong>×</strong>.</li>
+  <li>Usa <span class="campo">Orden</span> para decidir quién aparece primero y <strong>Visible en el sitio</strong> para mostrarla u ocultarla.</li>
+  <li>Presiona <span class="btn">Guardar</span>.</li>
+</ol>
+<figure><img src="capturas/a36-equipo-lista.png" alt="" /><figcaption>La lista del equipo.</figcaption></figure>
+<figure class="w80"><img src="capturas/a37-equipo-dialogo.png" alt="" /><figcaption>La ventana para editar una integrante.</figcaption></figure>
+<div class="recuadro nota"><p>Una integrante del equipo (lo que se muestra en el sitio) no es lo mismo que una cuenta del panel (para entrar a editar). Las cuentas se crean en <span class="menu">Usuarios y roles</span> (capítulo 13).</p></div>
+
+<!-- ═══════════════════════════ 10. BUZÓN ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 10</span>
+<h1 class="capitulo" id="c10">Buzón comunitario</h1>
+<p class="intro-capitulo">El espacio donde mujeres y adolescentes comparten sus relatos. Aquí el equipo los lee, los cuida y decide —con el consentimiento de cada persona— qué extracto publicar.</p>
+
+<h2 id="s10-1">10.1 Lo que ve la persona que escribe</h2>
+<p>En el sitio, el formulario del buzón:</p>
+<ul>
+  <li>Es <strong>anónimo por defecto</strong>. Si la persona quiere, puede firmar con un seudónimo y dejar un correo.</li>
+  <li>Permite elegir un tema. Si elige <strong>Otros</strong>, debe escribir de qué trata.</li>
+  <li>Muestra las <strong>normas de convivencia</strong>, que deben aceptarse para enviar (se editan en Configuración, sección 12.6).</li>
+  <li>Pregunta si autoriza publicar un extracto editado y pide su consentimiento informado.</li>
+</ul>
+<figure class="w50 alta"><img src="capturas/p02-sitio-buzon-formulario.png" alt="" /><figcaption>El formulario del buzón en el sitio.</figcaption></figure>
+
+<h2 id="s10-2">10.2 La bandeja del buzón</h2>
+<p>En el menú, haz clic en <span class="menu">Buzón comunitario</span>. Los relatos se ordenan en cuatro grupos:</p>
+<table>
+  <tr><th>Grupo</th><th>Significa</th></tr>
+  <tr><td><strong>Por revisar</strong></td><td>Relatos nuevos que nadie ha revisado todavía.</td></tr>
+  <tr><td><strong>Publicado</strong></td><td>Relatos cuyo extracto ya aparece en el sitio.</td></tr>
+  <tr><td><strong>Archivado</strong></td><td>Relatos leídos que no se publicarán (por ejemplo, porque la persona no lo autorizó).</td></tr>
+  <tr><td><strong>No publicable</strong></td><td>Relatos descartados: ofensivos, fuera de tema o que no corresponde publicar.</td></tr>
+</table>
+<p>Cada relato muestra etiquetas: <strong>Anónimo</strong> o la firma, <strong>Autoriza publicar</strong> o <strong>Solo lectura</strong>, el tema y, si corresponde, el aviso del filtro automático.</p>
+<figure><img src="capturas/a38-buzon-lista.png" alt="" /><figcaption>La bandeja del buzón con dos relatos por revisar.</figcaption></figure>
+
+<h2 id="s10-3">10.3 Revisar un relato y publicar un extracto</h2>
+<ol class="pasos">
+  <li>Haz clic sobre un relato. Se abre una ventana con el <strong>relato original</strong>, que solo ve el equipo.</li>
+  <li>Revisa si dice <strong>Autoriza publicar</strong>. Si no lo autorizó, solo puedes archivarlo.</li>
+  <li>En <span class="campo">Extracto para publicar</span>, escribe el fragmento que se mostrará en el sitio. Puedes usar el botón <strong>Usar el relato como base para editar</strong> y luego recortarlo.</li>
+  <li>Quita cualquier dato que pueda identificar a alguien: nombres, colegios, ciudades, usuarios de redes.</li>
+  <li>Si quieres, agrega una <span class="campo">Nota interna</span> (solo la ve el equipo) y una o más <strong>etiquetas</strong>.</li>
+  <li>Presiona <span class="btn">Aprobar y publicar</span> y confirma con <span class="btn">Publicar extracto</span>.</li>
+</ol>
+<figure class="w80 alta"><img src="capturas/a41-buzon-relato-publicable.png" alt="" /><figcaption>Un relato que autoriza su publicación.</figcaption></figure>
+<figure class="w80 alta"><img src="capturas/a42-buzon-extracto.png" alt="" /><figcaption>El extracto editado, con la etiqueta «Testimonio» elegida.</figcaption></figure>
+<figure class="w50"><img src="capturas/a43-buzon-publicar-confirmar.png" alt="" /><figcaption>La confirmación recuerda revisar que no haya datos que identifiquen.</figcaption></figure>
+<figure><img src="capturas/a44-buzon-publicados.png" alt="" /><figcaption>Los relatos publicados.</figcaption></figure>
+<div class="recuadro cuidado"><span class="titulo">El filtro editorial</span><p>Nunca se publica el relato completo tal como llegó: solo el extracto que escribe el equipo. Al editarlo, evita el sensacionalismo y cualquier detalle que pueda revictimizar a la persona.</p></div>
+
+<h2 id="s10-4">10.4 Relatos marcados por el filtro automático</h2>
+<p>El panel revisa cada relato que llega y <strong>marca</strong> los que podrían necesitar más atención: insultos, frases pasivo-agresivas («no es por ofender, pero…»), enlaces, mensajes en mayúsculas o señales de que la persona podría estar en riesgo.</p>
+<ul>
+  <li>El filtro <strong>nunca borra ni rechaza</strong> un relato: solo avisa. La decisión siempre es del equipo.</li>
+  <li>Un relato puede estar marcado porque <strong>cita</strong> algo que le dijeron a la persona (por ejemplo, un insulto que recibió). Lee siempre el contexto.</li>
+  <li>Para ver solo los marcados, usa el botón <strong>Solo marcados por el filtro</strong>.</li>
+</ul>
+<figure><img src="capturas/a39-buzon-solo-marcados.png" alt="" /><figcaption>Vista con solo los relatos marcados.</figcaption></figure>
+<p>Al abrir un relato marcado, un recuadro amarillo explica el motivo y las expresiones detectadas:</p>
+<figure class="w80 alta"><img src="capturas/a40-buzon-relato-marcado.png" alt="" /><figcaption>Un relato marcado por tono pasivo-agresivo, con la etiqueta correspondiente elegida.</figcaption></figure>
+
+<h2 id="s10-5">10.5 Etiquetas, archivar y descartar</h2>
+<p>Las <strong>etiquetas de moderación</strong> ayudan al equipo a ordenar los relatos: <em>Testimonio, Pasivo-agresivo, Ofensivo, Spam, Fuera de tema, Requiere contención</em> y <em>Derivar a especialista</em>. Haz clic en una para marcarla (queda en morado) y otra vez para quitarla. Se guardan al elegir cualquiera de estas acciones:</p>
+<table>
+  <tr><th>Botón</th><th>Qué hace</th></tr>
+  <tr><td><span class="btn">Aprobar y publicar</span></td><td>Publica el extracto en el sitio (solo si la persona lo autorizó).</td></tr>
+  <tr><td><span class="btn sec">Archivar</span></td><td>Lo guarda como leído, sin publicar.</td></tr>
+  <tr><td><span class="btn sec">Descartar</span></td><td>Lo pasa a «No publicable». Úsalo para mensajes ofensivos, spam o fuera de tema.</td></tr>
+  <tr><td><strong>Devolver a revisión</strong></td><td>Lo vuelve a «Por revisar», por ejemplo para que otra integrante lo vea.</td></tr>
+  <tr><td><strong>Eliminar</strong> (solo Administración)</td><td>Lo borra para siempre. Úsalo solo si la persona pide que borren su relato.</td></tr>
+</table>
+
+<h2 id="s10-6">10.6 Si un relato muestra señales de riesgo</h2>
+<div class="recuadro cuidado"><span class="titulo">Qué hacer</span>
+<p>Si el filtro muestra «Posible riesgo: requiere contención» (recuadro rojo), o si al leer notas que la persona podría estar en peligro:</p>
+<ul>
+  <li><strong>No publiques</strong> el relato.</li>
+  <li>Ponle la etiqueta <strong>Requiere contención</strong> y avisa al resto del equipo.</li>
+  <li>Si dejó un correo, considera responderle con calidez, sin juzgar, entregando las líneas de ayuda: <strong>*4141</strong> (prevención del suicidio, gratuita y las 24 horas) y <strong>Salud Responde 600 360 7777</strong>.</li>
+  <li>Si es anónimo, no hay forma de contactar a la persona: archívalo con una nota interna.</li>
+</ul></div>
+
+<!-- ═══════════════════════════ 11. MEDIOS ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 11</span>
+<h1 class="capitulo" id="c11">Medios (imágenes)</h1>
+<p class="intro-capitulo">La biblioteca de imágenes del sitio: portadas, fotos del equipo, logo e íconos.</p>
+
+<h2 id="s11-1">11.1 Subir imágenes</h2>
+<ol class="pasos">
+  <li>En el menú, haz clic en <span class="menu">Medios</span>.</li>
+  <li>Presiona <span class="btn">Subir imágenes</span> y elige una o varias imágenes de tu computador. También puedes <strong>arrastrarlas</strong> desde una carpeta hasta el recuadro punteado.</li>
+  <li>Espera el mensaje verde de confirmación.</li>
+</ol>
+<div class="par">
+  <figure><img src="capturas/a07-medios-vacio.png" alt="" /><figcaption>La biblioteca vacía, con el recuadro para arrastrar imágenes.</figcaption></figure>
+  <figure><img src="capturas/a09-medios-biblioteca.png" alt="" /><figcaption>La biblioteca con dos imágenes.</figcaption></figure>
+</div>
+
+<h2 id="s11-2">11.2 Describir, copiar o eliminar una imagen</h2>
+<p>Bajo cada imagen hay tres íconos:</p>
+<ul>
+  <li><strong>Lápiz — descripción:</strong> escribe en pocas palabras qué muestra la imagen. Esta descripción la leen en voz alta los programas que usan las personas ciegas o con baja visión. Si una imagen dice «Sin descripción», agrégala.</li>
+  <li><strong>Copiar enlace:</strong> copia la dirección de la imagen, por si necesitas compartirla.</li>
+  <li><strong>Basurero — eliminar:</strong> borra la imagen. Si se estaba usando como portada, foto o logo, ese lugar quedará sin imagen.</li>
+</ul>
+<figure class="w80"><img src="capturas/a10-medios-descripcion.png" alt="" /><figcaption>Escribir la descripción de una imagen.</figcaption></figure>
+
+<!-- ═══════════════════════════ 12. CONFIGURACIÓN ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 12</span>
+<h1 class="capitulo" id="c12">Configuración del sitio</h1>
+<p class="intro-capitulo">Los textos institucionales, el logo, el ícono y el título de la pestaña, las portadas, los datos de contacto y los avisos legales. Solo pueden usarla las cuentas con rol de Administración.</p>
+
+<h2 id="s12-1">12.1 Cómo funciona esta página</h2>
+<p>En el menú, haz clic en <span class="menu">Configuración del sitio</span>. La página está dividida en secciones; usa el índice de la izquierda para saltar a cada una.</p>
+<figure><img src="capturas/a45-config-inicio.png" alt="" /><figcaption>La página de configuración y su índice.</figcaption></figure>
+<p>Puedes cambiar varias cosas y guardar todo junto al final con <span class="btn">Guardar y publicar</span> (arriba a la derecha). El panel pedirá confirmar, porque los cambios se ven de inmediato en el sitio.</p>
+<figure class="w50"><img src="capturas/a54-config-guardar-confirmar.png" alt="" /><figcaption>Confirmación antes de publicar los cambios.</figcaption></figure>
+
+<h2 id="s12-2">12.2 Identidad: nombre, bajada y logo</h2>
+<p>El <span class="campo">Nombre del sitio</span> y la <span class="campo">Bajada</span> aparecen en la cabecera y en el pie de página. El <span class="campo">Logo</span> reemplaza el círculo con el punto que aparece junto al nombre. Usa una imagen cuadrada, idealmente con fondo transparente (PNG).</p>
+<figure class="w70"><img src="capturas/a46-config-identidad.png" alt="" /><figcaption>La sección Identidad.</figcaption></figure>
+
+<h2 id="s12-3">12.3 Título de la pestaña, ícono y buscadores</h2>
+<ul>
+  <li><span class="campo">Título de la página</span>: el texto que se ve en la pestaña del navegador y en los resultados de Google. En cada sección se antepone su nombre, por ejemplo «Glosario · Punto Neutro…».</li>
+  <li><span class="campo">Favicon</span>: el <strong>ícono pequeño</strong> que aparece en la pestaña del navegador y en los marcadores. Usa una imagen cuadrada y simple, idealmente de 512 × 512 píxeles.</li>
+  <li><span class="campo">Descripción para buscadores</span>: una o dos frases que Google muestra bajo el título del sitio.</li>
+</ul>
+<figure class="w70"><img src="capturas/a47-config-pestana.png" alt="" /><figcaption>Título, ícono y descripción.</figcaption></figure>
+<div class="recuadro consejo"><p>Después de cambiar el ícono, puede que tu navegador siga mostrando el anterior por unos minutos. Recarga la página o ábrela en otra ventana para ver el nuevo.</p></div>
+
+<h2 id="s12-4">12.4 Portada del inicio y textos principales</h2>
+<p>La sección <strong>Inicio</strong> controla la portada del sitio:</p>
+<ul>
+  <li><span class="campo">Imagen junto al título</span>: reemplaza la ilustración de círculos que aparece al lado del título principal. Usa una imagen horizontal, de al menos 1200 píxeles de ancho.</li>
+  <li><span class="campo">Título principal</span> y <span class="campo">Texto bajo el título</span>: lo primero que lee una visita.</li>
+  <li><span class="campo">¿Qué es Punto Neutro?</span>, <span class="campo">Objetivo de la página</span>, <span class="campo">Misión</span> y <span class="campo">Visión</span>.</li>
+</ul>
+<figure class="w60 media-alta"><img src="capturas/a48-config-portada-inicio.png" alt="" /><figcaption>La sección Inicio, con la imagen junto al título en la parte superior.</figcaption></figure>
+
+<h2 id="s12-5">12.5 Portadas de cada sección</h2>
+<p>Cada sección del sitio (Nosotras, Anatomía de un Trend, Entrevistas, Glosario, Querer encajar, Buzón y Podcast) puede tener su propia imagen de portada en la cabecera. Si dejas una vacía, se muestra la ilustración de esa sección.</p>
+<figure class="w70"><img src="capturas/a49-config-portadas.png" alt="" /><figcaption>Las portadas de las secciones.</figcaption></figure>
+
+<h2 id="s12-6">12.6 Buzón: consentimiento y normas de convivencia</h2>
+<p>Aquí se editan la presentación del buzón, el texto de consentimiento informado y las <span class="campo">Normas de convivencia</span>. Escribe <strong>una norma por línea</strong>: en el sitio se muestran como una lista que la persona debe aceptar antes de enviar.</p>
+<figure class="w70"><img src="capturas/a50-config-buzon.png" alt="" /><figcaption>La sección Buzón comunitario.</figcaption></figure>
+
+<h2 id="s12-7">12.7 Querer encajar, Nosotras y Podcast</h2>
+<p>Cada una de estas secciones tiene su texto de presentación. En <strong>Nosotras</strong> también se editan la línea editorial y los pilares editoriales (uno por entrada), y en <strong>Podcast</strong> el nombre y el enlace al perfil de SoundCloud.</p>
+<figure class="w70"><img src="capturas/a53-config-encajar.png" alt="" /><figcaption>La presentación de Querer encajar.</figcaption></figure>
+
+<h2 id="s12-8">12.8 Contacto y redes sociales</h2>
+<p>El correo, el teléfono, el WhatsApp y los enlaces a Instagram, Facebook y TikTok aparecen en el pie de página y en el banner de cierre de la portada. <strong>Los campos vacíos no se muestran</strong> en el sitio. Copia el enlace completo de cada red social (por ejemplo, <em>https://www.instagram.com/puntoneutro</em>).</p>
+<figure class="w70"><img src="capturas/a51-config-contacto.png" alt="" /><figcaption>La sección Contacto y redes.</figcaption></figure>
+
+<h2 id="s12-9">12.9 Créditos y política de privacidad</h2>
+<p>Los <span class="campo">Créditos</span> aparecen al final de cada página. La <span class="campo">Política de privacidad</span> se muestra en su propia página. Las líneas que empiezan con un número y un punto (por ejemplo «1. Qué datos recibimos») se muestran como subtítulos.</p>
+<figure class="w70"><img src="capturas/a52-config-legal.png" alt="" /><figcaption>Créditos y política de privacidad.</figcaption></figure>
+
+<!-- ═══════════════════════════ 13. USUARIOS ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 13</span>
+<h1 class="capitulo" id="c13">Usuarios y roles</h1>
+<p class="intro-capitulo">Las cuentas de las personas que pueden entrar al panel. Solo disponible para el rol de Administración.</p>
+
+<h2 id="s13-1">13.1 Crear una cuenta</h2>
+<ol class="pasos">
+  <li>En el menú, haz clic en <span class="menu">Usuarios y roles</span> y luego en <span class="btn">+ Nueva cuenta</span>.</li>
+  <li>Escribe el <span class="campo">Nombre</span> y el <span class="campo">Correo</span> de la persona.</li>
+  <li>Elige su <span class="campo">Rol</span>: <strong>Editora</strong> (contenidos, equipo, medios y buzón) o <strong>Administración</strong> (todo el panel).</li>
+  <li>Escribe una <span class="campo">Contraseña inicial</span> de al menos 10 caracteres.</li>
+  <li>Presiona <span class="btn">Guardar</span> y comparte el correo y la contraseña con la persona por un medio privado. Pídele que la cambie al entrar (sección 2.4).</li>
+</ol>
+<figure><img src="capturas/a55-usuarios.png" alt="" /><figcaption>La lista de cuentas.</figcaption></figure>
+<figure class="w80"><img src="capturas/a56-usuario-nuevo.png" alt="" /><figcaption>La ventana para crear una cuenta.</figcaption></figure>
+
+<h2 id="s13-2">13.2 Cambiar el rol, pausar o eliminar una cuenta</h2>
+<ul>
+  <li><strong>Cambiar el rol o restablecer la contraseña:</strong> haz clic en el lápiz de la cuenta, haz el cambio y guarda.</li>
+  <li><strong>Pausar el acceso:</strong> en la misma ventana, desactiva <strong>Cuenta activa</strong>. La persona no podrá entrar, pero su cuenta y sus contenidos se conservan.</li>
+  <li><strong>Eliminar:</strong> usa el basurero. Los contenidos que creó se conservan.</li>
+</ul>
+<div class="recuadro nota"><p>Por seguridad, nadie puede quitarse a sí misma el rol de Administración ni desactivar o eliminar su propia cuenta. Así el panel nunca queda sin una persona que lo administre.</p></div>
+
+<!-- ═══════════════════════════ 14. HISTORIAL ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 14</span>
+<h1 class="capitulo" id="c14">Historial de cambios</h1>
+<p class="intro-capitulo">Un registro de los últimos 200 cambios hechos en el panel: quién hizo qué y cuándo. Solo disponible para el rol de Administración.</p>
+<p>Úsalo para saber quién publicó o editó un contenido, o para entender un cambio inesperado en el sitio.</p>
+<figure><img src="capturas/a57-historial.png" alt="" /><figcaption>El historial de cambios.</figcaption></figure>
+
+<!-- ═══════════════════════════ 15. PREGUNTAS FRECUENTES ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 15</span>
+<h1 class="capitulo" id="c15">Preguntas frecuentes</h1>
+<p class="intro-capitulo">Respuestas rápidas a las dudas y problemas más comunes.</p>
+
+<h3>Olvidé mi contraseña.</h3>
+<p>Pídele a una persona con rol de Administración que te asigne una nueva desde <span class="menu">Usuarios y roles</span>. Luego cámbiala por una propia en <strong>Mi cuenta</strong>.</p>
+<h3>El panel me sacó y me pide ingresar otra vez.</h3>
+<p>Por seguridad, la sesión dura unas horas. Si al guardar aparece el mensaje «Tu sesión expiró», <strong>copia tu texto antes de recargar</strong> (selecciónalo y usa Copiar), vuelve a ingresar y pégalo de nuevo.</p>
+<h3>Publiqué algo y no lo veo en el sitio.</h3>
+<p>Revisa en la lista que tenga la etiqueta verde <strong>Publicado</strong> (o el interruptor <strong>Visible en el sitio</strong> / <strong>Publicado</strong> activado). Después recarga el sitio. En el glosario, el equipo y el podcast, el contenido debe estar marcado como visible o publicado.</p>
+<h3>No me deja publicar una nota.</h3>
+<p>Lee el aviso amarillo bajo el título: casi siempre falta la autora o una referencia. En las notas de Anatomía de un Trend ambas son obligatorias.</p>
+<h3>Mi autora no aparece en la lista.</h3>
+<p>Primero agrégala en <span class="menu">Equipo (Nosotras)</span>. Luego vuelve a la nota: ya aparecerá en la lista.</p>
+<h3>No puedo subir una imagen.</h3>
+<p>Revisa que sea JPG, PNG, WEBP, AVIF o GIF y que pese menos de 5 MB. Las fotos del celular a veces pesan más: redúcelas antes de subirlas.</p>
+<h3>¿Puedo subir un audio o un video?</h3>
+<p>No. Los episodios del podcast se suben a SoundCloud y se pega su enlace (capítulo 8). Los videos cortos se publican en TikTok, Instagram o YouTube y se enlazan en el campo <strong>Cápsula en redes</strong> de cada nota.</p>
+<h3>Borré algo por error.</h3>
+<p>Las eliminaciones no se pueden deshacer desde el panel. Si fue un contenido importante, contacta a quien administra el sitio técnicamente lo antes posible.</p>
+<h3>Un relato del buzón tiene un insulto. ¿Lo descarto?</h3>
+<p>Primero lee el contexto: muchas veces la persona está contando un insulto que recibió. Si es un testimonio, puede publicarse un extracto cuidadoso. Si el mensaje ataca a otras personas, descártalo con la etiqueta «Ofensivo».</p>
+<h3>Alguien pide que borremos su relato.</h3>
+<p>Una persona con rol de Administración puede buscarlo por la fecha aproximada y el texto, abrirlo y usar <strong>Eliminar</strong>.</p>
+<h3>Veo todo muy oscuro (o muy claro).</h3>
+<p>Usa el botón de la luna o el sol, al final del menú, para cambiar entre modo claro y oscuro.</p>
+
+<!-- ═══════════════════════════ 16. GLOSARIO DEL PANEL ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 16</span>
+<h1 class="capitulo" id="c16">Palabras que usamos en el panel</h1>
+<p class="intro-capitulo">Un pequeño diccionario de los términos que aparecen en el panel y en este manual.</p>
+<dl class="glosario">
+  <dt>Borrador</dt><dd>Contenido guardado que solo ve el equipo. No aparece en el sitio.</dd>
+  <dt>Publicar / Despublicar</dt><dd>Hacer visible un contenido en el sitio / volver a ocultarlo sin borrarlo.</dd>
+  <dt>Bajada</dt><dd>Frase breve bajo el título que resume la nota e invita a leerla.</dd>
+  <dt>Etiquetas</dt><dd>Palabras clave que agrupan contenidos. En el buzón, marcas internas del equipo para ordenar relatos.</dd>
+  <dt>URL o slug</dt><dd>La dirección web de una nota (por ejemplo, <em>…/anatomia-de-un-trend/clean-girl</em>). Se crea sola a partir del título.</dd>
+  <dt>Portada</dt><dd>Imagen principal de una nota o de una sección.</dd>
+  <dt>Favicon</dt><dd>El ícono pequeño del sitio que aparece en la pestaña del navegador.</dd>
+  <dt>Biblioteca (Medios)</dt><dd>El lugar donde se guardan todas las imágenes del sitio.</dd>
+  <dt>Texto alternativo o descripción</dt><dd>Descripción de una imagen que leen los lectores de pantalla, usados por personas ciegas o con baja visión.</dd>
+  <dt>Referencia</dt><dd>Fuente que respalda una información: un libro, un estudio, un informe o una especialista.</dd>
+  <dt>Cápsula</dt><dd>Video corto para redes sociales (TikTok, Reels o Shorts) que resume un tema y lleva al sitio.</dd>
+  <dt>Extracto</dt><dd>Fragmento editado de un relato del buzón que se publica en el sitio, sin datos que identifiquen.</dd>
+  <dt>Filtro automático</dt><dd>Revisión que hace el panel de cada relato que llega para marcar los que necesitan más atención. Nunca rechaza ni borra.</dd>
+  <dt>Rol</dt><dd>El tipo de cuenta: Editora o Administración. Define qué partes del panel puede usar cada persona.</dd>
+  <dt>Sesión</dt><dd>El tiempo durante el cual estás dentro del panel después de ingresar.</dd>
+</dl>
+
+<!-- ═══════════════════════════ 17. HOJA RÁPIDA ═══════════════════════════ -->
+<span class="capitulo-num">Capítulo 17</span>
+<h1 class="capitulo" id="c17">Hoja rápida</h1>
+<p class="intro-capitulo">Las tareas más frecuentes en pocos pasos. Puedes imprimir esta página y tenerla a mano.</p>
+<div class="rapida">
+  <div><h3>Publicar una nota</h3><ol><li>Anatomía de un Trend → <strong>+ Nueva nota</strong>.</li><li>Título, bajada y las 4 partes.</li><li>Autora y al menos una referencia.</li><li><strong>Publicar</strong> → confirmar.</li></ol></div>
+  <div><h3>Publicar un relato del buzón</h3><ol><li>Buzón comunitario → abrir un relato.</li><li>Verificar «Autoriza publicar».</li><li>Escribir el extracto sin datos que identifiquen.</li><li><strong>Aprobar y publicar</strong> → confirmar.</li></ol></div>
+  <div><h3>Agregar un término al glosario</h3><ol><li>Glosario → <strong>+ Nuevo</strong>.</li><li>Término, definición, sesgo y reformulación.</li><li>Ejemplo cotidiano (opcional).</li><li><strong>Guardar</strong>.</li></ol></div>
+  <div><h3>Agregar un episodio</h3><ol><li>Copiar el enlace en SoundCloud (Compartir → Copiar enlace).</li><li>Podcast → <strong>+ Nuevo</strong>.</li><li>Pegar el enlace y completar datos.</li><li>Activar «Publicado» → <strong>Guardar</strong>.</li></ol></div>
+  <div><h3>Cambiar una imagen de portada</h3><ol><li>Configuración del sitio → Portadas (o Inicio).</li><li><strong>Elegir imagen</strong> → elegir o subir.</li><li><strong>Guardar y publicar</strong> → confirmar.</li></ol></div>
+  <div><h3>Crear una cuenta para alguien</h3><ol><li>Usuarios y roles → <strong>+ Nueva cuenta</strong>.</li><li>Nombre, correo, rol y contraseña inicial.</li><li><strong>Guardar</strong> y compartir los datos en privado.</li></ol></div>
+  <div><h3>Si un relato muestra riesgo</h3><ol><li>No publicarlo.</li><li>Etiqueta «Requiere contención».</li><li>Avisar al equipo.</li><li>Si dejó correo: responder con *4141 y 600 360 7777.</li></ol></div>
+  <div><h3>Antes de terminar el día</h3><ol><li>Revisar que no queden «Cambios sin guardar».</li><li>Mirar el Resumen: relatos por revisar.</li><li>Salir si usas un computador compartido.</li></ol></div>
+</div>
+
+</body>
+</html>

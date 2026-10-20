@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8" />
+<title>Manual de uso · Punto Neutro</title>
+<link rel="stylesheet" href="estilos.css" />
+<style>
+  @page { size: A4; margin: 0; }
+  body { margin: 0; }
+  .portada { width: 210mm; height: 297mm; position: relative; overflow: hidden; background: radial-gradient(120% 90% at 85% 10%, #EBD6E6 0%, #EFE9D7 58%); padding: 26mm 22mm; display: flex; flex-direction: column; }
+  .marca { display: flex; align-items: center; gap: 4mm; font-family: 'Lora', serif; font-size: 18pt; font-weight: 600; color: #5E3474; }
+  .arte { position: absolute; right: -30mm; top: 70mm; width: 170mm; height: 170mm; }
+  .titulo { margin-top: auto; position: relative; }
+  .eyebrow { font-weight: 700; font-size: 10pt; letter-spacing: 0.18em; text-transform: uppercase; color: #8A3A84; display: flex; align-items: center; gap: 3mm; }
+  .eyebrow::before { content: ''; width: 3mm; height: 3mm; border-radius: 50%; background: #F49A9C; }
+  h1 { font-family: 'Lora', serif; font-size: 48pt; line-height: 1.02; color: #5E3474; margin: 5mm 0 6mm; }
+  .bajada { font-size: 15pt; color: #54435E; max-width: 130mm; line-height: 1.45; }
+  .pie { margin-top: 18mm; display: flex; justify-content: space-between; align-items: flex-end; font-size: 9.5pt; color: #54435E; border-top: 1px solid #D198C5; padding-top: 5mm; position: relative; }
+  .pie strong { color: #5E3474; }
+</style>
+</head>
+<body>
+  <section class="portada">
+    <div class="marca">
+      <svg width="40" height="40" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="27" fill="none" stroke="#7D4C97" stroke-width="6"/><circle cx="32" cy="32" r="9" fill="#F49A9C"/></svg>
+      Punto Neutro
+    </div>
+    <svg class="arte" viewBox="0 0 420 420" aria-hidden="true">
+      <circle cx="210" cy="210" r="190" fill="#EADCE2"/>
+      <circle cx="160" cy="170" r="110" fill="#D198C5" opacity="0.75"/>
+      <circle cx="270" cy="250" r="105" fill="#F49A9C" opacity="0.7"/>
+      <circle cx="225" cy="150" r="64" fill="#B96EB2" opacity="0.55"/>
+      <circle cx="210" cy="210" r="150" fill="none" stroke="#7D4C97" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"/>
+      <circle cx="210" cy="210" r="26" fill="#7D4C97"/>
+      <circle cx="210" cy="210" r="9" fill="#EFE9D7"/>
+    </svg>
+    <div class="titulo">
+      <span class="eyebrow">Guía para el equipo editorial</span>
+      <h1>Manual de uso<br />del panel</h1>
+      <p class="bajada">Todo lo que necesitas para publicar contenidos, moderar el Buzón Comunitario y mantener el sitio al día, paso a paso y sin conocimientos técnicos.</p>
+      <div class="pie">
+        <span><strong>Punto Neutro</strong> · Periodismo transmedia sobre neutralidad corporal<br />Proyecto de Título · Periodismo, Universidad Autónoma de Chile</span>
+        <span>Versión 1.0 · Octubre 2026</span>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

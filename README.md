@@ -50,3 +50,4 @@ server/   API Express (src/routes), Prisma (prisma/schema.prisma, migrations, se
 
 Cloudflare Pages (sitio) + Render (API) + Supabase (PostgreSQL). Paso a paso en **[DESPLIEGUE.md](DESPLIEGUE.md)** y **[SUPABASE.md](SUPABASE.md)**.
 - Estrategia de cápsulas para redes (RNF-02): [docs/estrategia-difusion-audiovisual.md](docs/estrategia-difusion-audiovisual.md).
+- **Manual de uso del panel** (para el equipo editorial, sin lenguaje técnico): [docs/manual-de-uso.pdf](docs/manual-de-uso.pdf).
