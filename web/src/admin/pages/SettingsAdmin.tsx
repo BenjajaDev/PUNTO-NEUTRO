@@ -19,7 +19,8 @@ const SECTIONS: { id: string; title: string; description: string; fields: FieldD
     fields: [
       { key: 'siteName', label: 'Nombre del sitio *', max: 80 },
       { key: 'tagline', label: 'Bajada', max: 160 },
-      { key: 'logoId', label: 'Logo', type: 'image', hint: 'Cuadrado, fondo transparente (PNG o WEBP). Sin logo se usa la marca por defecto.' },
+      { key: 'logoId', label: 'Logo de la cabecera', type: 'image', hint: 'Cuadrado, fondo transparente (PNG o WEBP). Sin logo se usa la marca por defecto.' },
+      { key: 'footerLogoId', label: 'Logo del pie de página', type: 'image', hint: 'Útil para una versión más simple o de otro color. Sin logo propio se usa el de la cabecera.' },
     ],
   },
   {

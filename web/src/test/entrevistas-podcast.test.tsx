@@ -82,7 +82,7 @@ describe('Tabs', () => {
 });
 
 describe('Entrevistas por categoría', () => {
-  const data = [interview(1, 'EXPERTAS', 'Dra. Paz'), interview(2, 'INFLUENCERS', 'Camila'), interview(3, 'PERSONAS_COMUNES', 'Josefa')];
+  const data = [interview(1, 'EXPERTAS', 'Dra. Paz'), interview(2, 'INFLUENCERS', 'Camila'), interview(3, 'MUJERES', 'Josefa')];
 
   const renderPage = (url = '/entrevistas') =>
     render(
@@ -97,7 +97,7 @@ describe('Entrevistas por categoría', () => {
     const user = userEvent.setup();
     renderPage();
     expect(await screen.findByRole('heading', { name: 'Expertas', level: 2 })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Personas comunes', level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mujeres', level: 2 })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /Todas/ })).toHaveTextContent('3');
 
     await user.click(screen.getByRole('tab', { name: /Expertas/ }));
@@ -109,9 +109,9 @@ describe('Entrevistas por categoría', () => {
 
   it('abre directo en la categoría que indica la URL', async () => {
     fetchMock.mockResolvedValue(json(data));
-    renderPage('/entrevistas?categoria=personas-comunes');
+    renderPage('/entrevistas?categoria=mujeres');
     expect(await screen.findByText('Josefa')).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: /Personas comunes/ })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByRole('tab', { name: /Mujeres/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.queryByText('Dra. Paz')).not.toBeInTheDocument();
   });
 });

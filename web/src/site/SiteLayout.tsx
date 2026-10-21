@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTheme } from '@/lib/useTheme';
 import { buttonClass } from '@/ui';
-import { Logo, LogoMark } from './components/Logo';
+import { BrandMark, Logo } from './components/Logo';
 import { FacebookIcon, InstagramIcon, TikTokIcon } from './components/SocialIcons';
 import { useSiteData } from './SiteDataProvider';
 
@@ -123,7 +123,7 @@ export function SiteLayout() {
         <div className="site-footer__inner">
           <div className="site-footer__brand stack">
             <span className="row" style={{ gap: 10 }}>
-              <LogoMark size={40} />
+              <BrandMark logoId={settings?.footerLogoId ?? settings?.logoId} size={40} />
               <strong className="site-footer__name">{name}</strong>
             </span>
             {settings?.tagline ? <p className="text-secondary">{settings.tagline}</p> : null}

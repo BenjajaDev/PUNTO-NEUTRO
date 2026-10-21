@@ -49,14 +49,14 @@ export function InterviewCard({ item, showCategory = true }: { item: InterviewSu
   );
 }
 
-/** Sección 4 · Pequeñas Entrevistas, separadas en Expertas, Influencers y Personas comunes. */
+/** Sección 4 · Pequeñas Entrevistas, separadas en Expertas, Influencers y Mujeres. */
 export function InterviewsPage() {
   const { data, loading, error, reload } = useResource((signal) => api<InterviewSummary[]>('/interviews', { signal }), []);
   const { settings } = useSiteData();
   usePageTitle('Pequeñas Entrevistas');
   const [params, setParams] = useSearchParams();
 
-  // ?categoria=expertas|influencers|personas-comunes (legible y compartible).
+  // ?categoria=expertas|influencers|mujeres (legible y compartible).
   const tab: TabKey = INTERVIEW_CATEGORIES.find((c) => c.slug === params.get('categoria'))?.key ?? 'TODAS';
   const setTab = (key: TabKey) => {
     const next = new URLSearchParams(params);
@@ -83,7 +83,7 @@ export function InterviewsPage() {
       <PageHero
         eyebrow="Pequeñas Entrevistas"
         title="Preguntas simples, conversaciones honestas"
-        intro="Expertas, influencers y personas comunes responden preguntas sobre el escrutinio sobre los cuerpos, la presión por mantener estéticas hegemónicas y las formas de cuidarse."
+        intro="Expertas, influencers y mujeres responden preguntas sobre el escrutinio sobre los cuerpos, la presión por mantener estéticas hegemónicas y las formas de cuidarse."
         art="interviews"
         coverId={settings?.interviewsCoverId}
       />

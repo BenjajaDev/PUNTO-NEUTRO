@@ -8,6 +8,7 @@ export type SiteSettings = {
   siteName: string;
   tagline: string;
   logoId: number | null;
+  footerLogoId: number | null;
   siteTitle: string;
   metaDescription: string;
   faviconId: number | null;
@@ -111,7 +112,7 @@ export type ReflectionSummary = {
 export type Reflection = ReflectionSummary & { body: string; related?: ReflectionSummary[] };
 
 // Espejo de InterviewCategory (server/prisma/schema.prisma).
-export type InterviewCategory = 'EXPERTAS' | 'INFLUENCERS' | 'PERSONAS_COMUNES';
+export type InterviewCategory = 'EXPERTAS' | 'INFLUENCERS' | 'MUJERES';
 
 export type InterviewQuestion = { question: string; answer: string };
 
@@ -239,6 +240,6 @@ export const REFLECTION_CATEGORY: Record<ReflectionCategory, string> = {
 export const INTERVIEW_CATEGORIES: { key: InterviewCategory; slug: string; label: string; singular: string; description: string }[] = [
   { key: 'EXPERTAS', slug: 'expertas', label: 'Expertas', singular: 'Experta', description: 'Especialistas en psicología, salud y comunicación explican lo que hay detrás de la presión por encajar.' },
   { key: 'INFLUENCERS', slug: 'influencers', label: 'Influencers', singular: 'Influencer', description: 'Creadoras de contenido cuentan cómo viven el escrutinio público y la presión estética en redes.' },
-  { key: 'PERSONAS_COMUNES', slug: 'personas-comunes', label: 'Personas comunes', singular: 'Persona común', description: 'Voces cotidianas: estudiantes, trabajadoras, madres, hijas. Experiencias reales lejos de las cámaras.' },
+  { key: 'MUJERES', slug: 'mujeres', label: 'Mujeres', singular: 'Mujer', description: 'Voces cotidianas: estudiantes, trabajadoras, madres, hijas. Experiencias reales lejos de las cámaras.' },
 ];
 export const INTERVIEW_CATEGORY_LABEL = Object.fromEntries(INTERVIEW_CATEGORIES.map((c) => [c.key, c.singular])) as Record<InterviewCategory, string>;

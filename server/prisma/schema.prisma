@@ -43,10 +43,13 @@ model User {
 model SiteSettings {
   id Int @id @default(1)
 
-  siteName String @default("Punto Neutro")
-  tagline  String @default("")
-  logoId   Int?
-  logo     Media? @relation("SiteLogo", fields: [logoId], references: [id], onDelete: SetNull)
+  siteName     String @default("Punto Neutro")
+  tagline      String @default("")
+  logoId       Int?
+  logo         Media? @relation("SiteLogo", fields: [logoId], references: [id], onDelete: SetNull)
+  // Logo del pie de página; sin él se usa el de la cabecera.
+  footerLogoId Int?
+  footerLogo   Media? @relation("FooterLogo", fields: [footerLogoId], references: [id], onDelete: SetNull)
 
   // Pestaña del navegador y buscadores
   siteTitle       String @default("Punto Neutro · Periodismo sobre neutralidad corporal")
@@ -216,7 +219,7 @@ model Reflection {
 enum InterviewCategory {
   EXPERTAS // especialistas: psicología, salud, comunicación…
   INFLUENCERS // creadoras de contenido e influencers digitales
-  PERSONAS_COMUNES // personas sin exposición pública
+  MUJERES // mujeres sin exposición pública: voces cotidianas
 }
 
 /// Sección 4 · Pequeñas Entrevistas: formato fijo de tres preguntas.
@@ -341,6 +344,7 @@ model Media {
   createdAt    DateTime @default(now())
 
   siteLogos         SiteSettings[]   @relation("SiteLogo")
+  footerLogos       SiteSettings[]   @relation("FooterLogo")
   siteFavicons      SiteSettings[]   @relation("SiteFavicon")
   heroImages        SiteSettings[]   @relation("HeroImage")
   aboutCovers       SiteSettings[]   @relation("AboutCover")

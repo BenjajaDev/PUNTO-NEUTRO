@@ -45,6 +45,7 @@ export const settingsSchema = z.object({
   siteName: text(80),
   tagline: optText(160),
   logoId: mediaId,
+  footerLogoId: mediaId,
   siteTitle: text(120),
   metaDescription: optText(300),
   faviconId: mediaId,
@@ -133,7 +134,7 @@ export const reflectionSchema = z
   })
   .superRefine(publishRules(false));
 
-export const INTERVIEW_CATEGORIES = ['EXPERTAS', 'INFLUENCERS', 'PERSONAS_COMUNES'] as const;
+export const INTERVIEW_CATEGORIES = ['EXPERTAS', 'INFLUENCERS', 'MUJERES'] as const;
 export const MAX_INTERVIEW_QUESTIONS = 20;
 
 export const interviewSchema = z.object({

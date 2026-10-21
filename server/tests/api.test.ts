@@ -359,6 +359,18 @@ describe('Identidad editable', () => {
     expect(icon.headers['content-type']).toBe('image/png');
     expect((await request(app).get('/api/site')).body).toMatchObject({ siteTitle: 'Punto Neutro · Prueba', heroImageId: up.body.id });
   });
+
+  it('el logo del pie se guarda aparte y se libera al borrar la imagen', async () => {
+    const admin = await agentFor('ADMIN');
+    const up = await admin.post('/api/admin/media').set(CSRF).attach('file', png, { filename: 'logo-pie.png', contentType: 'image/png' });
+    const settings = (await admin.get('/api/admin/settings')).body;
+    const saved = await admin.put('/api/admin/settings').set(CSRF).send({ ...settings, logoId: null, footerLogoId: up.body.id });
+    expect(saved.status).toBe(200);
+    expect((await request(app).get('/api/site')).body).toMatchObject({ logoId: null, footerLogoId: up.body.id });
+
+    expect((await admin.delete(`/api/admin/media/${up.body.id}`).set(CSRF)).status).toBeLessThan(300);
+    expect((await request(app).get('/api/site')).body.footerLogoId).toBeNull();
+  });
 });
 
 describe('Entrevistas por categoría', () => {
@@ -386,7 +398,7 @@ describe('Entrevistas por categoría', () => {
 
   it('filtra por categoría en la vista pública', async () => {
     const editor = await agentFor('EDITOR');
-    for (const [category, guestName] of [['EXPERTAS', 'Psicóloga'], ['INFLUENCERS', 'Creadora'], ['PERSONAS_COMUNES', 'Estudiante']]) {
+    for (const [category, guestName] of [['EXPERTAS', 'Psicóloga'], ['INFLUENCERS', 'Creadora'], ['MUJERES', 'Estudiante']]) {
       expect((await editor.post('/api/admin/interviews').set(CSRF).send({ ...base, category, guestName })).status).toBe(201);
     }
     const all = (await request(app).get('/api/interviews')).body;

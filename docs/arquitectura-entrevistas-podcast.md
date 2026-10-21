@@ -2,7 +2,7 @@
 
 Este documento describe el modelo de datos, la API, los componentes y la lógica (sitio público y panel) de dos funciones:
 
-1. **Entrevistas por categoría:** Expertas, Influencers y Personas comunes.
+1. **Entrevistas por categoría:** Expertas, Influencers y Mujeres.
 2. **Tarjetas de podcast dinámicas:** carátula, título, resumen, palabras clave y enlace directo a SoundCloud, con su CRUD en el panel.
 
 Para usar estas funciones en el panel, ver el manual: capítulos 6 y 8 de [`manual-de-uso.pdf`](manual-de-uso.pdf).
@@ -15,7 +15,7 @@ Para usar estas funciones en el panel, ver el manual: capítulos 6 y 8 de [`manu
 
 | Pedido | Implementado | Por qué |
 |---|---|---|
-| `categoria`: `expertas` · `influencers` · `personas_comunes` | `Interview.category`, enum `InterviewCategory`: `EXPERTAS` · `INFLUENCERS` · `PERSONAS_COMUNES` | Un enum de Postgres impide valores inválidos a nivel de base. Va en mayúsculas para seguir la convención del resto de los enums (`ContentStatus`, `Role`…). En la URL pública se usan slugs en minúscula: `expertas`, `influencers`, `personas-comunes`. |
+| `categoria`: `expertas` · `influencers` · `mujeres` | `Interview.category`, enum `InterviewCategory`: `EXPERTAS` · `INFLUENCERS` · `MUJERES` | Un enum de Postgres impide valores inválidos a nivel de base. Va en mayúsculas para seguir la convención del resto de los enums (`ContentStatus`, `Role`…). En la URL pública se usan slugs en minúscula: `expertas`, `influencers`, `mujeres`. |
 | `titulo` | `PodcastEpisode.title` | El código va en inglés y los textos en español (convención del repo). |
 | `url_imagen` | `PodcastEpisode.coverId` → `Media` (se sirve en `/api/media/:id`) | Las imágenes del sitio viven en la biblioteca de medios (Postgres). Una URL externa rompería la CSP (`img-src 'self'`), podría desaparecer y no tendría texto alternativo ni límite de peso. Al borrar la imagen, `onDelete: SetNull` deja la tarjeta con la ilustración por defecto. |
 | `resumen` | `PodcastEpisode.summary` | Reemplaza a `description`: la columna **se renombró**, así que no se perdieron datos. |
@@ -28,7 +28,7 @@ Para usar estas funciones en el panel, ver el manual: capítulos 6 y 8 de [`manu
 enum InterviewCategory {
   EXPERTAS          // especialistas: psicología, salud, comunicación…
   INFLUENCERS       // creadoras de contenido e influencers digitales
-  PERSONAS_COMUNES  // personas sin exposición pública
+  MUJERES           // mujeres sin exposición pública: voces cotidianas
 }
 
 model Interview {
@@ -211,7 +211,7 @@ Se agregaron tres opciones:
 
 ### Entrevistas (`/entrevistas`)
 
-**Estado en la URL.** La pestaña activa se guarda en `?categoria=expertas|influencers|personas-comunes`, así:
+**Estado en la URL.** La pestaña activa se guarda en `?categoria=expertas|influencers|mujeres`, así:
 
 - el enlace se puede compartir;
 - el botón «atrás» funciona;
@@ -258,7 +258,7 @@ Un slug desconocido cae en «Todas».
 
 **Lista:**
 
-- Chips «Todas / Expertas / Influencers / Personas comunes» con contadores.
+- Chips «Todas / Expertas / Influencers / Mujeres» con contadores.
 - Columna «Categoría».
 
 **Editor:** la categoría es lo primero del formulario, y es obligatoria tanto en el cliente como en la API.

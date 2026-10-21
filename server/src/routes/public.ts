@@ -80,7 +80,7 @@ function interviewSummary<T extends { questions: unknown }>({ questions, ...rest
   return { ...rest, firstQuestion: list[0]?.question ?? '', questionCount: list.length };
 }
 
-/** ?category=EXPERTAS|INFLUENCERS|PERSONAS_COMUNES filtra; sin parámetro, todas. */
+/** ?category=EXPERTAS|INFLUENCERS|MUJERES filtra; sin parámetro, todas. */
 publicRouter.get('/interviews', async (req, res) => {
   const category = INTERVIEW_CATEGORIES.includes(req.query.category as InterviewCategory) ? (req.query.category as InterviewCategory) : undefined;
   res.json(

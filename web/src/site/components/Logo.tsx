@@ -13,11 +13,16 @@ export function LogoMark({ size = 36 }: { size?: number }) {
   );
 }
 
-export function Logo({ name = 'Punto Neutro', logoId }: { name?: string; logoId?: number | null }) {
+/** Logo subido en el panel o, si no hay, la marca por defecto. Decorativo: el nombre va al lado. */
+export function BrandMark({ logoId, size = 36 }: { logoId?: number | null; size?: number }) {
   const src = mediaUrl(logoId);
+  return src ? <img src={src} alt="" width={size} height={size} className="logo__img" style={{ width: size, height: size }} /> : <LogoMark size={size} />;
+}
+
+export function Logo({ name = 'Punto Neutro', logoId }: { name?: string; logoId?: number | null }) {
   return (
     <span className="logo">
-      {src ? <img src={src} alt="" width={36} height={36} className="logo__img" /> : <LogoMark />}
+      <BrandMark logoId={logoId} />
       <span className="logo__text">{name}</span>
     </span>
   );

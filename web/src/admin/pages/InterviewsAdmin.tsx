@@ -39,7 +39,7 @@ export function InterviewsAdmin() {
 
   return (
     <>
-      <PageHeader title="Pequeñas Entrevistas" subtitle="Preguntas breves a expertas, influencers y personas comunes." actions={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Nueva entrevista</Button>} />
+      <PageHeader title="Pequeñas Entrevistas" subtitle="Preguntas breves a expertas, influencers y mujeres." actions={<Button icon={Plus} onClick={() => navigate('/admin/entrevistas/nuevo')}>Nueva entrevista</Button>} />
       {items.data?.length ? (
         <div className="row" role="group" aria-label="Filtrar por categoría" style={{ marginBottom: 16 }}>
           <button type="button" className="chip" aria-pressed={category === 'TODAS'} onClick={() => setCategory('TODAS')}>

@@ -9,7 +9,7 @@
 .section--tinted { background: var(--gradient-section); }
 
 .logo { display: inline-flex; align-items: center; gap: 10px; }
-.logo__img { width: 36px; height: 36px; object-fit: contain; border-radius: 8px; }
+.logo__img { object-fit: contain; border-radius: 8px; flex-shrink: 0; }
 .logo__text { font-family: var(--font-serif); font-size: 21px; font-weight: 600; color: var(--color-heading); letter-spacing: -0.01em; }
 
 /* ── Header ────────────────────────────────────────────────────────── */
@@ -450,11 +450,13 @@ a.author-card__name:hover { text-decoration: underline; }
 .reflection-card__cover { width: calc(100% + 2 * var(--space-6)); margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) 0; aspect-ratio: 16 / 9; object-fit: cover; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 .reflection-card__title { font-size: 22px; }
 .reflection-card .link-arrow { margin-top: auto; }
-.help-box { display: flex; gap: var(--space-4); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); background: var(--color-info-soft); color: var(--color-text-primary); border: 1px solid color-mix(in srgb, var(--color-info) 30%, transparent); }
-.help-box__icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--color-surface-raised); color: var(--color-info-text); flex-shrink: 0; }
-.help-box__title { font-family: var(--font-sans); font-size: 16px; font-weight: 700; color: var(--color-info-text); }
+/* Rosa salmón de la paleta: cálido y contenido, sin el tono de alerta del azul «info». */
+.help-box { display: flex; gap: var(--space-4); padding: var(--space-5) var(--space-6); border-radius: var(--radius-lg); background: var(--color-accent-soft); color: var(--color-text-primary); border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent); }
+.help-box__icon { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--color-accent); color: var(--color-on-accent); flex-shrink: 0; }
+.help-box__title { font-family: var(--font-sans); font-size: 16px; font-weight: 700; color: var(--color-accent-text); }
 .help-box__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 15px; }
-.help-box__list a { color: inherit; }
+.help-box__list strong { color: var(--color-accent-text); }
+.help-box__list a { color: var(--color-accent-text); text-decoration-color: color-mix(in srgb, var(--color-accent-text) 55%, transparent); }
 .help-box--compact { padding: var(--space-4); }
 .help-box--compact .help-box__icon { display: none; }
 .key-ideas { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-quote); color: var(--color-on-quote); }
