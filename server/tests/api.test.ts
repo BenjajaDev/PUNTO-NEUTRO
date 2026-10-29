@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app.js';
 import { prisma } from '../src/db.js';
 import { hashPassword } from '../src/lib/password.js';
@@ -510,5 +510,58 @@ describe('Tarjetas de podcast', () => {
     expect((await request(app).get('/api/podcast?tag=autoestima')).body).toHaveLength(0);
     expect((await editor.delete(`/api/admin/podcast/${id}`).set(CSRF)).status).toBe(200);
     expect((await request(app).get('/api/podcast')).body).toHaveLength(0);
+  });
+});
+
+describe('Secciones activables', () => {
+  const story = 'Este es un relato de prueba con más de treinta caracteres.';
+  const disable = (...sections: ('REFLECTIONS' | 'MAILBOX' | 'GLOSSARY')[]) =>
+    prisma.siteSettings.upsert({ where: { id: 1 }, update: { disabledSections: sections }, create: { id: 1, disabledSections: sections } });
+
+  beforeEach(async () => {
+    await prisma.glossaryTerm.deleteMany();
+  });
+  // La configuración es una fila compartida por todos los tests: se deja todo visible.
+  afterEach(async () => {
+    await disable();
+  });
+
+  it('una sección oculta responde 404 en lista y detalle; las demás siguen igual', async () => {
+    await disable('REFLECTIONS');
+    for (const path of ['/api/reflections', '/api/reflections/cualquiera']) {
+      const res = await request(app).get(path);
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('Esta sección no está disponible por ahora.');
+    }
+    expect((await request(app).get('/api/trends')).status).toBe(200);
+    await disable();
+    expect((await request(app).get('/api/reflections')).status).toBe(200);
+  });
+
+  it('con el buzón oculto no recibe relatos ni muestra los publicados', async () => {
+    await disable('MAILBOX');
+    const sent = await request(app).post('/api/mailbox').send({ story, consent: true, acceptRules: true });
+    expect(sent.status).toBe(404);
+    expect(await prisma.mailboxSubmission.count()).toBe(0);
+    expect((await request(app).get('/api/mailbox/stories')).status).toBe(404);
+  });
+
+  it('la portada no entrega contenido de secciones ocultas', async () => {
+    await prisma.glossaryTerm.create({ data: { slug: 'termino', term: 'Término', commonDefinition: 'Definición.', bias: 'Sesgo.', neutralReformulation: 'Reformulación.' } });
+    expect((await request(app).get('/api/home')).body).toMatchObject({ glossaryCount: 1 });
+    await disable('GLOSSARY');
+    const home = (await request(app).get('/api/home')).body;
+    expect(home).toMatchObject({ glossary: [], glossaryCount: 0, settings: { disabledSections: ['GLOSSARY'] } });
+  });
+
+  it('el panel guarda la lista sin duplicados y rechaza secciones desconocidas', async () => {
+    const admin = await agentFor('ADMIN');
+    const settings = (await admin.get('/api/admin/settings')).body;
+    const saved = await admin.put('/api/admin/settings').set(CSRF).send({ ...settings, disabledSections: ['PODCAST', 'PODCAST', 'ABOUT'] });
+    expect(saved.status).toBe(200);
+    expect(saved.body.disabledSections).toEqual(['PODCAST', 'ABOUT']);
+    const invalid = await admin.put('/api/admin/settings').set(CSRF).send({ ...settings, disabledSections: ['HOME'] });
+    expect(invalid.status).toBe(400);
+    expect(invalid.body.fields['disabledSections.0']).toBe('Sección desconocida.');
   });
 });

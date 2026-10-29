@@ -2,6 +2,7 @@ import { ArrowRight, BookOpen, Compass, Eye, Headphones, HeartHandshake, Mail, M
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { mediaUrl } from '@/lib/format';
+import { isSectionEnabled } from '@/lib/sections';
 import { INTERVIEW_CATEGORY_LABEL, REFLECTION_CATEGORY, type HomeData } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 import { buttonClass, ErrorState, Skeleton, SkeletonCards } from '@/ui';
@@ -29,6 +30,15 @@ export function HomePage() {
   if (error || !data) return <div className="container section"><ErrorState message={error || ''} onRetry={reload} /></div>;
 
   const { settings: s, trends, interview, glossary, glossaryCount, episode, storiesCount, reflections } = data;
+  // Trends, glosario y Querer encajar ya llegan vacíos si están ocultos; estos
+  // bloques tienen textos de «muy pronto» o enlaces que no deben aparecer.
+  const show = {
+    trends: isSectionEnabled(s, 'TRENDS'),
+    interviews: isSectionEnabled(s, 'INTERVIEWS'),
+    podcast: isSectionEnabled(s, 'PODCAST'),
+    mailbox: isSectionEnabled(s, 'MAILBOX'),
+    about: isSectionEnabled(s, 'ABOUT'),
+  };
 
   return (
     <>
@@ -41,14 +51,20 @@ export function HomePage() {
               {s.heroTitle || s.siteName}
             </h1>
             {s.heroSubtitle ? <p className="hero__subtitle">{s.heroSubtitle}</p> : null}
-            <div className="row hero__actions">
-              <Link to="/anatomia-de-un-trend" className={buttonClass({ size: 'lg' })} viewTransition>
-                Explorar los trends <ArrowRight size={18} aria-hidden />
-              </Link>
-              <Link to="/buzon" className={buttonClass({ variant: 'secondary', size: 'lg' })} viewTransition>
-                Comparte tu relato
-              </Link>
-            </div>
+            {show.trends || show.mailbox ? (
+              <div className="row hero__actions">
+                {show.trends ? (
+                  <Link to="/anatomia-de-un-trend" className={buttonClass({ size: 'lg' })} viewTransition>
+                    Explorar los trends <ArrowRight size={18} aria-hidden />
+                  </Link>
+                ) : null}
+                {show.mailbox ? (
+                  <Link to="/buzon" className={buttonClass({ variant: show.trends ? 'secondary' : 'primary', size: 'lg' })} viewTransition>
+                    Comparte tu relato
+                  </Link>
+                ) : null}
+              </div>
+            ) : null}
           </div>
           {/* Imagen editable en el panel; sin imagen, la ilustración de la marca. */}
           <SectionCover coverId={s.heroImageId} art="home" className="hero__art" />
@@ -167,83 +183,91 @@ export function HomePage() {
       ) : null}
 
       {/* ── Entrevista y podcast ── */}
-      <section className="section" aria-label="Entrevistas y podcast">
-        <div className="container grid-2">
-          <article className="card feature-card reveal">
-            <span className="feature-card__icon"><MessageSquareQuote size={24} aria-hidden /></span>
-            <span className="eyebrow">Pequeñas Entrevistas</span>
-            {interview ? (
-              <>
-                <div className="row" style={{ gap: 14 }}>
-                  {mediaUrl(interview.photoId) ? <img className="avatar" src={mediaUrl(interview.photoId)!} alt="" width={56} height={56} /> : null}
-                  <div>
-                    <span className="badge">{INTERVIEW_CATEGORY_LABEL[interview.category]}</span>
-                    <h2 className="feature-card__title">{interview.guestName}</h2>
-                    {interview.guestHandle ? <p className="text-muted text-small">{interview.guestHandle}</p> : null}
-                  </div>
-                </div>
-                <blockquote className="feature-card__quote">«{interview.firstQuestion}»</blockquote>
-                <Link to={`/entrevistas/${interview.slug}`} className="link-arrow" viewTransition>
-                  {interview.questionCount > 1 ? `Leer las ${interview.questionCount} preguntas` : 'Leer la entrevista'} <ArrowRight size={18} aria-hidden />
-                </Link>
-              </>
-            ) : (
-              <>
-                <h2 className="feature-card__title">Preguntas simples, conversaciones honestas</h2>
-                <p className="text-secondary">Creadoras de contenido chilenas hablan sobre el escrutinio digital, la presión estética y el autocuidado. Muy pronto.</p>
-              </>
-            )}
-          </article>
+      {show.interviews || show.podcast ? (
+        <section className="section" aria-label={show.interviews && show.podcast ? 'Entrevistas y podcast' : show.interviews ? 'Entrevistas' : 'Podcast'}>
+          <div className={show.interviews && show.podcast ? 'container grid-2' : 'container reading'}>
+            {show.interviews ? (
+              <article className="card feature-card reveal">
+                <span className="feature-card__icon"><MessageSquareQuote size={24} aria-hidden /></span>
+                <span className="eyebrow">Pequeñas Entrevistas</span>
+                {interview ? (
+                  <>
+                    <div className="row" style={{ gap: 14 }}>
+                      {mediaUrl(interview.photoId) ? <img className="avatar" src={mediaUrl(interview.photoId)!} alt="" width={56} height={56} /> : null}
+                      <div>
+                        <span className="badge">{INTERVIEW_CATEGORY_LABEL[interview.category]}</span>
+                        <h2 className="feature-card__title">{interview.guestName}</h2>
+                        {interview.guestHandle ? <p className="text-muted text-small">{interview.guestHandle}</p> : null}
+                      </div>
+                    </div>
+                    <blockquote className="feature-card__quote">«{interview.firstQuestion}»</blockquote>
+                    <Link to={`/entrevistas/${interview.slug}`} className="link-arrow" viewTransition>
+                      {interview.questionCount > 1 ? `Leer las ${interview.questionCount} preguntas` : 'Leer la entrevista'} <ArrowRight size={18} aria-hidden />
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="feature-card__title">Preguntas simples, conversaciones honestas</h2>
+                    <p className="text-secondary">Creadoras de contenido chilenas hablan sobre el escrutinio digital, la presión estética y el autocuidado. Muy pronto.</p>
+                  </>
+                )}
+              </article>
+            ) : null}
 
-          <article className="card feature-card feature-card--podcast reveal">
-            <span className="feature-card__icon feature-card__icon--accent"><Headphones size={24} aria-hidden /></span>
-            <span className="eyebrow">Podcast</span>
-            <h2 className="feature-card__title">{s.podcastName}</h2>
-            {episode ? (
-              <>
-                <div className="episode-mini">
-                  {mediaUrl(episode.coverId) ? (
-                    <img className="episode-mini__cover" src={mediaUrl(episode.coverId)!} alt="" width={88} height={88} loading="lazy" />
-                  ) : (
-                    <span className="episode-mini__cover episode-mini__cover--art" aria-hidden><SectionArt kind="podcast" /></span>
-                  )}
-                  <div className="stack-sm" style={{ gap: 4 }}>
-                    <span className="text-xs text-muted">Último episodio</span>
-                    <strong>{episode.title}</strong>
-                    {episode.tags.length ? <span className="text-small text-secondary">{episode.tags.map((t) => `#${t}`).join(' ')}</span> : null}
-                  </div>
-                </div>
-                <a className={buttonClass({ size: 'sm' })} href={episode.soundcloudUrl} target="_blank" rel="noopener noreferrer" style={{ alignSelf: 'flex-start' }}>
-                  <Headphones size={16} aria-hidden /> Escuchar en SoundCloud
-                  <span className="visually-hidden">(se abre en otra pestaña)</span>
-                </a>
-                <Link to="/podcast" className="link-arrow" viewTransition>
-                  Todos los episodios <ArrowRight size={18} aria-hidden />
-                </Link>
-              </>
-            ) : (
-              <p className="text-secondary">{s.podcastDescription || 'Conversaciones con especialistas. Primer episodio muy pronto.'}</p>
-            )}
-          </article>
-        </div>
-      </section>
+            {show.podcast ? (
+              <article className="card feature-card feature-card--podcast reveal">
+                <span className="feature-card__icon feature-card__icon--accent"><Headphones size={24} aria-hidden /></span>
+                <span className="eyebrow">Podcast</span>
+                <h2 className="feature-card__title">{s.podcastName}</h2>
+                {episode ? (
+                  <>
+                    <div className="episode-mini">
+                      {mediaUrl(episode.coverId) ? (
+                        <img className="episode-mini__cover" src={mediaUrl(episode.coverId)!} alt="" width={88} height={88} loading="lazy" />
+                      ) : (
+                        <span className="episode-mini__cover episode-mini__cover--art" aria-hidden><SectionArt kind="podcast" /></span>
+                      )}
+                      <div className="stack-sm" style={{ gap: 4 }}>
+                        <span className="text-xs text-muted">Último episodio</span>
+                        <strong>{episode.title}</strong>
+                        {episode.tags.length ? <span className="text-small text-secondary">{episode.tags.map((t) => `#${t}`).join(' ')}</span> : null}
+                      </div>
+                    </div>
+                    <a className={buttonClass({ size: 'sm' })} href={episode.soundcloudUrl} target="_blank" rel="noopener noreferrer" style={{ alignSelf: 'flex-start' }}>
+                      <Headphones size={16} aria-hidden /> Escuchar en SoundCloud
+                      <span className="visually-hidden">(se abre en otra pestaña)</span>
+                    </a>
+                    <Link to="/podcast" className="link-arrow" viewTransition>
+                      Todos los episodios <ArrowRight size={18} aria-hidden />
+                    </Link>
+                  </>
+                ) : (
+                  <p className="text-secondary">{s.podcastDescription || 'Conversaciones con especialistas. Primer episodio muy pronto.'}</p>
+                )}
+              </article>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       {/* ── Buzón ── */}
-      <section className="section" aria-labelledby="buzon-title">
-        <div className="container">
-          <div className="cta-band reveal">
-            <div className="stack-sm" style={{ maxWidth: 620 }}>
-              <span className="eyebrow eyebrow--on-band">Buzón comunitario</span>
-              <h2 id="buzon-title" className="cta-band__title">Tu historia también importa</h2>
-              <p>{s.mailboxIntro}</p>
-              {storiesCount ? <p className="text-small"><BookOpen size={15} aria-hidden style={{ verticalAlign: '-2px' }} /> {storiesCount} relatos compartidos con la comunidad</p> : null}
+      {show.mailbox ? (
+        <section className="section" aria-labelledby="buzon-title">
+          <div className="container">
+            <div className="cta-band reveal">
+              <div className="stack-sm" style={{ maxWidth: 620 }}>
+                <span className="eyebrow eyebrow--on-band">Buzón comunitario</span>
+                <h2 id="buzon-title" className="cta-band__title">Tu historia también importa</h2>
+                <p>{s.mailboxIntro}</p>
+                {storiesCount ? <p className="text-small"><BookOpen size={15} aria-hidden style={{ verticalAlign: '-2px' }} /> {storiesCount} relatos compartidos con la comunidad</p> : null}
+              </div>
+              <Link to="/buzon" className={buttonClass({ variant: 'accent', size: 'lg' })} viewTransition>
+                <Mail size={18} aria-hidden /> Escribir mi relato
+              </Link>
             </div>
-            <Link to="/buzon" className={buttonClass({ variant: 'accent', size: 'lg' })} viewTransition>
-              <Mail size={18} aria-hidden /> Escribir mi relato
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* ── Banner de cierre ── */}
       <section className="section closing" aria-labelledby="cierre-title">
@@ -256,9 +280,11 @@ export function HomePage() {
                 <Mail size={18} aria-hidden /> {s.contactEmail}
               </a>
             ) : null}
-            <Link to="/nosotras" className={buttonClass({ variant: 'secondary' })} viewTransition>
-              Conoce al equipo
-            </Link>
+            {show.about ? (
+              <Link to="/nosotras" className={buttonClass({ variant: 'secondary' })} viewTransition>
+                Conoce al equipo
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>

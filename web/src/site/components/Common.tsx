@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { mediaUrl, paragraphs } from '@/lib/format';
 import type { AuthorProfile, Reference } from '@/lib/types';
+import { useSectionEnabled } from '../SiteDataProvider';
 import { SectionArt, type ArtKind } from './SectionArt';
 
 export function SectionHeading({ eyebrow, title, intro, action, id }: { eyebrow?: string; title: string; intro?: ReactNode; action?: { to: string; label: string }; id?: string }) {
@@ -94,12 +95,14 @@ export function AuthorCard({ author, fallbackName }: { author?: AuthorProfile | 
   if (!author && !fallbackName) return null;
   const name = author?.name ?? fallbackName ?? '';
   const photo = mediaUrl(author?.photoId);
+  // Con «Nosotras» oculta, el nombre queda como texto: el perfil no se puede abrir.
+  const aboutVisible = useSectionEnabled('ABOUT');
   return (
     <aside className="author-card" aria-label="Autora de la nota">
       {photo ? <img className="author-card__photo" src={photo} alt="" width={56} height={56} /> : <span className="author-card__photo author-card__photo--initials" aria-hidden>{initials(name)}</span>}
       <div className="author-card__body">
         <span className="author-card__label">Escrito por</span>
-        {author ? (
+        {author && aboutVisible ? (
           <Link to={`/nosotras#integrante-${author.id}`} className="author-card__name" viewTransition>
             {name}
           </Link>

@@ -4,11 +4,25 @@ import { prisma, type Platform } from '../db.js';
 import { env } from '../env.js';
 import { HttpError, idParam, notFound, parse } from '../lib/http.js';
 import { screenSubmission } from '../lib/moderation.js';
-import { INTERVIEW_CATEGORIES, OTHER_TOPIC, submissionSchema } from '../schemas.js';
+import { requireSection } from '../lib/sections.js';
+import { INTERVIEW_CATEGORIES, OTHER_TOPIC, submissionSchema, type SiteSectionKey } from '../schemas.js';
 import { tagKey } from '../lib/tags.js';
 
 // API pública: solo lee contenido PUBLICADO. Lo único que escribe es el Buzón.
 export const publicRouter = Router();
+
+// Una sección oculta desde el panel deja de responder entera (lectura y envío),
+// antes que el limitador del buzón: un buzón cerrado no gasta cupo de envíos.
+const SECTION_ROUTES: [string, SiteSectionKey][] = [
+  ['/team', 'ABOUT'],
+  ['/trends', 'TRENDS'],
+  ['/interviews', 'INTERVIEWS'],
+  ['/glossary', 'GLOSSARY'],
+  ['/reflections', 'REFLECTIONS'],
+  ['/mailbox', 'MAILBOX'],
+  ['/podcast', 'PODCAST'],
+];
+for (const [path, section] of SECTION_ROUTES) publicRouter.use(path, requireSection(section));
 
 const published = { status: 'PUBLISHED' as const };
 const author = { select: { name: true } };
@@ -25,17 +39,18 @@ publicRouter.get('/site', async (_req, res) => {
   res.json(await getSettings());
 });
 
-/** Todo lo que necesita la portada en una sola petición. */
+/** Todo lo que necesita la portada en una sola petición. Las secciones ocultas ni se consultan. */
 publicRouter.get('/home', async (_req, res) => {
-  const [settings, trends, interview, glossary, glossaryCount, episode, stories, reflections] = await Promise.all([
-    getSettings(),
-    prisma.trend.findMany({ where: published, orderBy: { publishedAt: 'desc' }, take: 3, omit: longText, include: { authorMember } }),
-    prisma.interview.findFirst({ where: published, orderBy: { publishedAt: 'desc' } }).then((i) => i && interviewSummary(i)),
-    prisma.glossaryTerm.findMany({ where: { published: true }, orderBy: [{ order: 'asc' }, { term: 'asc' }], take: 3 }),
-    prisma.glossaryTerm.count({ where: { published: true } }),
-    prisma.podcastEpisode.findFirst({ where: { published: true }, orderBy: [{ publishedAt: 'desc' }, { number: 'desc' }] }),
-    prisma.mailboxSubmission.count({ where: { status: 'APPROVED', allowPublication: true } }),
-    prisma.reflection.findMany({ where: published, orderBy: { publishedAt: 'desc' }, take: 3, omit: { body: true } }),
+  const settings = await getSettings();
+  const on = (section: SiteSectionKey) => !settings.disabledSections.includes(section);
+  const [trends, interview, glossary, glossaryCount, episode, stories, reflections] = await Promise.all([
+    on('TRENDS') ? prisma.trend.findMany({ where: published, orderBy: { publishedAt: 'desc' }, take: 3, omit: longText, include: { authorMember } }) : [],
+    on('INTERVIEWS') ? prisma.interview.findFirst({ where: published, orderBy: { publishedAt: 'desc' } }).then((i) => i && interviewSummary(i)) : null,
+    on('GLOSSARY') ? prisma.glossaryTerm.findMany({ where: { published: true }, orderBy: [{ order: 'asc' }, { term: 'asc' }], take: 3 }) : [],
+    on('GLOSSARY') ? prisma.glossaryTerm.count({ where: { published: true } }) : 0,
+    on('PODCAST') ? prisma.podcastEpisode.findFirst({ where: { published: true }, orderBy: [{ publishedAt: 'desc' }, { number: 'desc' }] }) : null,
+    on('MAILBOX') ? prisma.mailboxSubmission.count({ where: { status: 'APPROVED', allowPublication: true } }) : 0,
+    on('REFLECTIONS') ? prisma.reflection.findMany({ where: published, orderBy: { publishedAt: 'desc' }, take: 3, omit: { body: true } }) : [],
   ]);
   res.json({ settings, trends, interview, glossary, glossaryCount, episode, storiesCount: stories, reflections });
 });

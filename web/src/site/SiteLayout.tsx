@@ -1,21 +1,27 @@
 import { Mail, Menu, MessageCircle, Moon, Phone, Sun, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { isSectionEnabled } from '@/lib/sections';
+import type { SiteSection } from '@/lib/types';
 import { useTheme } from '@/lib/useTheme';
 import { buttonClass } from '@/ui';
 import { BrandMark, Logo } from './components/Logo';
 import { FacebookIcon, InstagramIcon, TikTokIcon } from './components/SocialIcons';
 import { useSiteData } from './SiteDataProvider';
 
-export const NAV = [
+type NavItem = { to: string; label: string; end?: boolean; section?: SiteSection };
+
+/** Menú principal. `section` permite ocultar el enlace cuando el panel apaga esa sección. */
+const NAV: NavItem[] = [
   { to: '/', label: 'Inicio', end: true },
-  { to: '/nosotras', label: 'Nosotras' },
-  { to: '/anatomia-de-un-trend', label: 'Anatomía de un Trend' },
-  { to: '/entrevistas', label: 'Entrevistas' },
-  { to: '/glosario', label: 'Glosario' },
-  { to: '/querer-encajar', label: 'Querer encajar' },
-  { to: '/podcast', label: 'Podcast' },
+  { to: '/nosotras', label: 'Nosotras', section: 'ABOUT' },
+  { to: '/anatomia-de-un-trend', label: 'Anatomía de un Trend', section: 'TRENDS' },
+  { to: '/entrevistas', label: 'Entrevistas', section: 'INTERVIEWS' },
+  { to: '/glosario', label: 'Glosario', section: 'GLOSSARY' },
+  { to: '/querer-encajar', label: 'Querer encajar', section: 'REFLECTIONS' },
+  { to: '/podcast', label: 'Podcast', section: 'PODCAST' },
 ];
+const MAILBOX_LINK: NavItem = { to: '/buzon', label: 'Buzón comunitario', section: 'MAILBOX' };
 
 function ThemeToggle() {
   const { mode, toggle } = useTheme();
@@ -62,6 +68,9 @@ export function SiteLayout() {
     { href: settings?.tiktokUrl, label: 'TikTok', icon: TikTokIcon },
   ].filter((s) => s.href);
   const whatsapp = settings?.whatsappNumber?.replace(/\D/g, '');
+  const visible = (item: NavItem) => !item.section || isSectionEnabled(settings, item.section);
+  const nav = NAV.filter(visible);
+  const mailboxOpen = visible(MAILBOX_LINK);
 
   return (
     <div className="site">
@@ -76,7 +85,7 @@ export function SiteLayout() {
           </Link>
 
           <nav className="site-nav" aria-label="Principal">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className="site-nav__link" viewTransition>
                 {item.label}
               </NavLink>
@@ -85,9 +94,11 @@ export function SiteLayout() {
 
           <div className="site-header__actions">
             <ThemeToggle />
-            <Link to="/buzon" className={buttonClass({ variant: 'accent', size: 'sm', className: 'site-header__cta' })} viewTransition>
-              Buzón comunitario
-            </Link>
+            {mailboxOpen ? (
+              <Link to="/buzon" className={buttonClass({ variant: 'accent', size: 'sm', className: 'site-header__cta' })} viewTransition>
+                Buzón comunitario
+              </Link>
+            ) : null}
             <button
               type="button"
               className={buttonClass({ variant: 'ghost', iconOnly: true, className: 'site-header__menu' })}
@@ -103,14 +114,16 @@ export function SiteLayout() {
 
         <div id="menu-movil" className="mobile-menu" data-open={menuOpen} hidden={!menuOpen}>
           <nav aria-label="Principal (móvil)" className="mobile-menu__nav">
-            {NAV.map((item) => (
+            {nav.map((item) => (
               <NavLink key={item.to} to={item.to} end={item.end} className="mobile-menu__link" viewTransition>
                 {item.label}
               </NavLink>
             ))}
-            <Link to="/buzon" className={buttonClass({ variant: 'accent', block: true })} viewTransition>
-              Buzón comunitario
-            </Link>
+            {mailboxOpen ? (
+              <Link to="/buzon" className={buttonClass({ variant: 'accent', block: true })} viewTransition>
+                Buzón comunitario
+              </Link>
+            ) : null}
           </nav>
         </div>
       </header>
@@ -143,7 +156,7 @@ export function SiteLayout() {
           <nav aria-label="Secciones" className="site-footer__col">
             <h2 className="site-footer__title">Secciones</h2>
             <ul>
-              {[...NAV, { to: '/buzon', label: 'Buzón comunitario' }].map((item) => (
+              {[...NAV, MAILBOX_LINK].filter(visible).map((item) => (
                 <li key={item.to}>
                   <Link to={item.to} viewTransition>
                     {item.label}
@@ -177,9 +190,11 @@ export function SiteLayout() {
                   </a>
                 </li>
               ) : null}
-              <li>
-                <Link to="/buzon">Comparte tu relato</Link>
-              </li>
+              {mailboxOpen ? (
+                <li>
+                  <Link to="/buzon">Comparte tu relato</Link>
+                </li>
+              ) : null}
             </ul>
           </div>
         </div>

@@ -1,15 +1,17 @@
 import { Save } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { api, ApiError, errorMessage } from '@/lib/api';
-import type { SiteSettings } from '@/lib/types';
+import { SECTION_LABEL } from '@/lib/sections';
+import type { SiteSection, SiteSettings } from '@/lib/types';
 import { useSiteData } from '@/site/SiteDataProvider';
 import { Badge, Button, ErrorState, PageHeader, SkeletonRows, TextArea, TextField, useFeedback } from '@/ui';
 import { ImagePicker } from '../components/ImagePicker';
 import { ListField } from '../components/ListField';
+import { SectionVisibilityField } from '../components/SectionVisibilityField';
 import { useUnsavedChanges } from '../components/useUnsavedChanges';
 
 type Key = keyof SiteSettings;
-type FieldDef = { key: Key; label: string; type?: 'textarea' | 'list' | 'image' | 'url' | 'email'; rows?: number; max?: number; hint?: string };
+type FieldDef = { key: Key; label: string; type?: 'textarea' | 'list' | 'image' | 'url' | 'email' | 'sections'; rows?: number; max?: number; hint?: string };
 
 const SECTIONS: { id: string; title: string; description: string; fields: FieldDef[] }[] = [
   {
@@ -22,6 +24,12 @@ const SECTIONS: { id: string; title: string; description: string; fields: FieldD
       { key: 'logoId', label: 'Logo de la cabecera', type: 'image', hint: 'Cuadrado, fondo transparente (PNG o WEBP). Sin logo se usa la marca por defecto.' },
       { key: 'footerLogoId', label: 'Logo del pie de página', type: 'image', hint: 'Útil para una versión más simple o de otro color. Sin logo propio se usa el de la cabecera.' },
     ],
+  },
+  {
+    id: 'secciones',
+    title: 'Secciones visibles',
+    description: 'Apaga una sección para ocultarla del menú, la portada y el pie de página; quien entre por un enlace verá un aviso. Su contenido se sigue editando en el panel y vuelve a verse al encenderla.',
+    fields: [{ key: 'disabledSections', label: 'Secciones', type: 'sections' }],
   },
   {
     id: 'pestana',
@@ -123,6 +131,18 @@ const SECTIONS: { id: string; title: string; description: string; fields: FieldD
   },
 ];
 
+/** Si cambian las secciones visibles, el aviso dice cuáles: es lo que más impacta al público. */
+function publishMessage(before: SiteSection[], after: SiteSection[]) {
+  const list = (keys: SiteSection[]) => keys.map((k) => `«${SECTION_LABEL[k]}»`).join(', ');
+  const hidden = after.filter((k) => !before.includes(k));
+  const shown = before.filter((k) => !after.includes(k));
+  return [
+    'Los cambios se verán de inmediato en el sitio.',
+    hidden.length ? `${hidden.length > 1 ? 'Se ocultarán' : 'Se ocultará'}: ${list(hidden)}.` : '',
+    shown.length ? `${shown.length > 1 ? 'Volverán' : 'Volverá'} a mostrarse: ${list(shown)}.` : '',
+  ].filter(Boolean).join(' ');
+}
+
 const EDITABLE: Key[] = SECTIONS.flatMap((s) => s.fields.map((f) => f.key));
 const pick = (s: SiteSettings) => Object.fromEntries(EDITABLE.map((k) => [k, s[k]]));
 
@@ -157,7 +177,7 @@ export function SettingsAdmin() {
   };
 
   const save = async () => {
-    const ok = await confirm({ title: '¿Publicar los cambios?', message: 'Los textos y datos de contacto se actualizarán de inmediato en el sitio.', tone: 'brand', icon: Save, confirmLabel: 'Guardar y publicar' });
+    const ok = await confirm({ title: '¿Publicar los cambios?', message: publishMessage(original?.disabledSections ?? [], form.disabledSections), tone: 'brand', icon: Save, confirmLabel: 'Guardar y publicar' });
     if (!ok) return;
     try {
       const saved = await runBlocking('Guardando…', () => api<SiteSettings>('/admin/settings', { method: 'PUT', body: pick(form) }));
@@ -177,7 +197,7 @@ export function SettingsAdmin() {
     <>
       <PageHeader
         title="Configuración del sitio"
-        subtitle="Textos institucionales, logo, contacto y avisos legales."
+        subtitle="Textos institucionales, secciones visibles, logo, contacto y avisos legales."
         actions={
           <>
             {dirty ? <Badge tone="accent">Cambios sin guardar</Badge> : null}
@@ -200,6 +220,7 @@ export function SettingsAdmin() {
                 {section.fields.map((f) => {
                   const value = form[f.key];
                   const full = f.type === 'textarea' || f.type === 'list' ? { gridColumn: '1 / -1' } : undefined;
+                  if (f.type === 'sections') return <SectionVisibilityField key={f.key} value={value as SiteSection[]} onChange={(v) => set(f.key, v)} />;
                   if (f.type === 'image') return <div key={f.key}><ImagePicker label={f.label} hint={f.hint} value={value as number | null} onChange={(v) => set(f.key, v)} /></div>;
                   if (f.type === 'list') return <div key={f.key} style={full}><ListField label={f.label} value={value as string[]} max={8} onChange={(v) => set(f.key, v)} error={errors[f.key]} /></div>;
                   if (f.type === 'textarea') return <div key={f.key} style={full}><TextArea label={f.label} hint={f.hint} rows={f.rows} maxLength={f.max} showCount value={value as string} onChange={(e) => set(f.key, e.target.value)} error={errors[f.key]} /></div>;

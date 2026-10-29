@@ -4,8 +4,12 @@ export type ContentStatus = 'DRAFT' | 'PUBLISHED';
 export type Platform = 'TIKTOK' | 'INSTAGRAM' | 'MULTIPLATFORM';
 export type SubmissionStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'ARCHIVED';
 
+/** Secciones que se pueden ocultar desde el panel (enum `SiteSection`). */
+export type SiteSection = 'ABOUT' | 'TRENDS' | 'INTERVIEWS' | 'GLOSSARY' | 'REFLECTIONS' | 'MAILBOX' | 'PODCAST';
+
 export type SiteSettings = {
   siteName: string;
+  disabledSections: SiteSection[];
   tagline: string;
   logoId: number | null;
   footerLogoId: number | null;

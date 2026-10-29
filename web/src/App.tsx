@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { FeedbackProvider, Spinner } from './ui';
 import { SiteDataProvider } from './site/SiteDataProvider';
 import { SiteLayout } from './site/SiteLayout';
+import { SectionGate } from './site/components/SectionGate';
 import { AboutPage } from './site/pages/AboutPage';
 import { GlossaryPage } from './site/pages/GlossaryPage';
 import { HomePage } from './site/pages/HomePage';
@@ -34,16 +35,31 @@ const router = createBrowserRouter([
     element: <SiteLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'nosotras', element: <AboutPage /> },
-      { path: 'anatomia-de-un-trend', element: <TrendsPage /> },
-      { path: 'anatomia-de-un-trend/:slug', element: <TrendDetailPage /> },
-      { path: 'entrevistas', element: <InterviewsPage /> },
-      { path: 'entrevistas/:slug', element: <InterviewDetailPage /> },
-      { path: 'glosario', element: <GlossaryPage /> },
-      { path: 'querer-encajar', element: <ReflectionsPage /> },
-      { path: 'querer-encajar/:slug', element: <ReflectionDetailPage /> },
-      { path: 'buzon', element: <MailboxPage /> },
-      { path: 'podcast', element: <PodcastPage /> },
+      { element: <SectionGate section="ABOUT" />, children: [{ path: 'nosotras', element: <AboutPage /> }] },
+      {
+        element: <SectionGate section="TRENDS" />,
+        children: [
+          { path: 'anatomia-de-un-trend', element: <TrendsPage /> },
+          { path: 'anatomia-de-un-trend/:slug', element: <TrendDetailPage /> },
+        ],
+      },
+      {
+        element: <SectionGate section="INTERVIEWS" />,
+        children: [
+          { path: 'entrevistas', element: <InterviewsPage /> },
+          { path: 'entrevistas/:slug', element: <InterviewDetailPage /> },
+        ],
+      },
+      { element: <SectionGate section="GLOSSARY" />, children: [{ path: 'glosario', element: <GlossaryPage /> }] },
+      {
+        element: <SectionGate section="REFLECTIONS" />,
+        children: [
+          { path: 'querer-encajar', element: <ReflectionsPage /> },
+          { path: 'querer-encajar/:slug', element: <ReflectionDetailPage /> },
+        ],
+      },
+      { element: <SectionGate section="MAILBOX" />, children: [{ path: 'buzon', element: <MailboxPage /> }] },
+      { element: <SectionGate section="PODCAST" />, children: [{ path: 'podcast', element: <PodcastPage /> }] },
       { path: 'privacidad', element: <PrivacyPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

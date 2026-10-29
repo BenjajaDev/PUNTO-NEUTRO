@@ -1,5 +1,6 @@
 import {
   ExternalLink,
+  EyeOff,
   FileText,
   HeartHandshake,
   Headphones,
@@ -22,31 +23,33 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { api } from '@/lib/api';
-import type { Stats } from '@/lib/types';
+import { isSectionEnabled } from '@/lib/sections';
+import type { SiteSection, Stats } from '@/lib/types';
 import { useTheme } from '@/lib/useTheme';
 import { LogoMark } from '@/site/components/Logo';
+import { useSiteData } from '@/site/SiteDataProvider';
 import { Badge, Button, useFeedback } from '@/ui';
 import { ROLE_LABEL, useAuth } from './AuthProvider';
 
-type NavItem = { to: string; label: string; icon: LucideIcon; adminOnly?: boolean; end?: boolean; badge?: 'pending' };
+type NavItem = { to: string; label: string; icon: LucideIcon; adminOnly?: boolean; end?: boolean; badge?: 'pending'; section?: SiteSection };
 
 const SECTIONS: { label: string; items: NavItem[] }[] = [
   { label: 'General', items: [{ to: '/admin', label: 'Resumen', icon: LayoutDashboard, end: true }] },
   {
     label: 'Contenidos',
     items: [
-      { to: '/admin/trends', label: 'Anatomía de un Trend', icon: FileText },
-      { to: '/admin/entrevistas', label: 'Pequeñas Entrevistas', icon: MessageSquareQuote },
-      { to: '/admin/glosario', label: 'Glosario', icon: SpellCheck },
-      { to: '/admin/querer-encajar', label: 'Querer encajar', icon: HeartHandshake },
-      { to: '/admin/podcast', label: 'Podcast', icon: Headphones },
+      { to: '/admin/trends', label: 'Anatomía de un Trend', icon: FileText, section: 'TRENDS' },
+      { to: '/admin/entrevistas', label: 'Pequeñas Entrevistas', icon: MessageSquareQuote, section: 'INTERVIEWS' },
+      { to: '/admin/glosario', label: 'Glosario', icon: SpellCheck, section: 'GLOSSARY' },
+      { to: '/admin/querer-encajar', label: 'Querer encajar', icon: HeartHandshake, section: 'REFLECTIONS' },
+      { to: '/admin/podcast', label: 'Podcast', icon: Headphones, section: 'PODCAST' },
     ],
   },
-  { label: 'Comunidad', items: [{ to: '/admin/buzon', label: 'Buzón comunitario', icon: Inbox, badge: 'pending' }] },
+  { label: 'Comunidad', items: [{ to: '/admin/buzon', label: 'Buzón comunitario', icon: Inbox, badge: 'pending', section: 'MAILBOX' }] },
   {
     label: 'Sitio web',
     items: [
-      { to: '/admin/equipo', label: 'Equipo (Nosotras)', icon: Users },
+      { to: '/admin/equipo', label: 'Equipo (Nosotras)', icon: Users, section: 'ABOUT' },
       { to: '/admin/medios', label: 'Medios', icon: Image },
       { to: '/admin/configuracion', label: 'Configuración del sitio', icon: Settings2, adminOnly: true },
     ],
@@ -65,6 +68,7 @@ export const MAILBOX_CHANGED = 'pn:mailbox-changed';
 
 export function AdminLayout() {
   const { user, isAdmin, logout } = useAuth();
+  const { settings } = useSiteData();
   const { confirm } = useFeedback();
   const { mode, toggle } = useTheme();
   const [open, setOpen] = useState(false);
@@ -136,10 +140,15 @@ export function AdminLayout() {
             return (
               <div key={section.label} className="admin__group">
                 <span className="admin__group-label">{section.label}</span>
-                {items.map(({ to, label, icon: Icon, end, badge }) => (
+                {items.map(({ to, label, icon: Icon, end, badge, section }) => (
                   <NavLink key={to} to={to} end={end} className="admin__link">
                     <Icon size={18} aria-hidden />
                     <span style={{ flex: 1 }}>{label}</span>
+                    {section && !isSectionEnabled(settings, section) ? (
+                      <span className="admin__hidden" title="Oculta en el sitio público">
+                        <EyeOff size={13} aria-hidden /> Oculta
+                      </span>
+                    ) : null}
                     {badge === 'pending' && pending > 0 ? (
                       <span className="admin__count" aria-label={`${pending} pendientes`}>
                         {pending}

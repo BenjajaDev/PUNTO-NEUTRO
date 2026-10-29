@@ -40,16 +40,33 @@ model User {
 
 // ─── Configuración institucional (Inicio, Nosotras, Footer) ─────────
 
+/// Secciones del sitio que se pueden ocultar. Inicio y Privacidad quedan
+/// fuera a propósito: sin portada no hay sitio y la política de datos del
+/// buzón debe estar siempre disponible.
+enum SiteSection {
+  ABOUT // Nosotras
+  TRENDS // Anatomía de un Trend
+  INTERVIEWS // Pequeñas Entrevistas
+  GLOSSARY // Glosario
+  REFLECTIONS // Querer encajar
+  MAILBOX // Buzón comunitario
+  PODCAST // Podcast «A Pausar el Filtro»
+}
+
 model SiteSettings {
   id Int @id @default(1)
 
-  siteName     String @default("Punto Neutro")
-  tagline      String @default("")
-  logoId       Int?
-  logo         Media? @relation("SiteLogo", fields: [logoId], references: [id], onDelete: SetNull)
+  siteName String @default("Punto Neutro")
+
+  // Secciones ocultas al público (menú, portada, rutas y API pública).
+  // Vacío = todo visible. El panel las sigue editando.
+  disabledSections SiteSection[] @default([])
+  tagline          String        @default("")
+  logoId           Int?
+  logo             Media?        @relation("SiteLogo", fields: [logoId], references: [id], onDelete: SetNull)
   // Logo del pie de página; sin él se usa el de la cabecera.
-  footerLogoId Int?
-  footerLogo   Media? @relation("FooterLogo", fields: [footerLogoId], references: [id], onDelete: SetNull)
+  footerLogoId     Int?
+  footerLogo       Media?        @relation("FooterLogo", fields: [footerLogoId], references: [id], onDelete: SetNull)
 
   // Pestaña del navegador y buscadores
   siteTitle       String @default("Punto Neutro · Periodismo sobre neutralidad corporal")

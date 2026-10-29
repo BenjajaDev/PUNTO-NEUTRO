@@ -41,8 +41,16 @@ function publishRules(requireAuthor: boolean) {
   };
 }
 
+/** Secciones que se pueden ocultar (enum `SiteSection`; espejo en web/src/lib/sections.ts). */
+export const SITE_SECTIONS = ['ABOUT', 'TRENDS', 'INTERVIEWS', 'GLOSSARY', 'REFLECTIONS', 'MAILBOX', 'PODCAST'] as const;
+export type SiteSectionKey = (typeof SITE_SECTIONS)[number];
+
 export const settingsSchema = z.object({
   siteName: text(80),
+  disabledSections: z
+    .array(z.enum(SITE_SECTIONS, { error: 'Sección desconocida.' }))
+    .default([])
+    .transform((list) => [...new Set(list)]),
   tagline: optText(160),
   logoId: mediaId,
   footerLogoId: mediaId,

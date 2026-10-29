@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { api } from '@/lib/api';
-import type { SiteSettings } from '@/lib/types';
+import { isSectionEnabled } from '@/lib/sections';
+import type { SiteSection, SiteSettings } from '@/lib/types';
 import { useResource } from '@/lib/useResource';
 
 type SiteData = { settings: SiteSettings | null; loading: boolean; reload: () => void };
@@ -34,6 +35,11 @@ export function SiteDataProvider({ children }: { children: ReactNode }) {
 }
 
 export const useSiteData = () => useContext(SiteDataContext);
+
+/** ¿La sección está visible para el público? (se oculta en Configuración del sitio). */
+export function useSectionEnabled(section: SiteSection) {
+  return isSectionEnabled(useSiteData().settings, section);
+}
 
 /**
  * Título de la pestaña: «Glosario · Punto Neutro…» en cada página y solo el
