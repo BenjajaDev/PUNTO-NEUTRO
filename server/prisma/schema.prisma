@@ -128,6 +128,7 @@ model SiteSettings {
   instagramUrl   String @default("")
   facebookUrl    String @default("")
   tiktokUrl      String @default("")
+  xUrl           String @default("")
   creditsText    String @default("")
   privacyPolicy  String @default("")
 

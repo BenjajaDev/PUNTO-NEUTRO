@@ -116,6 +116,7 @@ const SECTIONS: { id: string; title: string; description: string; fields: FieldD
       { key: 'instagramUrl', label: 'Instagram', type: 'url' },
       { key: 'facebookUrl', label: 'Facebook', type: 'url' },
       { key: 'tiktokUrl', label: 'TikTok', type: 'url' },
+      { key: 'xUrl', label: 'X (ex Twitter)', type: 'url', hint: 'https://x.com/…' },
       { key: 'closingTitle', label: 'Título del banner de cierre', max: 160 },
       { key: 'closingText', label: 'Texto del banner de cierre', type: 'textarea', rows: 2, max: 600 },
     ],

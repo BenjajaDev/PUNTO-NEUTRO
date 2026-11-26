@@ -93,6 +93,7 @@ export const settingsSchema = z.object({
   instagramUrl: optionalUrl,
   facebookUrl: optionalUrl,
   tiktokUrl: optionalUrl,
+  xUrl: optionalUrl,
   creditsText: optText(600),
   privacyPolicy: optText(12000),
 });

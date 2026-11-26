@@ -21,3 +21,10 @@ export const TikTokIcon = ({ size = 20 }: Props) => (
     <path d="M14 3c.4 2.6 2.2 4.5 5 4.8" />
   </svg>
 );
+
+export const XIcon = ({ size = 20 }: Props) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d="M4 4h4.5L20 20h-4.5Z" />
+    <path d="M20 4l-6.6 7.5M10.6 12.5 4 20" />
+  </svg>
+);

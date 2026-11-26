@@ -6,7 +6,7 @@ import type { SiteSection } from '@/lib/types';
 import { useTheme } from '@/lib/useTheme';
 import { buttonClass } from '@/ui';
 import { BrandMark, Logo } from './components/Logo';
-import { FacebookIcon, InstagramIcon, TikTokIcon } from './components/SocialIcons';
+import { FacebookIcon, InstagramIcon, TikTokIcon, XIcon } from './components/SocialIcons';
 import { useSiteData } from './SiteDataProvider';
 
 type NavItem = { to: string; label: string; end?: boolean; section?: SiteSection };
@@ -66,6 +66,7 @@ export function SiteLayout() {
     { href: settings?.instagramUrl, label: 'Instagram', icon: InstagramIcon },
     { href: settings?.facebookUrl, label: 'Facebook', icon: FacebookIcon },
     { href: settings?.tiktokUrl, label: 'TikTok', icon: TikTokIcon },
+    { href: settings?.xUrl, label: 'X', icon: XIcon },
   ].filter((s) => s.href);
   const whatsapp = settings?.whatsappNumber?.replace(/\D/g, '');
   const visible = (item: NavItem) => !item.section || isSectionEnabled(settings, item.section);

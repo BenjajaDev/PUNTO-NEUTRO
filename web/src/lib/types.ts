@@ -48,6 +48,7 @@ export type SiteSettings = {
   instagramUrl: string;
   facebookUrl: string;
   tiktokUrl: string;
+  xUrl: string;
   creditsText: string;
   privacyPolicy: string;
 };

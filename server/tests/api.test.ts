@@ -565,3 +565,19 @@ describe('Secciones activables', () => {
     expect(invalid.body.fields['disabledSections.0']).toBe('Sección desconocida.');
   });
 });
+
+describe('Redes sociales', () => {
+  it('guarda el enlace de X y rechaza lo que no es una URL', async () => {
+    const admin = await agentFor('ADMIN');
+    const settings = (await admin.get('/api/admin/settings')).body;
+    const saved = await admin.put('/api/admin/settings').set(CSRF).send({ ...settings, xUrl: 'https://x.com/puntoneutro' });
+    expect(saved.status).toBe(200);
+    expect((await request(app).get('/api/site')).body.xUrl).toBe('https://x.com/puntoneutro');
+
+    const invalid = await admin.put('/api/admin/settings').set(CSRF).send({ ...settings, xUrl: 'puntoneutro' });
+    expect(invalid.status).toBe(400);
+    expect(invalid.body.fields.xUrl).toBeTruthy();
+
+    await admin.put('/api/admin/settings').set(CSRF).send({ ...settings, xUrl: '' });
+  });
+});
