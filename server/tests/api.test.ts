@@ -1,8 +1,10 @@
 import request from 'supertest';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createApp } from '../src/app.js';
 import { prisma } from '../src/db.js';
 import { hashPassword } from '../src/lib/password.js';
+import { STATUS_THEME } from '../src/routes/status.js';
+import { themes } from '../../web/src/theme/tokens.js';
 
 const app = createApp();
 const CSRF = { 'x-requested-with': 'punto-neutro' };
@@ -579,5 +581,32 @@ describe('Redes sociales', () => {
     expect(invalid.body.fields.xUrl).toBeTruthy();
 
     await admin.put('/api/admin/settings').set(CSRF).send({ ...settings, xUrl: '' });
+  });
+});
+
+describe('Página de estado', () => {
+  it('usa los mismos colores que el sistema de diseño del sitio, en ambos temas', () => {
+    for (const mode of ['light', 'dark'] as const) {
+      for (const [name, value] of Object.entries(STATUS_THEME[mode])) expect(`${mode}.${name}=${value}`).toBe(`${mode}.${name}=${themes[mode][name]}`);
+    }
+  });
+
+  it('confirma que la base responde, sin caché ni indexación', async () => {
+    const res = await request(app).get('/estado');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/text\/html/);
+    expect(res.headers['cache-control']).toBe('no-store');
+    expect(res.text).toContain('Base de datos conectada');
+    expect(res.text).not.toContain('http-equiv="refresh"');
+  });
+
+  it('si la base no responde avisa con 503 y se reintenta sola, sin exponer el error', async () => {
+    const spy = vi.spyOn(prisma, '$queryRaw').mockRejectedValueOnce(new Error('connect ECONNREFUSED 10.0.0.1:5432'));
+    const res = await request(app).get('/estado');
+    spy.mockRestore();
+    expect(res.status).toBe(503);
+    expect(res.text).toContain('La base de datos no responde');
+    expect(res.text).toContain('http-equiv="refresh"');
+    expect(res.text).not.toContain('ECONNREFUSED');
   });
 });

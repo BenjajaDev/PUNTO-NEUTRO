@@ -60,7 +60,10 @@ Copia la URL pública del servicio (algo como `https://punto-neutro-api.onrender
 ```
 https://punto-neutro-api.onrender.com/api/health   →  {"ok":true}
 https://punto-neutro-api.onrender.com/api/site     →  {"error":"Acceso directo no permitido."}
+https://punto-neutro-api.onrender.com/             →  página «Base de datos conectada»
 ```
+
+La raíz (o `/estado`) consulta de verdad la base. En el plan gratis Render duerme el servicio tras unos minutos sin visitas: abrir esa página lo despierta y, mientras la base no responda, muestra «La base de datos no responde» y se recarga sola cada 5 segundos. `/api/health` no toca la base a propósito (es el health check de Render).
 
 Que `/api/site` responda *Acceso directo no permitido* es correcto: con `PROXY_SECRET` definido, la API solo atiende lo que llega a través de Cloudflare.
 
